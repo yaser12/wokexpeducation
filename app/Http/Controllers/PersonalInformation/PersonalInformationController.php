@@ -45,21 +45,21 @@ class PersonalInformationController extends ApiController
             'day' => 'required|string'
         ];
 
-        $POBRules = [
-            'country' => 'required|string',
-            'city' => 'required|string',
-            'latitude' => 'required',
-            'longitude' => 'required'
-        ];
-
-        $CLRules = [
-            'country' => 'required|string',
-            'city' => 'required|string',
-            'postal_code' => 'required|string',
-            'street_address' => 'required|string',
-            'latitude' => 'required',
-            'longitude' => 'required'
-        ];
+//        $POBRules = [
+//            'country' => 'required|string',
+//            'city' => 'required|string',
+//            'latitude' => 'required',
+//            'longitude' => 'required'
+//        ];
+//
+//        $CLRules = [
+//            'country' => 'required|string',
+//            'city' => 'required|string',
+//            'postal_code' => 'required|string',
+//            'street_address' => 'required|string',
+//            'latitude' => 'required',
+//            'longitude' => 'required'
+//        ];
 
         $this->validate($request, $rules);
 
@@ -70,7 +70,7 @@ class PersonalInformationController extends ApiController
             return $this->errorResponse("Trying To Access Filled Field.", 409);
         }
 
-        return DB::transaction(function() use ($request, $POBRules, $CLRules, $resume, $DOBRules) {
+        return DB::transaction(function() use ($request, $resume, $DOBRules) {
 
             $DOBRequest = new Request($request->date_of_birth);
 
@@ -101,7 +101,7 @@ class PersonalInformationController extends ApiController
             if($request->has('place_of_birth'))
             {
                 $POBRequest = new Request($request->place_of_birth);
-                $this->validate($POBRequest, $POBRules);
+//                $this->validate($POBRequest, $POBRules);
                 PlaceOfBirth::create([
                     'personal_information_id' => $personalInformation->id,
                     'country' => $POBRequest->country,
@@ -114,7 +114,7 @@ class PersonalInformationController extends ApiController
             if($request->has('current_location'))
             {
                 $CLRequest = new Request($request->current_location);
-                $this->validate($CLRequest, $CLRules);
+//                $this->validate($CLRequest, $CLRules);
                 CurrentLocation::create([
                     'personal_information_id' => $personalInformation->id,
                     'country' => $CLRequest->country,
@@ -182,25 +182,25 @@ class PersonalInformationController extends ApiController
             'day' => 'required|string'
         ];
 
-        $POBRules = [
-            'country' => 'required|string',
-            'city' => 'required|string',
-            'latitude' => 'required',
-            'longitude' => 'required'
-        ];
-
-        $CLRules = [
-            'country' => 'required|string',
-            'city' => 'required|string',
-            'postal_code' => 'required|string',
-            'street_address' => 'required|string',
-            'latitude' => 'required',
-            'longitude' => 'required'
-        ];
+//        $POBRules = [
+//            'country' => 'required|string',
+//            'city' => 'required|string',
+//            'latitude' => 'required',
+//            'longitude' => 'required'
+//        ];
+//
+//        $CLRules = [
+//            'country' => 'required|string',
+//            'city' => 'required|string',
+//            'postal_code' => 'required|string',
+//            'street_address' => 'required|string',
+//            'latitude' => 'required',
+//            'longitude' => 'required'
+//        ];
 
         $this->validate($request, $rules);
 
-        return DB::transaction(function() use ($request, $personalInformation, $POBRules, $CLRules, $DOBRules) {
+        return DB::transaction(function() use ($request, $personalInformation, $DOBRules) {
 
             $date_of_birth = "";
             if($request->has('date_of_birth'))
@@ -228,7 +228,7 @@ class PersonalInformationController extends ApiController
             {
                 $personalInformation->placeOfBirth()->delete();
                 $POBRequest = new Request($request->place_of_birth);
-                $this->validate($POBRequest, $POBRules);
+//                $this->validate($POBRequest, $POBRules);
                 PlaceOfBirth::create([
                     'personal_information_id' => $personalInformation->id,
                     'country' => $POBRequest->country,
@@ -242,7 +242,7 @@ class PersonalInformationController extends ApiController
             {
                 $personalInformation->currentLocation()->delete();
                 $CLRequest = new Request($request->current_location);
-                $this->validate($CLRequest, $CLRules);
+//                $this->validate($CLRequest, $CLRules);
                 CurrentLocation::create([
                     'personal_information_id' => $personalInformation->id,
                     'country' => $CLRequest->country,
