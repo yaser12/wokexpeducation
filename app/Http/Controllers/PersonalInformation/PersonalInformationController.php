@@ -36,8 +36,6 @@ class PersonalInformationController extends ApiController
             'gender' => 'required|string',
             'marital_status' => 'required|string',
             'date_of_birth' => 'required',
-            'place_of_birth' => 'required',
-            'current_location' => 'required',
             'nationalities' => 'required'
         ];
 
@@ -73,12 +71,8 @@ class PersonalInformationController extends ApiController
         }
 
         return DB::transaction(function() use ($request, $POBRules, $CLRules, $resume, $DOBRules) {
-            $POBRequest = new Request($request->place_of_birth);
-            $CLRequest = new Request($request->current_location);
-            $DOBRequest = new Request($request->date_of_birth);
 
-            $this->validate($POBRequest, $POBRules);
-            $this->validate($CLRequest, $CLRules);
+            $DOBRequest = new Request($request->date_of_birth);
 
             $date_of_birth = "";
             if($request->has('date_of_birth'))
@@ -104,23 +98,33 @@ class PersonalInformationController extends ApiController
             $personalInformation->date_of_birth = $date_of_birth;
             $personalInformation->save();
 
-            PlaceOfBirth::create([
-                'personal_information_id' => $personalInformation->id,
-                'country' => $POBRequest->country,
-                'city' => $POBRequest->city,
-                'latitude' => $POBRequest->latitude,
-                'longitude' => $POBRequest->longitude
-            ]);
+            if($request->has('place_of_birth'))
+            {
+                $POBRequest = new Request($request->place_of_birth);
+                $this->validate($POBRequest, $POBRules);
+                PlaceOfBirth::create([
+                    'personal_information_id' => $personalInformation->id,
+                    'country' => $POBRequest->country,
+                    'city' => $POBRequest->city,
+                    'latitude' => $POBRequest->latitude,
+                    'longitude' => $POBRequest->longitude
+                ]);
+            }
 
-            CurrentLocation::create([
-                'personal_information_id' => $personalInformation->id,
-                'country' => $CLRequest->country,
-                'city' => $CLRequest->city,
-                'postal_code' => $CLRequest->postal_code,
-                'street_address' => $CLRequest->street_address,
-                'latitude' => $CLRequest->latitude,
-                'longitude' => $CLRequest->longitude
-            ]);
+            if($request->has('current_location'))
+            {
+                $CLRequest = new Request($request->current_location);
+                $this->validate($CLRequest, $CLRules);
+                CurrentLocation::create([
+                    'personal_information_id' => $personalInformation->id,
+                    'country' => $CLRequest->country,
+                    'city' => $CLRequest->city,
+                    'postal_code' => $CLRequest->postal_code,
+                    'street_address' => $CLRequest->street_address,
+                    'latitude' => $CLRequest->latitude,
+                    'longitude' => $CLRequest->longitude
+                ]);
+            }
 
             if($request->nationalities !== [])
             {
@@ -169,8 +173,6 @@ class PersonalInformationController extends ApiController
             'gender' => 'required|string',
             'marital_status' => 'required|string',
             'date_of_birth' => 'required',
-            'place_of_birth' => 'required',
-            'current_location' => 'required',
             'nationalities' => 'required'
         ];
 
