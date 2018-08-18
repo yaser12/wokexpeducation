@@ -34,4 +34,5 @@ Route::resource('summary', 'Summary\SummaryController',['except' => ['edit','cre
 Route::resource('objective', 'Objective\ObjectiveController',['except' => ['edit','create','index']]) ;
 Route::resource('resume', 'ResumeController',['except' => ['edit','create']]) ;
 Route::resource('personalInformation', 'PersonalInformation\PersonalInformationController', ['except' => ['edit','create','index']]);
+Route::resource('education', 'Education\EducationController', ['except' => ['edit','create']]);
 
