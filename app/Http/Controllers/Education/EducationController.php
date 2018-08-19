@@ -100,6 +100,12 @@ class EducationController extends ApiController
 
             $education->grade=null;
             $education->full_grade=null;
+
+            $educationOrder=Education::where('resume_id',$request['resume_id'])->count();
+            if($educationOrder != 0){
+                $education->order=$educationOrder+1;
+            }else $education->order=1;
+
             $education->save();
             $education->university;
             $education->major;
@@ -117,6 +123,7 @@ class EducationController extends ApiController
         if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
 
         $education = Education::where('resume_id', $resumeId)
+            ->orderBy('order')
             ->with(['university', 'major', 'minor', 'projects'])
             ->get();
 
@@ -254,10 +261,20 @@ class EducationController extends ApiController
     public function destroy(Education $education)
     {
         $user = auth()->user();
-        if ($user->id != $education->resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
-        $ed = clone $education;
-        $education->delete();
-        return $this->showOne($ed);
+        $oldEducation = clone $education;
+        if ($user->id != $education->resume->user_id) return $this->errorResponse('you are not authorized to do this operation', 401);
+        return DB::transaction(function () use ($oldEducation,$education) {
+            $education->delete();
+            $educations = Education::where('resume_id', $education->resume_id)->get();
+            $order = 1;
+            foreach ($educations as $ed) {
+                $ed->order = $order;
+                $ed->save();
+                ++$order;
+            }
+
+            return $this->showOne($oldEducation);
+        });
     }
 
 }

@@ -29,6 +29,7 @@ class CreateEducationTable extends Migration
             $table->foreign('major_id')->references('id')->on('majors');
             $table->foreign('minor_id')->references('id')->on('minors');
             $table->foreign('resume_id')->references('id')->on('resumes')->onDelete('cascade');
+            $table->integer('order');
             $table->timestamps();
         });
     }
