@@ -74,6 +74,7 @@ class EducationController extends ApiController
             } else {
                 $major = new Major();
                 $major->name = $reqMajor['name'];
+                $major->verified=false;
                 $major->save();
                 $education->major_id = $major->id;
             }
@@ -126,8 +127,10 @@ class EducationController extends ApiController
             ->orderBy('order')
             ->with(['university', 'major', 'minor', 'projects'])
             ->get();
-
-        return $this->showAll($education);
+        $majors=Major::where('verified',true)->get();
+        $minors=Minor::where('verified',true)->get();
+        return response()->json(['educations'=>$education,'majors'=>$majors,'minors'=>$minors],200);
+//        return $this->showAll($education);
     }
 
     public function update(Request $request, Education $education)
@@ -179,6 +182,7 @@ class EducationController extends ApiController
             } else {
                 $major = new Major();
                 $major->name = $reqMajor['name'];
+                $major->verified=false;
                 $major->save();
                 $education->major_id = $major->id;
             }
@@ -191,7 +195,8 @@ class EducationController extends ApiController
                 } else {
                     $minor = new Minor();
                     $minor->name = $reqMinor['name'];
-                    $minor->major_id=$reqMinor['major_id'];
+                    $minor->major_id=$major->id;
+                    $minor->verified=false;
                     $minor->save();
                     $education->minor_id = $minor->id;
                 }

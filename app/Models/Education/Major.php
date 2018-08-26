@@ -14,4 +14,8 @@ class Major extends Model
     {
         return $this->hasMany(Education::class);
     }
+    public function majorGroup()
+    {
+        return $this->belongsTo(MajorGroup::class);
+    }
 }
