@@ -132,6 +132,21 @@ class EducationController extends ApiController
         return response()->json(['educations'=>$education,'majors'=>$majors,'minors'=>$minors],200);
 //        return $this->showAll($education);
     }
+    public function  getSingleEducation($resumeId,$educationId)
+    {
+        $resume = Resume::findOrFail($resumeId);
+        $user = auth()->user();
+        if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
+        $education = Education::where('id', $educationId)
+            ->with(['university', 'major', 'minor', 'projects'])
+            ->first();
+        $majors=Major::where('verified',true)->get();
+        $minors=Minor::where('verified',true)->get();
+        return response()->json(['education'=>$education,'majors'=>$majors,'minors'=>$minors],200);
+
+
+
+    }
 
     public function update(Request $request, Education $education)
     {
