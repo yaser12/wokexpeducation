@@ -278,6 +278,18 @@ class EducationController extends ApiController
 
     }
 
+    public function orderData(Request $request,$resumeId){
+        $resume = Resume::findOrFail($resumeId);
+        $user = auth()->user();
+        if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
+        foreach($request['orderData'] as $ed){
+            $education=Education::findOrFail($ed['educationId']);
+            $education->order=$ed['orderId'];
+            $education->save();
+        }
+        return response()->json(['success'=>'true']);
+    }
+
 
     public function destroy(Education $education)
     {
@@ -295,5 +307,7 @@ class EducationController extends ApiController
             return $this->showOne($oldEducation);
         });
     }
+
+
 
 }
