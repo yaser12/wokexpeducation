@@ -124,7 +124,7 @@ class EducationController extends ApiController
         if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
 
         $education = Education::where('resume_id', $resumeId)
-            ->orderBy('order')
+            ->orderBy('order','desc')
             ->with(['university', 'major', 'minor', 'projects'])
             ->get();
         $majors=Major::where('verified',true)->get();
@@ -285,12 +285,10 @@ class EducationController extends ApiController
         if ($user->id != $education->resume->user_id) return $this->errorResponse('you are not authorized to do this operation', 401);
         return DB::transaction(function () use ($oldEducation,$education) {
             $education->delete();
-            $educations = Education::where('resume_id', $education->resume_id)->get();
-            $order = 1;
+            $educations = Education::where([['resume_id', $education->resume_id],['order','>',$education->order]])->get();
             foreach ($educations as $ed) {
-                $ed->order = $order;
+                $ed->order = $ed->order-1;
                 $ed->save();
-                ++$order;
             }
 
             return $this->showOne($oldEducation);
