@@ -102,11 +102,12 @@ class EducationController extends ApiController
             $education->grade=null;
             $education->full_grade=null;
 
-            $educationOrder=Education::where('resume_id',$request['resume_id'])->count();
-            if($educationOrder != 0){
-                $education->order=$educationOrder+1;
-            }else $education->order=1;
-
+            $educations=Education::where('resume_id',$request['resume_id'])->get();
+            foreach($educations as $ed){
+                $ed->order=$ed->order+1;
+                $ed->save();
+            }
+            $education->order=1;
             $education->save();
             $education->university;
             $education->major;
@@ -124,7 +125,7 @@ class EducationController extends ApiController
         if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
 
         $education = Education::where('resume_id', $resumeId)
-            ->orderBy('order','desc')
+            ->orderBy('order')
             ->with(['university', 'major', 'minor', 'projects'])
             ->get();
         $majors=Major::where('verified',true)->get();
