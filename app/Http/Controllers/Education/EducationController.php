@@ -95,8 +95,11 @@ class EducationController extends ApiController
                 $to_date_time = new \DateTime();
                 $to = $to_date_time->createFromFormat('Y-m-d', $date_string);
                 $education->to = $to;
+                $education->isPresent=false;
             } else {
                 $education->to = null;
+                $education->isPresent=true;
+
             }
 
             $education->grade=null;
@@ -203,7 +206,8 @@ class EducationController extends ApiController
                 $education->major_id = $major->id;
             }
 
-            if($request->has('minor')){
+
+            if( $request['minor']['name'] != null){
                 $reqMinor = $request['minor'];
                 $minor = Minor::where('name', $reqMinor['name'])->first();
                 if ($minor) {
@@ -221,8 +225,8 @@ class EducationController extends ApiController
 
             if($request->has('projects')){
                 $reqProjects = $request['projects'];
+                $education->projects()->delete();
                 if($reqProjects != null){
-                    $education->projects()->delete();
                     foreach($reqProjects as $project){
                         $pro=new EducationProject();
                         $pro->title=$project['title'];
