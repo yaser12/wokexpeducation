@@ -58,6 +58,8 @@ class EducationController extends ApiController
                 $university->name = $reqUniversity['name'];
                 $university->url = $reqUniversity['url'];
                 $university->description = $reqUniversity['description'];
+
+
                 $university->country = $reqUniversity['country'];
                 $university->city = $reqUniversity['city'];
                 $university->street_address = $reqUniversity['street_address'];
