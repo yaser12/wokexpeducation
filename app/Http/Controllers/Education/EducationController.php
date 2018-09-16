@@ -8,6 +8,7 @@ use App\Models\Education\Major;
 use App\Models\Education\Minor;
 use App\Models\Education\University;
 use App\Models\Resume;
+use Carbon\Carbon;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\ApiController;
@@ -30,7 +31,7 @@ class EducationController extends ApiController
             'degree_level' => 'required',
             'university' => 'required',
             'major' => 'required',
-            'from' => 'required',
+//            'from' => 'required',
             'isPresent' => 'required',
             'resume_id' => 'required',
         ]);
@@ -49,6 +50,7 @@ class EducationController extends ApiController
             $education = new Education();
             $education->degree_level = $request['degree_level'];
             $education->resume_id = $request['resume_id'];
+            $education->description = $request['description'];
 
             $university = University::where('name', $reqUniversity['name'])->first();
             if ($university) {
@@ -57,7 +59,6 @@ class EducationController extends ApiController
                 $university = new University();
                 $university->name = $reqUniversity['name'];
                 $university->url = $reqUniversity['url'];
-                $university->description = $reqUniversity['description'];
 
 
                 $university->country = $reqUniversity['country'];
@@ -81,14 +82,19 @@ class EducationController extends ApiController
                 $education->major_id = $major->id;
             }
 
-            $fromMonth = $reqFrom['month'];
-            $fromYear = $reqFrom['year'];
-            $fromDay = 1;
-            $date_string = $fromYear . "-" . $fromMonth . "-" . $fromDay;
-            $from_date_time = new \DateTime();
-            $from = $from_date_time->createFromFormat('Y-m-d', $date_string);
-            $education->from = $from;
-
+            if ( $reqFrom['year']!= null ){
+                if($reqFrom['month']!=null){
+                $fromMonth = $reqFrom['month'];
+                }else{
+                    $fromMonth = 0;
+                }
+                $fromYear = $reqFrom['year'];
+                $fromDay = 1;
+                $date_string = $fromYear . "-" . $fromMonth . "-" . $fromDay;
+                $from_date_time = new \DateTime();
+                $from = $from_date_time->createFromFormat('Y-m-d', $date_string);
+                $education->from = $from;
+            }
             if ($request['isPresent'] == false && $request['to'] != null) {
                 $toMonth = $reqTo['month'];
                 $toYear = $reqTo['year'];
@@ -118,6 +124,7 @@ class EducationController extends ApiController
             $education->major;
             $education->minor;
             $education->projects;
+
             return $this->showOne($education);
 
         });
@@ -160,7 +167,7 @@ class EducationController extends ApiController
             'degree_level' => 'required',
             'university' => 'required',
             'major' => 'required',
-            'from' => 'required',
+//            'from' => 'required',
             'isPresent' => 'required',
             'resume_id' => 'required',
         ]);
@@ -178,6 +185,7 @@ class EducationController extends ApiController
 
             $education->degree_level = $request['degree_level'];
             $education->resume_id = $request['resume_id'];
+            $education->description = $request['description'];
 
             $university = University::where('name', $reqUniversity['name'])->first();
             if ($university) {
@@ -186,7 +194,7 @@ class EducationController extends ApiController
                 $university = new University();
                 $university->name = $reqUniversity['name'];
                 $university->url = $reqUniversity['url'];
-                $university->description = $reqUniversity['description'];
+
                 $university->country = $reqUniversity['country'];
                 $university->city = $reqUniversity['city'];
                 $university->street_address = $reqUniversity['street_address'];
@@ -241,14 +249,15 @@ class EducationController extends ApiController
 
             }
 
-
-            $fromMonth = $reqFrom['month'];
-            $fromYear = $reqFrom['year'];
-            $fromDay = 1;
-            $date_string = $fromYear . "-" . $fromMonth . "-" . $fromDay;
-            $from_date_time = new \DateTime();
-            $from = $from_date_time->createFromFormat('Y-m-d', $date_string);
-            $education->from = $from;
+            if ( $reqFrom['month'] !=null && $reqFrom['year']!= null ) {
+                $fromMonth = $reqFrom['month'];
+                $fromYear = $reqFrom['year'];
+                $fromDay = 1;
+                $date_string = $fromYear . "-" . $fromMonth . "-" . $fromDay;
+                $from_date_time = new \DateTime();
+                $from = $from_date_time->createFromFormat('Y-m-d', $date_string);
+                $education->from = $from;
+            }
 
             if ($request['isPresent'] == false && $request['to'] != null) {
                 $toMonth = $reqTo['month'];
@@ -285,6 +294,7 @@ class EducationController extends ApiController
     }
 
     public function orderData(Request $request,$resumeId){
+
         $resume = Resume::findOrFail($resumeId);
         $user = auth()->user();
         if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
