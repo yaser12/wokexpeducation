@@ -33,6 +33,8 @@ class EducationController extends ApiController
             'major' => 'required',
 //            'from' => 'required',
             'isPresent' => 'required',
+            'isFromMonthPresent' =>'required',
+            'isToMonthPresent' => 'required',
             'resume_id' => 'required',
         ]);
 
@@ -83,10 +85,16 @@ class EducationController extends ApiController
             }
 
             if ( $reqFrom['year']!= null ){
-                if($reqFrom['month']!=null){
-                $fromMonth = $reqFrom['month'];
+
+                if($request['isFromMonthPresent'] == true){
+                    $fromMonth = $reqFrom['month'];
+                    $education->isFromMonthPresent  =true;
+
                 }else{
-                    $fromMonth = 0;
+
+                    $education->isFromMonthPresent = false;
+                    $fromMonth = 1;
+
                 }
                 $fromYear = $reqFrom['year'];
                 $fromDay = 1;
@@ -95,8 +103,21 @@ class EducationController extends ApiController
                 $from = $from_date_time->createFromFormat('Y-m-d', $date_string);
                 $education->from = $from;
             }
-            if ($request['isPresent'] == false && $request['to'] != null) {
-                $toMonth = $reqTo['month'];
+
+            if ($request['isPresent'] == false && $reqTo['year'] != null) {
+
+                if($request['isToMonthPresent'] == true) {
+                    $toMonth = $reqTo['month'];
+                    $education->isToMonthPresent = true;
+
+                }
+                else{
+                    $toMonth = 1;
+                    $education->isToMonthPresent = false;
+
+
+                }
+
                 $toYear = $reqTo['year'];
                 $toDay = 1;
                 $date_string = $toYear . "-" . $toMonth . "-" . $toDay;
@@ -109,6 +130,7 @@ class EducationController extends ApiController
                 $education->isPresent=true;
 
             }
+
 
             $education->grade=null;
             $education->full_grade=null;
@@ -124,7 +146,7 @@ class EducationController extends ApiController
             $education->major;
             $education->minor;
             $education->projects;
-
+           
             return $this->showOne($education);
 
         });
@@ -169,6 +191,8 @@ class EducationController extends ApiController
             'major' => 'required',
 //            'from' => 'required',
             'isPresent' => 'required',
+            'isFromMonthPresent' =>'required',
+            'isToMonthPresent' => 'required',
             'resume_id' => 'required',
         ]);
 
@@ -249,8 +273,15 @@ class EducationController extends ApiController
 
             }
 
-            if ( $reqFrom['month'] !=null && $reqFrom['year']!= null ) {
-                $fromMonth = $reqFrom['month'];
+            if ( $reqFrom['year']!= null ) {
+                if($request['isFromMonthPresent'] == true){
+                    $fromMonth = $reqFrom['month'];
+                    $education->isFromMonthPresent = true;
+                }
+                else{
+                    $fromMonth = 1 ;
+                    $education->isFromMonthPresent = false;
+                }
                 $fromYear = $reqFrom['year'];
                 $fromDay = 1;
                 $date_string = $fromYear . "-" . $fromMonth . "-" . $fromDay;
@@ -259,8 +290,15 @@ class EducationController extends ApiController
                 $education->from = $from;
             }
 
-            if ($request['isPresent'] == false && $request['to'] != null) {
-                $toMonth = $reqTo['month'];
+            if ($request['isPresent'] == false && $reqTo['year'] != null) {
+                if ($request['isToMonthPresent'] == true){
+                    $toMonth = $reqTo['month'];
+                    $education->isToMonthPresent = true;
+                }
+                else{
+                    $toMonth = 1;
+                    $education->isToMonthPresent = false;
+                }
                 $toYear = $reqTo['year'];
                 $toDay = 1;
                 $date_string = $toYear . "-" . $toMonth . "-" . $toDay;
