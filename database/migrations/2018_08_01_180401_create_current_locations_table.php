@@ -16,12 +16,12 @@ class CreateCurrentLocationsTable extends Migration
         Schema::create('current_locations', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('personal_information_id')->unsigned();
-            $table->string('country')->nullble();
-            $table->string('city')->nullble();
-            $table->string('postal_code')->nullble();
-            $table->string('street_address')->nullble();
-            $table->decimal('latitude',18,15)->nullble();
-            $table->decimal('longitude',18,15)->nullble();
+            $table->string('country')->nullable();
+            $table->string('city')->nullable();
+            $table->string('postal_code')->nullable();
+            $table->string('street_address')->nullable();
+            $table->decimal('latitude',18,15)->nullable();
+            $table->decimal('longitude',18,15)->nullable();
             $table->timestamps();
             $table->foreign('personal_information_id')->references('id')->on('personal_informations')->onDelete('cascade');
         });

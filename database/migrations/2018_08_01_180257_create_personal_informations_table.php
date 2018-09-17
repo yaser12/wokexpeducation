@@ -16,10 +16,10 @@ class CreatePersonalInformationsTable extends Migration
         Schema::create('personal_informations', function (Blueprint $table) {
             $table->increments('id');
             $table->string('first_name');
-            $table->string('middle_name')->nullble();
+            $table->string('middle_name')->nullable();
             $table->string('last_name');
-            $table->string('profile_picture')->nullble();
-            $table->string('resume_title')->nullble();
+            $table->string('profile_picture')->nullable();
+            $table->string('resume_title')->nullable();
             $table->string('gender');
             $table->string('marital_status');
             $table->date('date_of_birth');
