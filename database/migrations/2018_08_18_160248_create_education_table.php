@@ -20,7 +20,7 @@ class CreateEducationTable extends Migration
             $table->integer('university_id')->unsigned();
             $table->integer('major_id')->unsigned();
             $table->integer('minor_id')->unsigned()->nullable();
-            $table->date('from');
+            $table->date('from')->nullable();
             $table->date('to')->nullable();
             $table->boolean('isPresent')->nullable();
             $table->float('grade')->nullable();
