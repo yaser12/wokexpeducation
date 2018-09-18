@@ -114,8 +114,6 @@ class EducationController extends ApiController
                 else{
                     $toMonth = 1;
                     $education->isToMonthPresent = false;
-
-
                 }
 
                 $toYear = $reqTo['year'];
@@ -146,7 +144,7 @@ class EducationController extends ApiController
             $education->major;
             $education->minor;
             $education->projects;
-           
+
             return $this->showOne($education);
 
         });
