@@ -21,8 +21,8 @@ class CreateUniversitiesTable extends Migration
             $table->string('city')->nullable();
             $table->string('street_address')->nullable();
             $table->text('description')->nullable();
-            $table->decimal('latitude',18,15)->nullable();
-            $table->decimal('longitude',18,15)->nullable();
+//            $table->decimal('latitude',18,15)->nullable();
+//            $table->decimal('longitude',18,15)->nullable();
             $table->timestamps();
         });
     }

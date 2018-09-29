@@ -30,7 +30,7 @@ class EducationController extends ApiController
         $this->validate($request, [
             'degree_level' => 'required',
             'university' => 'required',
-            'major' => 'required',
+//            'major' => 'required',
 //            'from' => 'required',
             'isPresent' => 'required',
             'isFromMonthPresent' =>'required',
@@ -48,35 +48,36 @@ class EducationController extends ApiController
             $reqFrom = $request['from'];
             $reqTo = $request['to'];
 
-
             $education = new Education();
             $education->degree_level = $request['degree_level'];
             $education->resume_id = $request['resume_id'];
             $education->description = $request['description'];
 
-            $university = University::where('name', $reqUniversity['name'])->first();
-            if ($university) {
+
+            if ($reqUniversity['id'] >0) {
+                $university = University::where('name', $reqUniversity['name'])->first();
                 $education->university_id = $university->id;
             } else {
+
                 $university = new University();
                 $university->name = $reqUniversity['name'];
                 $university->url = $reqUniversity['url'];
-
-
                 $university->country = $reqUniversity['country'];
                 $university->city = $reqUniversity['city'];
                 $university->street_address = $reqUniversity['street_address'];
-                $university->latitude = $reqUniversity['latitude'];
-                $university->longitude = $reqUniversity['longitude'];
+
+//                $university->latitude = $reqUniversity['latitude'];
+//                $university->longitude = $reqUniversity['longitude'];
+
                 $university->save();
                 $education->university_id = $university->id;
             }
 
 
-            $major = Major::where('name', $reqMajor['name'])->first();
-            if ($major) {
+            if($request['major_id'] > 0){
+                $major = Major::where('id', $request['major_id'])->first();
                 $education->major_id = $major->id;
-            } else {
+            } else{
                 $major = new Major();
                 $major->name = $reqMajor['name'];
                 $major->verified=false;
@@ -140,12 +141,13 @@ class EducationController extends ApiController
             }
             $education->order=1;
             $education->save();
-            $education->university;
-            $education->major;
-            $education->minor;
-            $education->projects;
+            $newEducation=Education::where('id',$education->id)->first();
+            $newEducation->university;
+            $newEducation->major;
+            $newEducation->minor;
+            $newEducation->projects;
 
-            return $this->showOne($education);
+            return $this->showOne($newEducation);
 
         });
     }
@@ -162,7 +164,8 @@ class EducationController extends ApiController
             ->get();
         $majors=Major::where('verified',true)->get();
         $minors=Minor::where('verified',true)->get();
-        return response()->json(['educations'=>$education,'majors'=>$majors,'minors'=>$minors],200);
+        $universities=University::where('verified',true)->get();
+        return response()->json(['educations'=>$education,'majors'=>$majors,'minors'=>$minors, 'universities'=>$universities],200);
 //        return $this->showAll($education);
     }
     public function  getSingleEducation($resumeId,$educationId)
@@ -175,10 +178,8 @@ class EducationController extends ApiController
             ->first();
         $majors=Major::where('verified',true)->get();
         $minors=Minor::where('verified',true)->get();
-        return response()->json(['education'=>$education,'majors'=>$majors,'minors'=>$minors],200);
-
-
-
+        $universities = University::where('verified' , true)->get();
+        return response()->json(['education'=>$education,'majors'=>$majors,'minors'=>$minors,'universities'=>$universities],200);
     }
 
     public function update(Request $request, Education $education)
@@ -186,7 +187,7 @@ class EducationController extends ApiController
         $this->validate($request, [
             'degree_level' => 'required',
             'university' => 'required',
-            'major' => 'required',
+//            'major' => 'required',
 //            'from' => 'required',
             'isPresent' => 'required',
             'isFromMonthPresent' =>'required',
@@ -209,8 +210,8 @@ class EducationController extends ApiController
             $education->resume_id = $request['resume_id'];
             $education->description = $request['description'];
 
-            $university = University::where('name', $reqUniversity['name'])->first();
-            if ($university) {
+            if ($reqUniversity['id']>0) {
+                $university = University::where('name', $reqUniversity['name'])->first();
                 $education->university_id = $university->id;
             } else {
                 $university = new University();
@@ -220,24 +221,24 @@ class EducationController extends ApiController
                 $university->country = $reqUniversity['country'];
                 $university->city = $reqUniversity['city'];
                 $university->street_address = $reqUniversity['street_address'];
-                $university->latitude = $reqUniversity['latitude'];
-                $university->longitude = $reqUniversity['longitude'];
+//                $university->latitude = $reqUniversity['latitude'];
+//                $university->longitude = $reqUniversity['longitude'];
                 $university->save();
                 $education->university_id = $university->id;
             }
 
-
-            $major = Major::where('name', $reqMajor['name'])->first();
-            if ($major) {
-                $education->major_id = $major->id;
-            } else {
-                $major = new Major();
-                $major->name = $reqMajor['name'];
-                $major->verified=false;
-                $major->save();
-                $education->major_id = $major->id;
+            if( $reqMajor['name'] != null) {
+                $major = Major::where('name', $reqMajor['name'])->first();
+                if ($major) {
+                    $education->major_id = $major->id;
+                } else {
+                    $major = new Major();
+                    $major->name = $reqMajor['name'];
+                    $major->verified = false;
+                    $major->save();
+                    $education->major_id = $major->id;
+                }
             }
-
 
             if( $request['minor']['name'] != null){
                 $reqMinor = $request['minor'];
@@ -286,6 +287,9 @@ class EducationController extends ApiController
                 $from_date_time = new \DateTime();
                 $from = $from_date_time->createFromFormat('Y-m-d', $date_string);
                 $education->from = $from;
+            }else{
+                $education->isFromMonthPresent = false;
+                $education->from = null;
             }
 
             if ($request['isPresent'] == false && $reqTo['year'] != null) {
@@ -303,8 +307,10 @@ class EducationController extends ApiController
                 $to_date_time = new \DateTime();
                 $to = $to_date_time->createFromFormat('Y-m-d', $date_string);
                 $education->to = $to;
+                $education->isPresent=false;
             } else {
                 $education->to = null;
+                $education->isPresent=true;
             }
 
 
@@ -318,11 +324,12 @@ class EducationController extends ApiController
             }else $education->full_grade=null;
 
             $education->save();
-            $education->university;
-            $education->major;
-            $education->minor;
-            $education->projects;
-            return $this->showOne($education);
+            $newEducation = Education::find($education->id);
+            $newEducation->university;
+            $newEducation->major;
+            $newEducation->minor;
+            $newEducation->projects;
+            return $this->showOne($newEducation);
 
         });
 
