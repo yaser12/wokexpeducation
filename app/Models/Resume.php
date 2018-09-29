@@ -6,6 +6,7 @@ use App\Models\ContactInfo\ContactInformation;
 use App\Models\ObjectiveSec\Objective;
 use App\Models\PersonalInformation\PersonalInformation;
 use App\Models\SummarySec\Summary;
+use App\Models\Language\Language;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 
@@ -26,6 +27,9 @@ class Resume extends Model
     }
     public function contactInformation(){
         return $this->hasOne(ContactInformation::class);
+    }
+    public function languages(){
+        return $this->hasMany(Language::class);
     }
 
     protected $fillable=['user_id'];

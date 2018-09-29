@@ -35,6 +35,7 @@ Route::resource('objective', 'Objective\ObjectiveController',['except' => ['edit
 Route::resource('resume', 'ResumeController',['except' => ['edit','create']]) ;
 Route::resource('personalInformation', 'PersonalInformation\PersonalInformationController', ['except' => ['edit','create','index']]);
 Route::resource('education', 'Education\EducationController', ['except' => ['edit','create']]);
+Route::resource('language', 'Language\LanguageController', ['except' => ['edit','create']]);
 Route::get('education/{resumeId}/{educationId}','Education\EducationController@getSingleEducation');
 Route::Post('education/order/{resumeId}','Education\EducationController@orderData');
 
