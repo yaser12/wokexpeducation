@@ -127,10 +127,7 @@ class EducationController extends ApiController
             } else {
                 $education->to = null;
                 $education->isPresent=true;
-
             }
-
-
             $education->grade=null;
             $education->full_grade=null;
 

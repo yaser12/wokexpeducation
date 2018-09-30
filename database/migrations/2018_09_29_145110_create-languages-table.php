@@ -16,6 +16,7 @@ class CreateLanguagesTable extends Migration
         Schema::create('languages', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('language_id')->unsigned();
+            $table->integer('order')->unsigned();
             $table->string('type');
             $table->string('listening')->nullable();
             $table->string('reading')->nullable();
@@ -24,6 +25,7 @@ class CreateLanguagesTable extends Migration
             $table->integer('resume_id')->unsigned();
             $table->foreign('language_id')->references('id')->on('international_languages');
             $table->foreign('resume_id')->references('id')->on('resumes');
+
             $table->timestamps();
         });
     }

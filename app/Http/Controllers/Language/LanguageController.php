@@ -71,9 +71,16 @@ class LanguageController extends ApiController
                 $language->speaking = $request['speaking'];
                 $language->writing = $request['writing'];
             }
-
+            $languages=Language::where('resume_id',$request['resume_id'])->get();
+            foreach($languages as $lang){
+                $lang->order=$lang->order+1;
+                $lang->save();
+            }
+            $language->order=1;
             $language->save();
-            return $this->showOne($language);
+            $newLanguage = Language::where('id', $language->id);
+            $newLanguage->diplomas;
+            return $this->showOne($newLanguage);
         });
     }
 
@@ -91,6 +98,7 @@ class LanguageController extends ApiController
             return $this->errorResponse('you are not authorized to do this operation', 401);
 
         $languages = Language::where('resume_id', $resumeId)
+            ->orderBy('order')
             ->with(['diplomas'])
             ->get();
 
@@ -166,9 +174,21 @@ class LanguageController extends ApiController
                     $diploma->save();
                 }
             }
-            $language->diplomas();
+            $language->diplomas;
             return $this->showOne($language);
         });
+    }
+    public function orderData(Request $request,$resumeId){
+
+        $resume = Resume::findOrFail($resumeId);
+        $user = auth()->user();
+        if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
+        foreach($request['orderData'] as $lang){
+            $Language=Language::findOrFail($lang['languageId']);
+            $Language->order=$lang['orderId'];
+            $Language->save();
+        }
+        return response()->json(['success'=>'true']);
     }
 
     /**
