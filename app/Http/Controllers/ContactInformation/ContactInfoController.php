@@ -64,6 +64,7 @@ class ContactInfoController extends ApiController
 
     public function store(Request $request)
     {
+
         $this->validate($request, ['emails' => 'required', 'resume_id'=>'required|integer']);
 
         /*
@@ -88,7 +89,10 @@ class ContactInfoController extends ApiController
                     'email_address'=>$email['email_address']
                 ]);
             }
+
+
             if($request->has('contact_numbers')){
+
                 foreach($request->contact_numbers as $number) {
                     ContactNumber::create([
                         'phone_type'=>$number['phone_type'],
@@ -98,6 +102,7 @@ class ContactInfoController extends ApiController
 
                     ]);
                 }
+                
             }
             if($request->has('internet_communications')){
                 foreach($request->internet_communications as $account) {

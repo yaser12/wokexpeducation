@@ -9,6 +9,7 @@ use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\DB;
+use function response;
 
 class LanguageController extends ApiController
 {
@@ -78,7 +79,8 @@ class LanguageController extends ApiController
             }
             $language->order=1;
             $language->save();
-            $newLanguage = Language::where('id', $language->id);
+
+            $newLanguage = Language::where('id', $language->id)->first();
             $newLanguage->diplomas;
             return $this->showOne($newLanguage);
         });

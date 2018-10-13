@@ -8,9 +8,7 @@ use App\Models\Education\Major;
 use App\Models\Education\Minor;
 use App\Models\Education\University;
 use App\Models\Resume;
-use Carbon\Carbon;
 use Illuminate\Http\Request;
-use App\Http\Controllers\Controller;
 use App\Http\Controllers\ApiController;
 use Illuminate\Support\Facades\DB;
 
@@ -72,7 +70,6 @@ class EducationController extends ApiController
                 $university->save();
                 $education->university_id = $university->id;
             }
-
 
             if($request['major_id'] > 0){
                 $major = Major::where('id', $request['major_id'])->first();

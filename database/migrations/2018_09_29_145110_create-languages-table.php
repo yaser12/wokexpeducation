@@ -25,7 +25,6 @@ class CreateLanguagesTable extends Migration
             $table->integer('resume_id')->unsigned();
             $table->foreign('language_id')->references('id')->on('international_languages');
             $table->foreign('resume_id')->references('id')->on('resumes');
-
             $table->timestamps();
         });
     }
