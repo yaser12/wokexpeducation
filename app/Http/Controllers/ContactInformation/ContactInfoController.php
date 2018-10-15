@@ -11,6 +11,8 @@ use App\Models\ContactInfo\PersonalLink;
 use App\Models\Resume;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
+use function reset;
+use function response;
 
 class ContactInfoController extends ApiController
 {
@@ -80,6 +82,7 @@ class ContactInfoController extends ApiController
 
         $this->storeValidation($request);
 
+
         return DB::transaction(function() use ($request) {
             $contactInfo=ContactInformation::create(['resume_id'=>$request->resume_id]);
 
@@ -94,9 +97,10 @@ class ContactInfoController extends ApiController
             if($request->has('contact_numbers')){
 
                 foreach($request->contact_numbers as $number) {
+
                     ContactNumber::create([
                         'phone_type'=>$number['phone_type'],
-                        'country_code'=>$number['country_code'],
+                        'country_code'=>$number['country_code']['code'],
                         'phone_number'=>$number['phone_number'],
                         'contact_information_id'=>$contactInfo->id
 
@@ -104,6 +108,9 @@ class ContactInfoController extends ApiController
                 }
                 
             }
+
+//            return response()->json($request);
+
             if($request->has('internet_communications')){
                 foreach($request->internet_communications as $account) {
                     InternetCommunication::create([
@@ -165,6 +172,7 @@ class ContactInfoController extends ApiController
      */
     public function update(Request $request, ContactInformation $contactInfo)
     {
+
         $this->validate($request, ['emails' => 'required']);
         $this->storeValidation($request);
         return DB::transaction(function() use ($request, $contactInfo) {
@@ -186,7 +194,7 @@ class ContactInfoController extends ApiController
                 foreach ($request->contact_numbers as $number) {
                     ContactNumber::create([
                         'phone_type' => $number['phone_type'],
-                        'country_code' => $number['country_code'],
+                        'country_code' => $number['country_code']['code'],
                         'phone_number' => $number['phone_number'],
                         'contact_information_id' => $contactInfo->id
 
