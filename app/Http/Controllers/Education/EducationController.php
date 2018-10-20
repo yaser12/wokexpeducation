@@ -203,6 +203,7 @@ class EducationController extends ApiController
             $education->degree_level = $request['degree_level'];
             $education->resume_id = $request['resume_id'];
             $education->description = $request['description'];
+            
 
             if ($reqUniversity['id']>0) {
                 $university = University::where('name', $reqUniversity['name'])->first();
