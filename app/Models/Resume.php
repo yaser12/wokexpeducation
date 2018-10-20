@@ -2,7 +2,10 @@
 
 namespace App\Models;
 
+use App\Models\Achievements\Achievements;
 use App\Models\ContactInfo\ContactInformation;
+use App\Models\DrivingLicense\Driving;
+use App\Models\Education\Education;
 use App\Models\ObjectiveSec\Objective;
 use App\Models\PersonalInformation\PersonalInformation;
 use App\Models\SummarySec\Summary;
@@ -30,6 +33,18 @@ class Resume extends Model
     }
     public function languages(){
         return $this->hasMany(Language::class);
+    }
+
+    public function educations(){
+        return $this->hasMany(Education::class);
+    }
+
+    public function drivingLicense(){
+        return $this->hasMany(Driving::class);
+    }
+
+    public function achievements(){
+        return $this->hasMany(Achievements::class);
     }
 
     protected $fillable=['user_id'];

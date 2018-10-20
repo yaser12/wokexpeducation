@@ -37,6 +37,7 @@ Route::resource('personalInformation', 'PersonalInformation\PersonalInformationC
 Route::resource('education', 'Education\EducationController', ['except' => ['edit','create']]);
 Route::resource('language', 'Language\LanguageController', ['except' => ['edit','create']]);
 Route::resource('driving', 'DrivingLicense\DrivingLicenseController', ['except' => ['edit','create']]);
+Route::resource('achievements', 'Achievements\AchievementsController', ['except' => ['edit','create']]);
 Route::Post('language/order/{resumeId}','Language\LanguageController@orderData');
 Route::get('education/{resumeId}/{educationId}','Education\EducationController@getSingleEducation');
 Route::Post('education/order/{resumeId}','Education\EducationController@orderData');

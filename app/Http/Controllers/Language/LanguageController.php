@@ -167,7 +167,6 @@ class LanguageController extends ApiController
                 {
                     $diplomaRequest = new Request($value);
                     $this->validate($diplomaRequest, $diplomaRules);
-
                     $diploma = new Diploma();
                     $diploma->name = $diplomaRequest['name'];
                     $diploma->grade = $diplomaRequest['grade'];

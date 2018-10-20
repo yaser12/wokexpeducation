@@ -89,10 +89,8 @@ class EducationController extends ApiController
                     $education->isFromMonthPresent  =true;
 
                 }else{
-
                     $education->isFromMonthPresent = false;
                     $fromMonth = 1;
-
                 }
                 $fromYear = $reqFrom['year'];
                 $fromDay = 1;
@@ -101,13 +99,10 @@ class EducationController extends ApiController
                 $from = $from_date_time->createFromFormat('Y-m-d', $date_string);
                 $education->from = $from;
             }
-
             if ($request['isPresent'] == false && $reqTo['year'] != null) {
-
                 if($request['isToMonthPresent'] == true) {
                     $toMonth = $reqTo['month'];
                     $education->isToMonthPresent = true;
-
                 }
                 else{
                     $toMonth = 1;
@@ -203,7 +198,7 @@ class EducationController extends ApiController
             $education->degree_level = $request['degree_level'];
             $education->resume_id = $request['resume_id'];
             $education->description = $request['description'];
-            
+
 
             if ($reqUniversity['id']>0) {
                 $university = University::where('name', $reqUniversity['name'])->first();
