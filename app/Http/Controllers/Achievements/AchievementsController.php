@@ -58,9 +58,20 @@ class AchievementsController extends ApiController
         $this->validate($request, ['resume_id'=>'required' , 'description' => 'required']);
 
         $achievement = new Achievements();
+        
+        if ( $request['date']['year']!= null ){
+            $year =$request['date']['year'];
+        }
+        if ( $request['date']['month']!= null ){
+            $month =$request['date']['month'];
+        }
+        if ( $request['date']['day']!= null ){
+            $day =  $request['date']['day'];
+        }
 
+        $date_string = $year . "-" . $month . "-" . $day;
         $date_time = new \DateTime();
-        $date = $date_time->createFromFormat('Y-m-d', $request['date']);
+        $date = $date_time->createFromFormat('Y-m-d', $date_string);
         $achievement->date = $date;
 
         $achievement->description = $request['description'];
@@ -155,14 +166,15 @@ class AchievementsController extends ApiController
      * @param  \App\Models\Achievemens\Achievements  $achievements
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Achievements $achievements)
+    public function destroy(Achievements $achievement)
     {
+        
         $user = auth()->user();
-        if ($user->id != $achievements->resume->user->id)
+        if ($user->id != $achievement->resume->user->id)
             return $this->errorResponse('you are not authorized to do this operation', 401);
 
-        $achievements->delete();
-        return $this->showOne($achievements);
+        $achievement>delete();
+        return $this->showOne($achievement);
     }
 
     public function orderData(Request $request,$resumeId){
@@ -170,9 +182,11 @@ class AchievementsController extends ApiController
         $resume = Resume::findOrFail($resumeId);
         $user = auth()->user();
         if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
-        foreach($request['orderData'] as $lang){
-            $achievement=Achievements::findOrFail($lang['languageId']);
-            $achievement->order=$lang['orderId'];
+        
+
+        foreach($request['orderData'] as $ach){
+            $achievement=Achievements::findOrFail($ach['achievementId']);
+            $achievement->order=$ach['orderId'];
             $achievement->save();
         }
         return response()->json(['success'=>'true']);

@@ -38,7 +38,12 @@ Route::resource('education', 'Education\EducationController', ['except' => ['edi
 Route::resource('language', 'Language\LanguageController', ['except' => ['edit','create']]);
 Route::resource('driving', 'DrivingLicense\DrivingLicenseController', ['except' => ['edit','create']]);
 Route::resource('achievements', 'Achievements\AchievementsController', ['except' => ['edit','create']]);
+Route::resource('membership', 'Membership\MembershipController', ['except' => ['edit','create']]);
+Route::resource('project', 'Projects\ProjectsController', ['except' => ['edit','create']]);
+Route::resource('publication', 'Publications\PublicationsController', ['except' => ['edit','create']]);
+Route::resource('volunteer', 'Volunteers\VolunteersController', ['except' => ['edit','create']]);
 Route::Post('language/order/{resumeId}','Language\LanguageController@orderData');
 Route::get('education/{resumeId}/{educationId}','Education\EducationController@getSingleEducation');
 Route::Post('education/order/{resumeId}','Education\EducationController@orderData');
+Route::Post('achievements/order/{resumeId}','Achievements\AchievementsController@orderData');
 
