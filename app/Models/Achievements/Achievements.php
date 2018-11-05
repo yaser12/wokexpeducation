@@ -1,10 +1,11 @@
 <?php
 
 namespace App\Models\Achievements;
+use App\Models\Resume;
 
 use Illuminate\Database\Eloquent\Model;
 
-use App\Models\Resume ;
+
  
 class Achievements extends Model
 {

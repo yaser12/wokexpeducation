@@ -1,6 +1,6 @@
 <?php
 
-namespace App\Http\Controllers\Memberbership;
+namespace App\Http\Controllers\Membership;
 
 use App\Http\Controllers\ApiController;
 use App\Models\Membership;

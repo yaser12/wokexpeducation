@@ -69,7 +69,12 @@ class DatabaseSeeder extends Seeder
                 $p->nationalities()->attach($nationalities);
             });
 
+            $r->achievements()
+                ->save(factory('App\Models\Achievements\Achievements')->make());
+
         });
+
+        
 
     }
 }

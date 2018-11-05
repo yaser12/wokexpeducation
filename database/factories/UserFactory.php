@@ -1,5 +1,6 @@
 <?php
 
+use App\Models\Achievements\Achievements ; 
 use App\Models\ContactInfo\ContactInformation;
 use App\Models\ContactInfo\ContactNumber;
 use App\Models\ContactInfo\Email;
@@ -106,6 +107,15 @@ $factory->define(CurrentLocation::class, function (Faker $faker) {
 $factory->define(Nationality::class, function (Faker $faker) {
     return [
         'name' => $faker->countryISOAlpha3,
+    ];
+});
+
+
+$factory->define(Achievements::class, function (Faker $faker) {
+    return [
+        'date' => $faker->dateTime($max = 'now'),
+        'description' => $faker->paragraph,
+        'order' => 1
     ];
 });
 
