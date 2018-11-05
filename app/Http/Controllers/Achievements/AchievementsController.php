@@ -8,6 +8,7 @@ use App\Models\Resume;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+
 use function response;
 
 class AchievementsController extends ApiController
@@ -155,14 +156,14 @@ class AchievementsController extends ApiController
      * @param  \App\Models\Achievemens\Achievements  $achievements
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Achievements $achievements)
+    public function destroy(Achievements $achievement)
     {
         $user = auth()->user();
-        if ($user->id != $achievements->resume->user->id)
+        if ($user->id != $achievement->resume->user->id)
             return $this->errorResponse('you are not authorized to do this operation', 401);
 
-        $achievements->delete();
-        return $this->showOne($achievements);
+        $achievement->delete();
+        return $this->showOne($achievement);
     }
 
     public function orderData(Request $request,$resumeId){
