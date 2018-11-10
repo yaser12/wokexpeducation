@@ -37,7 +37,9 @@ Route::resource('personalInformation', 'PersonalInformation\PersonalInformationC
 Route::resource('education', 'Education\EducationController', ['except' => ['edit','create']]);
 Route::resource('language', 'Language\LanguageController', ['except' => ['edit','create']]);
 Route::resource('driving', 'DrivingLicense\DrivingLicenseController', ['except' => ['edit','create']]);
-Route::resource('achievements', 'Achievements\AchievementsController', ['except' => ['edit','create']]);
+Route::resource('achievements', 'Achievements\AchievementsController', ['except' => ['edit','create','index']]);
+Route::get('resumes/{resume}/achievements','Achievements\AchievementsController@index'); 
+
 Route::resource('membership', 'Membership\MembershipController', ['except' => ['edit','create']]);
 Route::resource('project', 'Projects\ProjectsController', ['except' => ['edit','create']]);
 Route::resource('publication', 'Publications\PublicationsController', ['except' => ['edit','create']]);

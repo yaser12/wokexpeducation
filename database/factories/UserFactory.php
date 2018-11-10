@@ -115,7 +115,8 @@ $factory->define(Achievements::class, function (Faker $faker) {
     return [
         'date' => $faker->dateTime($max = 'now'),
         'description' => $faker->paragraph,
-        'order' => 1
+        'order' => 1,
+        'resume_id' => Resume::all()->random()->id 
     ];
 });
 

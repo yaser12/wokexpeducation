@@ -15,6 +15,20 @@ use Illuminate\Database\Eloquent\Model;
 
 class Resume extends Model
 {
+
+
+    //Model Events
+    protected static function boot(){
+
+        parent::boot();
+        
+        //When Deleting A Resume 
+        static::deleting(function($resume){
+
+            //delete each achievement associated with it 
+            $resume->achievements->each->delete();
+        });
+    }
     public function user(){
         return $this->belongsTo(User::class);
     }

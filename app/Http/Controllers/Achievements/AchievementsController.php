@@ -8,6 +8,7 @@ use App\Models\Resume;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Illuminate\Support\Facades\DB;
+use Auth ; 
 
 use function response;
 
@@ -19,13 +20,29 @@ class AchievementsController extends ApiController
     }
 
     /**
-     * Display a listing of the resource.
+     * Display a listing of achievements associated with single resume.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Resume $resume)
     {
-        //
+        //Authorization
+        $user = Auth::user();  
+        if($user->id != $resume->user_id){
+           return  $this->errorResponse('you are not authorized to do this operation', 401);
+        
+        }
+
+        //fetch the achievements associated with the resume 
+        $achievements = $resume->achievements()
+                        ->orderBy('order')
+                        ->get(); 
+
+
+        
+        //Return the success response data 
+        return $this->showAll($achievements);
+
     }
 
     /**
@@ -47,19 +64,22 @@ class AchievementsController extends ApiController
     public function store(Request $request)
     {
 
-
+      //validation 
       $this->validate($request,[ 'resume_id' => 'required']);
 
-        $resume = Resume::findOrFail($request['resume_id']);
+      $resume = Resume::findOrFail($request['resume_id']);
 
+
+        //Authorization 
         $user = auth()->user();
 
         if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
 
+        //validate resume_id and description 
         $this->validate($request, ['resume_id'=>'required' , 'description' => 'required']);
 
         $achievement = new Achievements();
-        
+        //store date 
         if ( $request['date']['year']!= null ){
             $year =$request['date']['year'];
         }
@@ -69,26 +89,35 @@ class AchievementsController extends ApiController
         if ( $request['date']['day']!= null ){
             $day =  $request['date']['day'];
         }
-
-        $date_string = $year . "-" . $month . "-" . $day;
-        $date_time = new \DateTime();
-        $date = $date_time->createFromFormat('Y-m-d', $date_string);
-        $achievement->date = $date;
-
+        //handle the case the date is null 
+        if(isset($year) && isset($month) && isset($day)){
+            $date_string = $year . "-" . $month . "-" . $day;
+            $date_time = new \DateTime();
+            $date = $date_time->createFromFormat('Y-m-d', $date_string);
+            $achievement->date = $date;
+        }
+        
+        //store descrition 
         $achievement->description = $request['description'];
 
+
+        //associate with resume 
         $achievement->resume_id = $request['resume_id'];
 
-
+        //Update Orders of achievements associated with current resume
         $achievements=Achievements::where('resume_id',$request['resume_id'])->get();
-        foreach($achievements as $lang){
-            $lang->order=$lang->order+1;
-            $lang->save();
+        foreach($achievements as $ach){
+            $ach->order=$ach->order+1;
+            $ach->save();
         }
         $achievement->order=1;
 
+
+        //persist the achievment in the database 
+        
         $achievement->save();
 
+        //fetch the newly created achievement from the database 
         $newAchievement = Achievements::where('id' , $achievement->id)->first();
 
         return $this->showOne($newAchievement);
@@ -96,24 +125,28 @@ class AchievementsController extends ApiController
         }
 
     /**
-     * Display the specified resource.
+     * Display the specified Achievement.
      *
      * @param  \App\Models\Achievements\Achievements  $achievements
      * @return \Illuminate\Http\Response
      */
-    public function show($resumeId)
+    public function show(Achievements $achievement)
     {
-        $resume = Resume::findOrFail($resumeId);
+        //Fetch the Resume Associated with the Achievement 
+
+        $resume = $achievement->resume ; 
+        
+        //Authorization
+
         $user = auth()->user();
+
         if ($user->id != $resume->user->id)
             return $this->errorResponse('you are not authorized to do this operation', 401);
 
-        $achievements = Achievements::where('resume_id', $resumeId)
-            ->orderBy('order')
-            ->get();
+        //return single achievement
 
-        return $this->showAll($achievements);
-    }
+        return $this->showOne($achievement);
+}
 
     /**
      * Show the form for editing the specified resource.
@@ -135,27 +168,65 @@ class AchievementsController extends ApiController
      */
     public function update(Request $request,  $id)
     {
-        $this->validate($request,[ 'resume_id' => 'required']);
 
+        //validate Resume Id 
+        $this->validate($request,['resume_id' => 'required']);
+
+
+        //Authorization
         $resume = Resume::findOrFail($request['resume_id']);
 
         $user = auth()->user();
 
         if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
 
-            $this->validate($request, ['description' => 'required']);
+        //validate description
+        $this->validate($request, ['description' => 'required']);
 
-            $achievement = Achievements::findOrFail( $id);
+        //fetch the target achievment from the database 
+        $achievement = Achievements::findOrFail($id);
 
+        //store date 
+        if ( $request['date']['year']!= null ){
+            $year =$request['date']['year'];
+        }
+        if ( $request['date']['month']!= null ){
+            $month =$request['date']['month'];
+        }
+        if ( $request['date']['day']!= null ){
+            $day =  $request['date']['day'];
+        }
+        //handle the case the date is null 
+        if(isset($year) && isset($month) && isset($day)){
+
+            $date_string = $year . "-" . $month . "-" . $day;
             $date_time = new \DateTime();
-            $date = $date_time->createFromFormat('Y-m-d', $request['date']);
+            $date = $date_time->createFromFormat('Y-m-d', $date_string);
             $achievement->date = $date;
-            $achievement->description = $request['description'];
-            $achievement->resume_id = $request['resume_id'];
-            $achievement->save();
-            $newAchievements = Achievements::where('id', $achievement->id)->first();
+        }
 
-            return $this->showOne($newAchievements);
+        /*
+        $date_time = new \DateTime();
+
+        $date = $date_time->createFromFormat('Y-m-d', $request['date']);
+
+        $achievement->date = $date;
+        */
+
+        //store description
+        $achievement->description = $request['description'];
+        
+        //store resume_id 
+        $achievement->resume_id = $request['resume_id'];
+        
+        //persist achievment to database 
+        $achievement->save();
+        
+        //fetch the persisted achievement from database 
+        $newAchievements = Achievements::where('id', $achievement->id)->first();
+
+        
+        return $this->showOne($newAchievements);
 
 
 
@@ -185,6 +256,8 @@ class AchievementsController extends ApiController
     public function orderData(Request $request,$resumeId){
 
         $resume = Resume::findOrFail($resumeId);
+
+        //Authorization
         $user = auth()->user();
         if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
         
