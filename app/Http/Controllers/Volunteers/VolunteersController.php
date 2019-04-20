@@ -50,25 +50,49 @@ class VolunteersController extends ApiController
 
         if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
 
-        $this->validate($request, ['resume_id'=>'required' , 'description' => 'required']);
+        $this->validate($request, ['resume_id'=>'required' , 'description' => 'required',
+            'isPresent' => 'required',
+            'isMonthPresent' => 'required',]);
         $volunteer = new Volunteers();
 
-        $date_time = new \DateTime();
-        $date = $date_time->createFromFormat('Y-m-d', $request['date']);
-        $volunteer->date = $date;
+        //store date
+        if ($request['isPresent'] == false && $request['date']['year'] != null) {
+            if ($request['isMonthPresent'] == true) {
+                $Month = $request['date']['month'];
+                $volunteer->isMonthPresent = true;
+            } else {
+                $Month = 1;
+                $volunteer->isMonthPresent = false;
+            }
+            $Year = $request['date']['year'];
+            $Day = 1;
+            $date_string = $Year . "-" . $Month . "-" . $Day;
+            $date_time = new \DateTime();
+            $date = $date_time->createFromFormat('Y-m-d', $date_string);
+            $volunteer->date = $date;
+            $volunteer->isPresent = false;
+        }  else  if( $request['isPresent'] == true){
+            $volunteer->date = null;
+            $volunteer->isPresent = true;
+            $volunteer->isMonthPresent = false;}
+        else{
+            // There is no date
+            $volunteer->date= null;
+            $volunteer->isPresent = $request['isPresent'];// isPresent=0
+            $volunteer->isMonthPresent = $request['isMonthPresent'];//isMonthPresent=0
+
+        }
 
         $volunteer->description = $request['description'];
 
         $volunteer->resume_id = $request['resume_id'];
 
         $volunteers=Volunteers::where('resume_id',$request['resume_id'])->get();
-        foreach($volunteers as $lang){
-            $lang->order=$lang->order+1;
-            $lang->save();
+        foreach($volunteers as $vol){
+            $vol->order=$vol->order+1;
+            $vol->save();
         }
         $volunteer->order=1;
-
-
         $volunteer->save();
 
         $newVolunteer = Volunteers::where('id' , $volunteer->id)->first();
@@ -125,12 +149,38 @@ class VolunteersController extends ApiController
 
         if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
 
-        $this->validate($request, ['resume_id'=>'required' , 'description' => 'required']);
-        $volunteers = new Publications();
+        $this->validate($request, ['resume_id'=>'required' , 'description' => 'required',
+            'isPresent' => 'required',
+            'isMonthPresent' => 'required',]);
+        $volunteers = Volunteers::findOrFail($id);
 
-        $date_time = new \DateTime();
-        $date = $date_time->createFromFormat('Y-m-d', $request['date']);
-        $volunteers->date = $date;
+        //update date
+        if ($request['isPresent'] == false && $request['date']['year'] != null) {
+            if ($request['isMonthPresent'] == true) {
+                $Month = $request['date']['month'];
+                $volunteers->isMonthPresent = true;
+            } else {
+                $Month = 1;
+                $volunteers->isMonthPresent = false;
+            }
+            $Year = $request['date']['year'];
+            $Day = 1;
+            $date_string = $Year . "-" . $Month . "-" . $Day;
+            $date_time = new \DateTime();
+            $date = $date_time->createFromFormat('Y-m-d', $date_string);
+            $volunteers->date = $date;
+            $volunteers->isPresent = false;
+        } else  if( $request['isPresent'] == true){
+            $volunteers->date = null;
+            $volunteers->isPresent = true;
+            $volunteers->isMonthPresent = false;}
+        else{
+            // There is no date
+            $volunteers->date= null;
+            $volunteers->isPresent = $request['isPresent'];// isPresent=0
+            $volunteers->isMonthPresent = $request['isMonthPresent'];//isMonthPresent=0
+
+        }
 
         $volunteers->description = $request['description'];
 
@@ -138,7 +188,7 @@ class VolunteersController extends ApiController
 
         $volunteers->save();
 
-        $newVolunteers = Publications::where('id' ,  $volunteers->id)->first();
+        $newVolunteers = Volunteers::where('id' ,  $volunteers->id)->first();
 
         return $this->showOne($newVolunteers);
     }
@@ -146,27 +196,32 @@ class VolunteersController extends ApiController
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Volunteers\Volunteers  $volunteers
+     * @param  \App\Models\Volunteers\Volunteers  $volunteer
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Volunteers $volunteers)
+    public function destroy(Volunteers $volunteer)
     {
         $user = auth()->user();
-        if ($user->id != $volunteers->resume->user->id)
+        if ($user->id != $volunteer->resume->user->id)
             return $this->errorResponse('you are not authorized to do this operation', 401);
 
-        $volunteers->delete();
-        return $this->showOne($volunteers);
+        $volunteer->delete();
+        $volunteers = Volunteers::where([['resume_id', $volunteer->resume_id],['order','>',$volunteer->order]])->get();
+        foreach ($volunteers as $vol) {
+            $vol->order = $vol->order-1;
+            $vol->save();
+        }
+        return $this->showOne($volunteer);
     }
     public function orderData(Request $request,$resumeId){
 
         $resume = Resume::findOrFail($resumeId);
         $user = auth()->user();
         if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
-        foreach($request['orderData'] as $lang){
-            $volunteers=Volunteers::findOrFail($lang['languageId']);
-            $volunteers->order=$lang['orderId'];
-            $volunteers->save();
+        foreach($request['orderData'] as $vol){
+            $volunteer=Volunteers::findOrFail($vol['volunteerId']);
+            $volunteer->order=$vol['orderId'];
+            $volunteer->save();
         }
         return response()->json(['success'=>'true']);
     }

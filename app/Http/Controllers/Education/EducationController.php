@@ -52,17 +52,18 @@ class EducationController extends ApiController
             $education->description = $request['description'];
 
 
-            if ($reqUniversity['id'] >0) {
+                if ($reqUniversity['id'] >0) {
                 $university = University::where('name', $reqUniversity['name'])->first();
                 $education->university_id = $university->id;
             } else {
 
                 $university = new University();
                 $university->name = $reqUniversity['name'];
-                $university->url = $reqUniversity['url'];
-                $university->country = $reqUniversity['country'];
-                $university->city = $reqUniversity['city'];
-                $university->street_address = $reqUniversity['street_address'];
+                $university->verified = false;
+//                $university->url = $reqUniversity['url'];
+//                $university->country = $reqUniversity['country'];
+//                $university->city = $reqUniversity['city'];
+//                $university->street_address = $reqUniversity['street_address'];
 
 //                $university->latitude = $reqUniversity['latitude'];
 //                $university->longitude = $reqUniversity['longitude'];
@@ -211,6 +212,7 @@ class EducationController extends ApiController
                 $university->country = $reqUniversity['country'];
                 $university->city = $reqUniversity['city'];
                 $university->street_address = $reqUniversity['street_address'];
+                $university->verified = false;
 //                $university->latitude = $reqUniversity['latitude'];
 //                $university->longitude = $reqUniversity['longitude'];
                 $university->save();

@@ -1,8 +1,9 @@
 <?php
 
-namespace App\Model\Membership;
+namespace App\Models\Membership;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Resume;
 
 class Membership extends Model
 {

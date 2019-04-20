@@ -3,7 +3,8 @@
 namespace App\Http\Controllers\Membership;
 
 use App\Http\Controllers\ApiController;
-use App\Models\Membership;
+
+use App\Models\Membership\Membership;
 use App\Models\Resume;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -50,21 +51,50 @@ class MembershipController extends ApiController
 
         if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
 
-        $this->validate($request, ['resume_id'=>'required' , 'description' => 'required']);
+        $this->validate($request, ['resume_id'=>'required' ,
+            'description' => 'required',
+            'isPresent' => 'required',
+            'isMonthPresent' => 'required',]);
         $membership = new Membership();
 
-        $date_time = new \DateTime();
-        $date = $date_time->createFromFormat('Y-m-d', $request['date']);
-        $membership->date = $date;
+        //store date
+        if ($request['isPresent'] == false && $request['date']['year'] != null) {
+            if ($request['isMonthPresent'] == true) {
+                $Month = $request['date']['month'];
+                $membership->isMonthPresent = true;
+            } else {
+                $Month = 1;
+                $membership->isMonthPresent = false;
+            }
+            $Year = $request['date']['year'];
+            $Day = 1;
+            $date_string = $Year . "-" . $Month . "-" . $Day;
+            $date_time = new \DateTime();
+            $date = $date_time->createFromFormat('Y-m-d', $date_string);
+            $membership->date = $date;
+            $membership->isPresent = false;
+        }
+        else  if( $request['isPresent'] == true){
+            $membership->date = null;
+            $membership->isPresent = true;
+            $membership->isMonthPresent = false;}
+        else{
+            // There is no date
+            $membership->date= null;
+            $membership->isPresent = $request['isPresent'];// isPresent=0
+            $membership->isMonthPresent = $request['isMonthPresent'];//isMonthPresent=0
+
+        }
+
 
         $membership->description = $request['description'];
 
         $membership->resume_id = $request['resume_id'];
 
         $memberships=Membership::where('resume_id',$request['resume_id'])->get();
-        foreach($memberships as $lang){
-            $lang->order=$lang->order+1;
-            $lang->save();
+        foreach($memberships as $member){
+            $member->order=$member->order+1;
+            $member->save();
         }
         $membership->order=1;
         $membership->save();
@@ -123,13 +153,40 @@ class MembershipController extends ApiController
 
         if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
 
-        $this->validate($request, ['description' => 'required']);
+        $this->validate($request, ['description' => 'required',
+            'isPresent' => 'required',
+            'isMonthPresent' => 'required']);
 
         $membership = Membership::findOrFail( $id);
 
-        $date_time = new \DateTime();
-        $date = $date_time->createFromFormat('Y-m-d', $request['date']);
-        $membership->date = $date;
+        //update date
+        if ($request['isPresent'] == false && $request['date']['year'] != null) {
+            if ($request['isMonthPresent'] == true) {
+                $Month = $request['date']['month'];
+                $membership->isMonthPresent = true;
+            } else {
+                $Month = 1;
+                $membership->isMonthPresent = false;
+            }
+            $Year = $request['date']['year'];
+            $Day = 1;
+            $date_string = $Year . "-" . $Month . "-" . $Day;
+            $date_time = new \DateTime();
+            $date = $date_time->createFromFormat('Y-m-d', $date_string);
+            $membership->date = $date;
+            $membership->isPresent = false;
+        }    else  if( $request['isPresent'] == true){
+            $membership->date = null;
+            $membership->isPresent = true;
+            $membership->isMonthPresent = false;}
+        else{
+            // There is no date
+            $membership->date= null;
+            $membership->isPresent = $request['isPresent'];// isPresent=0
+            $membership->isMonthPresent = $request['isMonthPresent'];//isMonthPresent=0
+
+        }
+
         $membership->description = $request['description'];
         $membership->resume_id = $request['resume_id'];
         $membership->save();
@@ -151,8 +208,12 @@ class MembershipController extends ApiController
         $user = auth()->user();
         if ($user->id != $membership->resume->user->id)
             return $this->errorResponse('you are not authorized to do this operation', 401);
-
         $membership->delete();
+        $memberships = Membership::where([['resume_id', $membership->resume_id],['order','>',$membership->order]])->get();
+        foreach ($memberships as $member) {
+            $member->order = $member->order-1;
+            $member->save();
+        }
         return $this->showOne($membership);
     }
     public function orderData(Request $request,$resumeId){
@@ -160,9 +221,9 @@ class MembershipController extends ApiController
         $resume = Resume::findOrFail($resumeId);
         $user = auth()->user();
         if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
-        foreach($request['orderData'] as $lang){
-            $membership=Membership::findOrFail($lang['languageId']);
-            $membership->order=$lang['orderId'];
+        foreach($request['orderData'] as $member){
+            $membership=Membership::findOrFail($member['membershipId']);
+            $membership->order=$member['orderId'];
             $membership->save();
         }
         return response()->json(['success'=>'true']);

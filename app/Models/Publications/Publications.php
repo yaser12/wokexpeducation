@@ -3,6 +3,7 @@
 namespace App\Models\Publications;
 
 use Illuminate\Database\Eloquent\Model;
+use App\Models\Resume;
 
 class Publications extends Model
 {

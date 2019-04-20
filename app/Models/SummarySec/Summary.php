@@ -3,7 +3,7 @@
 namespace App\Models\SummarySec;
 
 use Illuminate\Database\Eloquent\Model;
-
+use App\Models\Resume;
 class Summary extends Model
 {
     public function resume(){

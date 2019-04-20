@@ -48,4 +48,8 @@ Route::Post('language/order/{resumeId}','Language\LanguageController@orderData')
 Route::get('education/{resumeId}/{educationId}','Education\EducationController@getSingleEducation');
 Route::Post('education/order/{resumeId}','Education\EducationController@orderData');
 Route::Post('achievements/order/{resumeId}','Achievements\AchievementsController@orderData');
+Route::Post('memberships/order/{resumeId}','Membership\MembershipController@orderData');
+Route::Post('projects/order/{resumeId}','Projects\ProjectsController@orderData');
+Route::Post('publications/order/{resumeId}','Publications\PublicationsController@orderData');
+Route::Post('volunteers/order/{resumeId}','Volunteers\VolunteersController@orderData');
 

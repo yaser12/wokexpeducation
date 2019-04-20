@@ -51,24 +51,53 @@ class PublicationsController extends ApiController
 
         if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
 
-        $this->validate($request, ['resume_id'=>'required' , 'description' => 'required']);
+        $this->validate($request, ['resume_id'=>'required' ,
+            'description' => 'required',
+            'isPresent' => 'required',
+            'isMonthPresent' => 'required',]);
+
         $publication = new Publications();
 
-        $date_time = new \DateTime();
-        $date = $date_time->createFromFormat('Y-m-d', $request['date']);
-        $publication->date = $date;
+        //store date
+        if ($request['isPresent'] == false && $request['date']['year'] != null) {
+            if ($request['isMonthPresent'] == true) {
+                $Month = $request['date']['month'];
+                $publication->isMonthPresent = true;
+            } else {
+                $Month = 1;
+                $publication->isMonthPresent = false;
+            }
+            $Year = $request['date']['year'];
+            $Day = 1;
+            $date_string = $Year . "-" . $Month . "-" . $Day;
+            $date_time = new \DateTime();
+            $date = $date_time->createFromFormat('Y-m-d', $date_string);
+            $publication->date = $date;
+            $publication->isPresent = false;
+        }  else  if( $request['isPresent'] == true){
+            $publication->date = null;
+            $publication->isPresent = true;
+            $publication->isMonthPresent = false;}
+        else{
+            // There is no date
+            $publication->date= null;
+            $publication->isPresent = $request['isPresent'];// isPresent=0
+            $publication->isMonthPresent = $request['isMonthPresent'];//isMonthPresent=0
+
+        }
+
+
 
         $publication->description = $request['description'];
 
         $publication->resume_id = $request['resume_id'];
 
         $publications=Publications::where('resume_id',$request['resume_id'])->get();
-        foreach($publications as $lang){
-            $lang->order=$lang->order+1;
-            $lang->save();
+        foreach($publications as $pub){
+            $pub->order=$pub->order+1;
+            $pub->save();
         }
         $publication->order=1;
-
         $publication->save();
 
         $newPublication = Publications::where('id' , $publication->id)->first();
@@ -124,12 +153,40 @@ class PublicationsController extends ApiController
 
         if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
 
-        $this->validate($request, ['resume_id'=>'required' , 'description' => 'required']);
-        $publications = new Publications();
+        $this->validate($request, ['resume_id'=>'required' , 'description' => 'required',
+            'isPresent' => 'required',
+            'isMonthPresent' => 'required',]);
+        $publications = Publications::findOrFail( $id);
 
-        $date_time = new \DateTime();
-        $date = $date_time->createFromFormat('Y-m-d', $request['date']);
-        $publications->date = $date;
+        //update date
+        if ($request['isPresent'] == false && $request['date']['year'] != null) {
+            if ($request['isMonthPresent'] == true) {
+                $Month = $request['date']['month'];
+                $publications->isMonthPresent = true;
+            } else {
+                $Month = 1;
+                $publications->isMonthPresent = false;
+            }
+            $Year = $request['date']['year'];
+            $Day = 1;
+            $date_string = $Year . "-" . $Month . "-" . $Day;
+            $date_time = new \DateTime();
+            $date = $date_time->createFromFormat('Y-m-d', $date_string);
+            $publications->date = $date;
+            $publications->isPresent = false;
+        }  else  if( $request['isPresent'] == true){
+            $publications->date = null;
+            $publications->isPresent = true;
+            $publications->isMonthPresent = false;}
+        else{
+            // There is no date
+            $publications->date= null;
+            $publications->isPresent = $request['isPresent'];// isPresent=0
+            $publications->isMonthPresent = $request['isMonthPresent'];//isMonthPresent=0
+
+        }
+
+
 
         $publications->description = $request['description'];
 
@@ -146,17 +203,23 @@ class PublicationsController extends ApiController
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Publications\Publications  $publications
+     * @param  \App\Models\Publications\Publications  $publication
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Publications $publications)
+    public function destroy(Publications $publication)
     {
         $user = auth()->user();
-        if ($user->id != $publications->resume->user->id)
+        if ($user->id != $publication->resume->user->id)
             return $this->errorResponse('you are not authorized to do this operation', 401);
 
-        $publications->delete();
-        return $this->showOne($publications);
+        $publication->delete();
+        $publications = Publications::where([['resume_id', $publication->resume_id], ['order', '>', $publication->order]])->get();
+        foreach ($publications as $pub) {
+            $pub->order = $pub->order - 1;
+            $pub->save();
+        }
+
+        return $this->showOne($publication);
     }
 
     public function orderData(Request $request,$resumeId){
@@ -164,10 +227,10 @@ class PublicationsController extends ApiController
         $resume = Resume::findOrFail($resumeId);
         $user = auth()->user();
         if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
-        foreach($request['orderData'] as $lang){
-            $publications=Publications::findOrFail($lang['languageId']);
-            $publications->order=$lang['orderId'];
-            $publications->save();
+        foreach($request['orderData'] as $pub){
+            $publication=Publications::findOrFail($pub['publicationId']);
+            $publication->order=$pub['orderId'];
+            $publication->save();
         }
         return response()->json(['success'=>'true']);
     }

@@ -75,29 +75,65 @@ class AchievementsController extends ApiController
 
         if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
 
-        //validate resume_id and description 
-        $this->validate($request, ['resume_id'=>'required' , 'description' => 'required']);
+        //validate
+        $this->validate($request, ['resume_id'=>'required' ,
+            'description' => 'required',
+            'isPresent' => 'required',
+            'isMonthPresent' => 'required',]);
 
         $achievement = new Achievements();
-        //store date 
-        if ( $request['date']['year']!= null ){
-            $year =$request['date']['year'];
-        }
-        if ( $request['date']['month']!= null ){
-            $month =$request['date']['month'];
-        }
-        if ( $request['date']['day']!= null ){
-            $day =  $request['date']['day'];
-        }
-        //handle the case the date is null 
-        if(isset($year) && isset($month) && isset($day)){
-            $date_string = $year . "-" . $month . "-" . $day;
-            $date_time = new \DateTime();
-            $date = $date_time->createFromFormat('Y-m-d', $date_string);
-            $achievement->date = $date;
-        }
+
+        //store date
+//
+            if ($request['isPresent'] == false &&  $request['date']['year'] != null) {
+                if ($request['isMonthPresent'] == true) {
+                    $Month = $request['date']['month'];
+                    $achievement->isMonthPresent = true;
+                } else {
+                    $Month = 1;
+                    $achievement->isMonthPresent = false;
+                }
+                $Year = $request['date']['year'];
+                $Day = 1;
+                $date_string = $Year . "-" . $Month . "-" . $Day;
+                $date_time = new \DateTime();
+                $date = $date_time->createFromFormat('Y-m-d', $date_string);
+                $achievement->date = $date;
+                $achievement->isPresent = false;
+            }
+              else  if( $request['isPresent'] == true){
+                $achievement->date = null;
+                $achievement->isPresent = true;
+                  $achievement->isMonthPresent = false;}
+                else{
+                  // There is no date
+                    $achievement->date= null;
+                    $achievement->isPresent = $request['isPresent'];// isPresent=0
+                    $achievement->isMonthPresent = $request['isMonthPresent'];//isMonthPresent=0
+
+                }
+
+
+
+//
+//        if ( $request['date']['year']!= null ){
+//            $year =$request['date']['year'];
+//        }
+//        if ( $request['date']['month']!= null ){
+//            $month =$request['date']['month'];
+//        }
+//        if ( $request['date']['day']!= null ){
+//            $day =  $request['date']['day'];
+//        }
+//        //handle the case the date is null
+//        if(isset($year) && isset($month) && isset($day)){
+//            $date_string = $year . "-" . $month . "-" . $day;
+//            $date_time = new \DateTime();
+//            $date = $date_time->createFromFormat('Y-m-d', $date_string);
+//            $achievement->date = $date;
+//        }
         
-        //store descrition 
+        //store description
         $achievement->description = $request['description'];
 
 
@@ -134,7 +170,7 @@ class AchievementsController extends ApiController
     {
         //Fetch the Resume Associated with the Achievement 
 
-        $resume = $achievement->resume ; 
+        $resume = $achievement->resume ;
         
         //Authorization
 
@@ -170,7 +206,7 @@ class AchievementsController extends ApiController
     {
 
         //validate Resume Id 
-        $this->validate($request,['resume_id' => 'required']);
+        $this->validate($request,['resume_id' => 'required',]);
 
 
         //Authorization
@@ -180,30 +216,61 @@ class AchievementsController extends ApiController
 
         if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
 
-        //validate description
-        $this->validate($request, ['description' => 'required']);
+        //validate
+        $this->validate($request, ['description' => 'required'
+        ,  'isPresent' => 'required',
+            'isMonthPresent' => 'required']);
 
         //fetch the target achievment from the database 
         $achievement = Achievements::findOrFail($id);
 
-        //store date 
-        if ( $request['date']['year']!= null ){
-            $year =$request['date']['year'];
-        }
-        if ( $request['date']['month']!= null ){
-            $month =$request['date']['month'];
-        }
-        if ( $request['date']['day']!= null ){
-            $day =  $request['date']['day'];
-        }
-        //handle the case the date is null 
-        if(isset($year) && isset($month) && isset($day)){
-
-            $date_string = $year . "-" . $month . "-" . $day;
+        //update date
+//
+        if ($request['isPresent'] == false &&  $request['date']['year'] != null) {
+            if ($request['isMonthPresent'] == true) {
+                $Month = $request['date']['month'];
+                $achievement->isMonthPresent = true;
+            } else {
+                $Month = 1;
+                $achievement->isMonthPresent = false;
+            }
+            $Year = $request['date']['year'];
+            $Day = 1;
+            $date_string = $Year . "-" . $Month . "-" . $Day;
             $date_time = new \DateTime();
             $date = $date_time->createFromFormat('Y-m-d', $date_string);
             $achievement->date = $date;
+            $achievement->isPresent = false;
         }
+        else  if( $request['isPresent'] == true){
+            $achievement->date = null;
+            $achievement->isPresent = true;
+            $achievement->isMonthPresent = false;}
+        else{
+            // There is no date
+            $achievement->date= null;
+            $achievement->isPresent = $request['isPresent'];// isPresent=0
+            $achievement->isMonthPresent = $request['isMonthPresent'];//isMonthPresent=0
+
+        }
+
+//        if ( $request['date']['year']!= null ){
+//            $year =$request['date']['year'];
+//        }
+//        if ( $request['date']['month']!= null ){
+//            $month =$request['date']['month'];
+//        }
+//        if ( $request['date']['day']!= null ){
+//            $day =  $request['date']['day'];
+//        }
+//        //handle the case the date is null
+//        if(isset($year) && isset($month) && isset($day)){
+//
+//            $date_string = $year . "-" . $month . "-" . $day;
+//            $date_time = new \DateTime();
+//            $date = $date_time->createFromFormat('Y-m-d', $date_string);
+//            $achievement->date = $date;
+//        }
 
         /*
         $date_time = new \DateTime();
@@ -247,6 +314,11 @@ class AchievementsController extends ApiController
 
 
         $achievement->delete();
+        $achievements = Achievements::where([['resume_id', $achievement->resume_id],['order','>',$achievement->order]])->get();
+        foreach ($achievements as $ach) {
+            $ach->order = $ach->order-1;
+            $ach->save();
+        }
 
        
 

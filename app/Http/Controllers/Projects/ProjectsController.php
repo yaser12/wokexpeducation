@@ -51,26 +51,52 @@ class ProjectsController extends ApiController
 
         if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
 
-        $this->validate($request, ['resume_id'=>'required' , 'description' => 'required']);
+        $this->validate($request, ['resume_id'=>'required' , 'description' => 'required',
+            'isPresent' => 'required',
+            'isMonthPresent' => 'required',]);
         $project = new Projects();
 
-        $date_time = new \DateTime();
-        $date = $date_time->createFromFormat('Y-m-d', $request['date']);
-        $project->date = $date;
+        //store date
+        if ($request['isPresent'] == false && $request['date']['year'] != null) {
+            if ($request['isMonthPresent'] == true) {
+                $Month = $request['date']['month'];
+                $project->isMonthPresent = true;
+            } else {
+                $Month = 1;
+                $project->isMonthPresent = false;
+            }
+            $Year = $request['date']['year'];
+            $Day = 1;
+            $date_string = $Year . "-" . $Month . "-" . $Day;
+            $date_time = new \DateTime();
+            $date = $date_time->createFromFormat('Y-m-d', $date_string);
+            $project->date = $date;
+            $project->isPresent = false;
+        }  else  if( $request['isPresent'] == true){
+            $project->date = null;
+            $project->isPresent = true;
+            $project->isMonthPresent = false;}
+        else{
+            // There is no date
+            $project->date= null;
+            $project->isPresent = $request['isPresent'];// isPresent=0
+            $project->isMonthPresent = $request['isMonthPresent'];//isMonthPresent=0
+
+        }
 
         $project->description = $request['description'];
 
         $project->resume_id = $request['resume_id'];
 
         $projects=Projects::where('resume_id',$request['resume_id'])->get();
-        foreach($projects as $lang){
-            $lang->order=$lang->order+1;
-            $lang->save();
+        foreach($projects as $pro){
+            $pro->order=$pro->order+1;
+            $pro->save();
         }
         $project->order=1;
-        $projects->save();
+        $project->save();
 
-        $newProjects = Projects::where('id' , $projects->id)->first();
+        $newProjects = Projects::where('id' , $project->id)->first();
 
         return $this->showOne($newProjects);
 
@@ -116,7 +142,9 @@ class ProjectsController extends ApiController
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request,[ 'resume_id' => 'required']);
+        $this->validate($request,[ 'resume_id' => 'required',
+            'isPresent' => 'required',
+            'isMonthPresent' => 'required',]);
 
         $resume = Resume::findOrFail($request['resume_id']);
 
@@ -128,9 +156,34 @@ class ProjectsController extends ApiController
 
         $projects = Projects::findOrFail( $id);
 
-        $date_time = new \DateTime();
-        $date = $date_time->createFromFormat('Y-m-d', $request['date']);
-        $projects->date = $date;
+       //update date
+        if ($request['isPresent'] == false && $request['date']['year'] != null) {
+            if ($request['isMonthPresent'] == true) {
+                $Month = $request['date']['month'];
+                $projects->isMonthPresent = true;
+            } else {
+                $Month = 1;
+                $projects->isMonthPresent = false;
+            }
+            $Year = $request['date']['year'];
+            $Day = 1;
+            $date_string = $Year . "-" . $Month . "-" . $Day;
+            $date_time = new \DateTime();
+            $date = $date_time->createFromFormat('Y-m-d', $date_string);
+            $projects->date = $date;
+            $projects->isPresent = false;
+        } else  if( $request['isPresent'] == true){
+            $projects->date = null;
+            $projects->isPresent = true;
+            $projects->isMonthPresent = false;}
+        else{
+            // There is no date
+            $projects->date= null;
+            $projects->isPresent = $request['isPresent'];// isPresent=0
+            $projects->isMonthPresent = $request['isMonthPresent'];//isMonthPresent=0
+
+        }
+
         $projects->description = $request['description'];
         $projects->resume_id = $request['resume_id'];
         $projects->save();
@@ -143,28 +196,33 @@ class ProjectsController extends ApiController
     /**
      * Remove the specified resource from storage.
      *
-     * @param  \App\Models\Projects\Projects  $projects
+     * @param  \App\Models\Projects\Projects  $project
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Projects $projects)
+    public function destroy(Projects $project)
     {
         $user = auth()->user();
-        if ($user->id != $projects->resume->user->id)
+        if ($user->id != $project->resume->user->id)
             return $this->errorResponse('you are not authorized to do this operation', 401);
 
-        $projects->delete();
-        return $this->showOne($projects);
-    }
+        $project->delete();
+        $projects = Projects::where([['resume_id', $project->resume_id], ['order', '>', $project->order]])->get();
+        foreach ($projects as $pro) {
+            $pro->order = $pro->order - 1;
+            $pro->save();
+        }
+            return $this->showOne($project);
 
+    }
     public function orderData(Request $request,$resumeId){
 
         $resume = Resume::findOrFail($resumeId);
         $user = auth()->user();
         if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
-        foreach($request['orderData'] as $lang){
-            $projects=Projects::findOrFail($lang['languageId']);
-            $projects->order=$lang['orderId'];
-            $projects->save();
+        foreach($request['orderData'] as $pro){
+            $project=Projects::findOrFail($pro['projectId']);
+            $project->order=$pro['orderId'];
+            $project->save();
         }
         return response()->json(['success'=>'true']);
     }
