@@ -42,6 +42,7 @@ Route::get('resumes/{resume}/achievements','Achievements\AchievementsController@
 
 Route::resource('membership', 'Membership\MembershipController', ['except' => ['edit','create']]);
 Route::resource('project', 'Projects\ProjectsController', ['except' => ['edit','create']]);
+Route::resource('hobbiesInterest', 'HobbiesInterest\HobbiesInterestController',['except' => ['edit','create','index']]) ;
 Route::resource('publication', 'Publications\PublicationsController', ['except' => ['edit','create']]);
 Route::resource('volunteer', 'Volunteers\VolunteersController', ['except' => ['edit','create']]);
 Route::Post('language/order/{resumeId}','Language\LanguageController@orderData');

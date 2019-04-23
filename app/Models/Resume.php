@@ -6,6 +6,8 @@ use App\Models\Achievements\Achievements;
 use App\Models\ContactInfo\ContactInformation;
 use App\Models\DrivingLicense\Driving;
 use App\Models\Education\Education;
+
+use App\Models\HobbiesInterest\HobbiesInterest;
 use App\Models\Membership\Membership;
 use App\Models\ObjectiveSec\Objective;
 use App\Models\PersonalInformation\PersonalInformation;
@@ -75,6 +77,9 @@ class Resume extends Model
     }
     public function volunteers(){
         return $this->hasMany(Volunteers::class);
+    }
+    public function hobbiesInterest(){
+        return $this->hasOne(HobbiesInterest::class);
     }
 
     protected $fillable=['user_id'];
