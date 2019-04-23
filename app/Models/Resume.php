@@ -7,6 +7,7 @@ use App\Models\ContactInfo\ContactInformation;
 use App\Models\DrivingLicense\Driving;
 use App\Models\Education\Education;
 
+use App\Models\ConferencesWorkshopSeminar\ConferencesWorkshopSeminar;
 use App\Models\HobbiesInterest\HobbiesInterest;
 use App\Models\Membership\Membership;
 use App\Models\ObjectiveSec\Objective;
@@ -21,8 +22,6 @@ use Illuminate\Database\Eloquent\Model;
 
 class Resume extends Model
 {
-
-
     //Model Events
     protected static function boot(){
 
@@ -81,6 +80,8 @@ class Resume extends Model
     public function hobbiesInterest(){
         return $this->hasOne(HobbiesInterest::class);
     }
+    public function ConferencesWorkshopSeminar(){
+        return $this->hasMany(ConferencesWorkshopSeminar::class);}
 
     protected $fillable=['user_id'];
 }

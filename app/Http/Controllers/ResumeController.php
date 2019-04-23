@@ -81,6 +81,7 @@ class ResumeController extends ApiController
         $resume->personalInformation->nationalities;
         $resume->personalInformation->currentLocation;
         $resume->personalInformation->placeOfBirth;
+        $resume->ConferencesWorkshopSeminar;
 
         return $this->showOne($resume);
     }
