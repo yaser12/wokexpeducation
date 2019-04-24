@@ -20,6 +20,8 @@ class CreateAchievementsTable extends Migration
             $table->integer('resume_id')->unsigned();
             $table->foreign('resume_id')->references('id')->on('resumes')->onDelete('cascade');
             $table->integer('order');
+            $table->boolean('isPresent')->nullable();
+            $table->string('isMonthPresent')->nullable();
             $table->timestamps();
         });
     }

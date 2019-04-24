@@ -23,7 +23,7 @@ class CreateConferencesWorkshopSeminarsTable extends Migration
             $table->foreign('resume_id')->references('id')->on('resumes')->onDelete('cascade');
             $table->integer('order');
 
-            $table->string('isMonth ')->nullable();
+            $table->string('isMonth')->nullable();
             $table->timestamps();
         });
     }

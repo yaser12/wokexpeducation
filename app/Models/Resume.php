@@ -12,6 +12,7 @@ use App\Models\HobbiesInterest\HobbiesInterest;
 use App\Models\Membership\Membership;
 use App\Models\ObjectiveSec\Objective;
 use App\Models\PersonalInformation\PersonalInformation;
+use App\Models\Portfolio\Portfolio;
 use App\Models\Projects\Projects;
 use App\Models\Publications\Publications;
 use App\Models\SummarySec\Summary;
@@ -23,65 +24,98 @@ use Illuminate\Database\Eloquent\Model;
 class Resume extends Model
 {
     //Model Events
-    protected static function boot(){
+    protected static function boot()
+    {
 
         parent::boot();
-        
+
         //When Deleting A Resume 
-        static::deleting(function($resume){
+        static::deleting(function ($resume) {
 
             //delete each achievement associated with it 
             $resume->achievements->each->delete();
         });
     }
-    public function user(){
+
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function personalInformation(){
+    public function personalInformation()
+    {
         return $this->hasOne(PersonalInformation::class);
     }
-    public function objective(){
+
+    public function objective()
+    {
         return $this->hasOne(Objective::class);
     }
-    public function summary(){
+
+    public function summary()
+    {
         return $this->hasOne(Summary::class);
     }
-    public function contactInformation(){
+
+    public function contactInformation()
+    {
         return $this->hasOne(ContactInformation::class);
     }
-    public function languages(){
+
+    public function languages()
+    {
         return $this->hasMany(Language::class);
     }
 
-    public function educations(){
+    public function educations()
+    {
         return $this->hasMany(Education::class);
     }
 
-    public function drivingLicense(){
+    public function drivingLicense()
+    {
         return $this->hasMany(Driving::class);
     }
 
-    public function achievements(){
+    public function achievements()
+    {
         return $this->hasMany(Achievements::class);
     }
-    public function memberships(){
+
+    public function memberships()
+    {
         return $this->hasMany(Membership::class);
     }
-    public function projects(){
-    return $this->hasMany(Projects::class);
+
+    public function projects()
+    {
+        return $this->hasMany(Projects::class);
     }
-    public function publications(){
+
+    public function publications()
+    {
         return $this->hasMany(Publications::class);
     }
-    public function volunteers(){
+
+    public function volunteers()
+    {
         return $this->hasMany(Volunteers::class);
     }
-    public function hobbiesInterest(){
+
+    public function hobbiesInterest()
+    {
         return $this->hasOne(HobbiesInterest::class);
     }
-    public function ConferencesWorkshopSeminar(){
-        return $this->hasMany(ConferencesWorkshopSeminar::class);}
 
-    protected $fillable=['user_id'];
+    public function ConferencesWorkshopSeminar()
+    {
+        return $this->hasMany(ConferencesWorkshopSeminar::class);
+    }
+
+    public function Portfolio()
+    {
+        return $this->hasMany(Portfolio::class);
+    }
+
+    protected $fillable = ['user_id'];
 }
