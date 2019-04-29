@@ -3,6 +3,7 @@
 namespace App\Models;
 
 use App\Models\Achievements\Achievements;
+use App\Models\Certifications\Certifications;
 use App\Models\ContactInfo\ContactInformation;
 use App\Models\DrivingLicense\Driving;
 use App\Models\Education\Education;
@@ -17,6 +18,7 @@ use App\Models\Projects\Projects;
 use App\Models\Publications\Publications;
 use App\Models\SummarySec\Summary;
 use App\Models\Language\Language;
+use App\Models\Training\Training;
 use App\Models\Volunteers\Volunteers;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
@@ -115,6 +117,14 @@ class Resume extends Model
     public function Portfolio()
     {
         return $this->hasMany(Portfolio::class);
+    }
+    public function certifications()
+    {
+        return $this->hasMany(Certifications::class);
+    }
+    public function trainings()
+    {
+        return $this->hasMany(Training::class);
     }
 
     protected $fillable = ['user_id'];

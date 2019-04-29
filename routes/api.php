@@ -66,5 +66,13 @@ Route::resource('portfolio', 'Portfolio\PortfolioController', ['except' => ['edi
 Route::Post('portfolios/order/{resumeId}', 'Portfolio\PortfolioController@orderData');
 Route::get('resumes/{resume}/portfolios', 'Portfolio\PortfolioController@index');
 
+Route::resource('certifications', 'Certification\CertificationController', ['except' => ['edit', 'create']]);
+Route::Post('certifications/order/{resumeId}', 'Certification\CertificationController@orderData');
+Route::get('resumes/{resume}/certifications', 'Certification\CertificationController@index');
+
+Route::resource('trainings', 'Training\TrainingController', ['except' => ['edit', 'create']]);
+Route::Post('trainings/order/{resumeId}', 'Training\TrainingController@orderData');
+Route::get('resumes/{resume}/trainings', 'Training\TrainingController@index');
+
 
 

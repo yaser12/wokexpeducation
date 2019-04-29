@@ -13,6 +13,7 @@ class ConferencesWorkshopSeminarController extends ApiController
     {
         $this->middleware('jwt.auth');
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -42,7 +43,7 @@ class ConferencesWorkshopSeminarController extends ApiController
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
@@ -70,16 +71,15 @@ class ConferencesWorkshopSeminarController extends ApiController
         //store type
         $conferences_workshop_seminar->type = $request['type'];
 
-        if($request['type'] === 'conference')
-        {
-            $this->validate($request,['attended_as' => 'required']);
-            $conferences_workshop_seminar->attended_as =$request['attended_as'];
+        if ($request['type'] === 'conference') {
+            $this->validate($request, ['attended_as' => 'required']);
+            $conferences_workshop_seminar->attended_as = $request['attended_as'];
 
         }
 
         //store date
 //
-        if ( $request['date']['year']!= null ){
+        if ($request['date']['year'] != null) {
 
             if ($request['isMonth'] == true) {
                 $Month = $request['date']['month'];
@@ -88,30 +88,29 @@ class ConferencesWorkshopSeminarController extends ApiController
                 $Month = 1;
                 $conferences_workshop_seminar->isMonth = false;
             }
-            $Year =$request['date']['year'];
+            $Year = $request['date']['year'];
             $Day = 1;
             $date_string = $Year . "-" . $Month . "-" . $Day;
             $date_time = new \DateTime();
             $date = $date_time->createFromFormat('Y-m-d', $date_string);
             $conferences_workshop_seminar->date = $date;
-        }else{
-            $conferences_workshop_seminar->date =null;
-            $conferences_workshop_seminar->isMonth =null;
+        } else {
+            $conferences_workshop_seminar->date = null;
+            $conferences_workshop_seminar->isMonth = null;
         }
 
 
-
-        $conferences_workshop_seminars=ConferencesWorkshopSeminar::where('resume_id',$request['resume_id'])->get();
-        foreach($conferences_workshop_seminars as $Con_work_sem){
-            $Con_work_sem->order=$Con_work_sem->order+1;
+        $conferences_workshop_seminars = ConferencesWorkshopSeminar::where('resume_id', $request['resume_id'])->get();
+        foreach ($conferences_workshop_seminars as $Con_work_sem) {
+            $Con_work_sem->order = $Con_work_sem->order + 1;
             $Con_work_sem->save();
 
         }
-        $conferences_workshop_seminar->order=1;
+        $conferences_workshop_seminar->order = 1;
         $conferences_workshop_seminar->save();
 
         //fetch the newly created conferences_workshop_seminar from the database
-        $newConferences_workshop_seminar = ConferencesWorkshopSeminar::where('id' , $conferences_workshop_seminar->id)->first();
+        $newConferences_workshop_seminar = ConferencesWorkshopSeminar::where('id', $conferences_workshop_seminar->id)->first();
         return $this->showOne($newConferences_workshop_seminar);
     }
 
@@ -121,11 +120,11 @@ class ConferencesWorkshopSeminarController extends ApiController
      * @param  App\Models\ConferencesWorkshopSeminar\ConferencesWorkshopSeminar $conferences_workshop_seminar
      * @return \Illuminate\Http\Response
      */
-    public function show( $con_work_sem)
+    public function show($con_work_sem)
     {
-        $conferencesWorkshopSeminar= ConferencesWorkshopSeminar::findOrFail($con_work_sem);
+        $conferencesWorkshopSeminar = ConferencesWorkshopSeminar::findOrFail($con_work_sem);
 
-        $resume = $conferencesWorkshopSeminar->resume ;
+        $resume = $conferencesWorkshopSeminar->resume;
 
         //Authorization
 
@@ -137,10 +136,12 @@ class ConferencesWorkshopSeminarController extends ApiController
 
         return $this->showOne($conferencesWorkshopSeminar);
     }
+
+
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -151,8 +152,8 @@ class ConferencesWorkshopSeminarController extends ApiController
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
@@ -181,16 +182,15 @@ class ConferencesWorkshopSeminarController extends ApiController
         // type
         $conferences_workshop_seminar->type = $request['type'];
 
-        if($request['type'] === 'conference')
-        {
-            $this->validate($request,['attended_as' => 'required']);
-            $conferences_workshop_seminar->attended_as =$request['attended_as'];
+        if ($request['type'] === 'conference') {
+            $this->validate($request, ['attended_as' => 'required']);
+            $conferences_workshop_seminar->attended_as = $request['attended_as'];
 
         }
 
         //update date
 //
-        if ( $request['date']['year']!= null ){
+        if ($request['date']['year'] != null) {
 
             if ($request['isMonth'] == true) {
                 $Month = $request['date']['month'];
@@ -199,21 +199,21 @@ class ConferencesWorkshopSeminarController extends ApiController
                 $Month = 1;
                 $conferences_workshop_seminar->isMonth = false;
             }
-            $Year =$request['date']['year'];
+            $Year = $request['date']['year'];
             $Day = 1;
             $date_string = $Year . "-" . $Month . "-" . $Day;
             $date_time = new \DateTime();
             $date = $date_time->createFromFormat('Y-m-d', $date_string);
             $conferences_workshop_seminar->date = $date;
-        }else{
-            $conferences_workshop_seminar->date =null;
-            $conferences_workshop_seminar->isMonth =null;
+        } else {
+            $conferences_workshop_seminar->date = null;
+            $conferences_workshop_seminar->isMonth = null;
         }
 
         $conferences_workshop_seminar->save();
 
         //fetch the newly created conferences_workshop_seminar from the database
-        $newConferences_workshop_seminar = ConferencesWorkshopSeminar::where('id' , $conferences_workshop_seminar->id)->first();
+        $newConferences_workshop_seminar = ConferencesWorkshopSeminar::where('id', $conferences_workshop_seminar->id)->first();
         return $this->showOne($newConferences_workshop_seminar);
     }
 
@@ -225,7 +225,7 @@ class ConferencesWorkshopSeminarController extends ApiController
      */
     public function destroy($con_id)
     {
-        $conferencesWorkshopSeminar= ConferencesWorkshopSeminar::findOrFail($con_id);
+        $conferencesWorkshopSeminar = ConferencesWorkshopSeminar::findOrFail($con_id);
         $user = auth()->user();
 
 
@@ -234,16 +234,17 @@ class ConferencesWorkshopSeminarController extends ApiController
 
         $conferencesWorkshopSeminar->delete();
 
-        $conferences_workshop_seminars = ConferencesWorkshopSeminar::where([['resume_id', $conferencesWorkshopSeminar->resume_id],['order','>',$conferencesWorkshopSeminar->order]])->get();
+        $conferences_workshop_seminars = ConferencesWorkshopSeminar::where([['resume_id', $conferencesWorkshopSeminar->resume_id], ['order', '>', $conferencesWorkshopSeminar->order]])->get();
         foreach ($conferences_workshop_seminars as $con) {
-            $con->order = $con->order-1;
+            $con->order = $con->order - 1;
             $con->save();
         }
         return $this->showOne($conferencesWorkshopSeminar);
     }
 
 
-    public function orderData(Request $request,$resumeId){
+    public function orderData(Request $request, $resumeId)
+    {
 
         $resume = Resume::findOrFail($resumeId);
 
@@ -252,12 +253,12 @@ class ConferencesWorkshopSeminarController extends ApiController
         if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
 
 
-        foreach($request['orderData'] as  $con){
+        foreach ($request['orderData'] as $con) {
 
-            $conferences_workshop_seminar=ConferencesWorkshopSeminar::findOrFail($con['conferences_workshop_seminarId']);
-            $conferences_workshop_seminar->order=$con['orderId'];
+            $conferences_workshop_seminar = ConferencesWorkshopSeminar::findOrFail($con['conferences_workshop_seminarId']);
+            $conferences_workshop_seminar->order = $con['orderId'];
             $conferences_workshop_seminar->save();
         }
-        return response()->json(['success'=>'true']);
+        return response()->json(['success' => 'true']);
     }
 }

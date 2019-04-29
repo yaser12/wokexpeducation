@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Models\ConferencesWorkshopSeminar;
+namespace App\Models\Certifications;
 
-use Illuminate\Database\Eloquent\Model;
 use App\Models\Resume;
+use Illuminate\Database\Eloquent\Model;
 
-class ConferencesWorkshopSeminar extends Model
+class Certifications extends Model
 {
     protected $dates = ['date'];
 
