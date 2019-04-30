@@ -71,7 +71,7 @@ class ConferencesWorkshopSeminarController extends ApiController
         //store type
         $conferences_workshop_seminar->type = $request['type'];
 
-        if ($request['type'] === 'conference') {
+        if ($request['type'] === 'Conference') {
             $this->validate($request, ['attended_as' => 'required']);
             $conferences_workshop_seminar->attended_as = $request['attended_as'];
 
@@ -182,7 +182,7 @@ class ConferencesWorkshopSeminarController extends ApiController
         // type
         $conferences_workshop_seminar->type = $request['type'];
 
-        if ($request['type'] === 'conference') {
+        if ($request['type'] === 'Conference') {
             $this->validate($request, ['attended_as' => 'required']);
             $conferences_workshop_seminar->attended_as = $request['attended_as'];
 
