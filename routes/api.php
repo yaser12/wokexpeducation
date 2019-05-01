@@ -74,5 +74,8 @@ Route::resource('trainings', 'Training\TrainingController', ['except' => ['edit'
 Route::Post('trainings/order/{resumeId}', 'Training\TrainingController@orderData');
 Route::get('resumes/{resume}/trainings', 'Training\TrainingController@index');
 
+Route::resource('references', 'ReReferences\ReReferencesController', ['except' => ['edit', 'create']]);
+Route::Post('references/order/{resumeId}', 'ReReferences\ReReferencesController@orderData');
+Route::get('resumes/{resume}/references', 'ReReferences\ReReferencesController@index');
 
 
