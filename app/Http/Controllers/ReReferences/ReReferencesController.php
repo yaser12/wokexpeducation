@@ -46,7 +46,8 @@ class ReReferencesController extends ApiController
      */
     public function store(Request $request)
     {
-        $this->validate($request, ['name' => 'required', 'resume_id'=>'required']);
+        $this->validate($request, ['name' => 'required', 'resume_id'=>'required',
+           'ref_email_address'=>'required' ]);
         $resume=Resume::findOrFail($request->resume_id);
         $user = auth()->user();
         if ($user->id != $resume->user->id)
@@ -58,15 +59,12 @@ class ReReferencesController extends ApiController
             'position'=>$request->position,
             'organization'=>$request->organization,
             'prefered_time_to_call'=>$request->prefered_time_to_call,
+            'ref_email_address'=>$request->ref_email_address,
         ]);
 
         if($request->has(['mobile','country_code'])){
             $reference->country_code = $request->country_code;
             $reference->mobile = $request->mobile;
-        }
-
-        if($request->has('ref_email_address')){
-            $reference->ref_email_address = $request->ref_email_address;
         }
 
        if($request->has('is_available')){
@@ -128,7 +126,8 @@ class ReReferencesController extends ApiController
     {
         $this->validate($request,[
             'name'=>'required',
-            'resume_id'=>'required'
+            'resume_id'=>'required',
+            'ref_email_address'=>'required'
         ]);
         $resume = Resume::findOrFail($request['resume_id']);
         $user = auth()->user();
@@ -141,14 +140,11 @@ class ReReferencesController extends ApiController
         $reference->position = $request->position;
         $reference->organization = $request->organization;
         $reference->prefered_time_to_call = $request->prefered_time_to_call;
+        $reference->ref_email_address = $request->ref_email_address;
 
         if($request->has('mobile','country_code')){
             $reference->country_code = $request->country_code;
             $reference->mobile = $request->mobile;
-        }
-
-        if($request->has('ref_email_address')){
-            $reference->ref_email_address = $request->ref_email_address;
         }
 
         if($request->has('is_available')){
@@ -201,7 +197,7 @@ class ReReferencesController extends ApiController
 
         foreach($request['orderData'] as  $ref){
 
-            $reference=ReReference::findOrFail($ref['reference']);
+            $reference=ReReference::findOrFail($ref['referenceId']);
             $reference->order=$ref['orderId'];
             $reference->save();
         }
@@ -209,3 +205,4 @@ class ReReferencesController extends ApiController
     }
 
 }
+
