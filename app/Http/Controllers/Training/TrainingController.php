@@ -115,10 +115,12 @@ class TrainingController extends ApiController
         } else {
             $training->to = null;
             $training->isPresent = true;
+            $training->isToMonthPresent = $request['isToMonthPresent'];
         }
         $training->description = null;
         $training->website = null;
-        $training->location = null;
+        $training->country = null;
+        $training->city = null;
 
 
         $trainings = Training::where('resume_id', $request['resume_id'])->get();
@@ -236,6 +238,7 @@ class TrainingController extends ApiController
         } else {
             $training->to = null;
             $training->isPresent = true;
+            $training->isToMonthPresent = $request['isToMonthPresent'];
         }
 
         if ($request->has('description')) {
@@ -244,9 +247,13 @@ class TrainingController extends ApiController
         if ($request->has('website')) {
             $training->website = $request->website;
         } else $training->website = null;
-        if ($request->has('location')) {
-            $training->location = $request->location;
-        } else $training->location = null;
+
+
+        if (($request['city'] && $request['country'] ) !=null) {
+            $training->city = $request['city'];
+            $training->country =$request['country'];
+        } else   {  $training->city = null;
+                   $training->country = null;}
 
         $training->save();
 
