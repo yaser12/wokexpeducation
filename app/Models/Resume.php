@@ -21,6 +21,7 @@ use App\Models\SummarySec\Summary;
 use App\Models\Language\Language;
 use App\Models\Training\Training;
 use App\Models\Volunteers\Volunteers;
+use App\Models\WorkExperience\WorkExperience;
 use App\User;
 use Illuminate\Database\Eloquent\Model;
 
@@ -130,6 +131,10 @@ class Resume extends Model
 
     public function reReferences(){
         return $this->hasMany(ReReference::class);
+    }
+    public function work_experiences()
+    {
+        return $this->hasMany(WorkExperience::class);
     }
 
     protected $fillable = ['user_id'];
