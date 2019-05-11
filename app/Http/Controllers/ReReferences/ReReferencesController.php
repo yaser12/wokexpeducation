@@ -62,9 +62,10 @@ class ReReferencesController extends ApiController
             'ref_email_address'=>$request->ref_email_address,
         ]);
 
-        if($request->has(['mobile','country_code'])){
-            $reference->country_code = $request->country_code;
-            $reference->mobile = $request->mobile;
+
+        if(($request['mobile'] && $request['country_code']['code']) !=null){
+            $reference->country_code = $request['country_code']['code'];
+            $reference->mobile = $request['mobile'];
         }
 
        if($request->has('is_available')){
@@ -142,9 +143,9 @@ class ReReferencesController extends ApiController
         $reference->prefered_time_to_call = $request->prefered_time_to_call;
         $reference->ref_email_address = $request->ref_email_address;
 
-        if($request->has('mobile','country_code')){
-            $reference->country_code = $request->country_code;
-            $reference->mobile = $request->mobile;
+        if(($request['mobile'] && $request['country_code']['code']) !=null){
+            $reference->country_code = $request['country_code']['code'];
+            $reference->mobile = $request['mobile'];
         }
 
         if($request->has('is_available')){
