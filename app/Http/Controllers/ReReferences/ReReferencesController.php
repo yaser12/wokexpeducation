@@ -63,9 +63,9 @@ class ReReferencesController extends ApiController
         ]);
 
 
-        if(($request['mobile'] && $request['country_code']['code']) !=null){
+        if(($request['country_code']['mobile'] && $request['country_code']['code']) !=null){
             $reference->country_code = $request['country_code']['code'];
-            $reference->mobile = $request['mobile'];
+            $reference->mobile = $request['country_code']['mobile'];
         }
 
        if($request->has('is_available')){
