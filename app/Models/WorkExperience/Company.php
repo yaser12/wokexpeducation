@@ -8,6 +8,17 @@ class Company extends Model
 {
     public function work_experience()
     {
-        return $this->hasMany(WorkExperience::class);
+        return $this->belongsTo(WorkExperience::class);
     }
+
+    protected $fillable = [
+        'work_experience_id',
+        'country',
+        'city',
+        'name',
+        'company_size',
+        'company_website',
+        'company_description',
+        'verified_by_google'
+    ];
 }

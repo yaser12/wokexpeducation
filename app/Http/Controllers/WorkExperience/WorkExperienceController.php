@@ -95,23 +95,18 @@ class WorkExperienceController extends ApiController
             $work_exp->job_title = $request['job_title'];
             $work_exp->resume_id = $request['resume_id'];
             $work_exp->description = $request['description'];
+            $work_exp->save();
 
             //store company
-            $comapny = Company::where('name', $reqCompany['name'])
-                ->where('city', $reqCompany['city'])
-                ->where('country', $reqCompany['country'])->first();
-            if ($comapny != null) {
-                $work_exp->company_id = $comapny->id;
-            } else {
-                $new_comapny = new Company();
-                $new_comapny->name = $reqCompany['name'];
-                $new_comapny->city = $reqCompany['city'];
-                $new_comapny->country = $reqCompany['country'];
-                $new_comapny->verified = false;
+            Company::create([
+                'work_experience_id' => $work_exp->id,
+                'name' => $reqCompany['name'],
+                'city' => $reqCompany['city'],
+                'country' => $reqCompany['country'],
+                'verified_by_google' => $reqCompany['verified_by_google'],
 
-                $new_comapny->save();
-                $work_exp->company_id = $new_comapny->id;
-            }
+            ]);
+
             //store date
             if ($reqFrom['year'] != null) {
                 if ($request['isFromMonthPresent'] == true) {
@@ -222,7 +217,6 @@ class WorkExperienceController extends ApiController
         return DB::transaction(function () use ($request, $work_exp, $id) {
 
             $reqCompany = $request['company'];
-//            $reqEmploymentType = $request['employment_types'];
             $reqFrom = $request['from'];
             $reqTo = $request['to'];
 
@@ -230,31 +224,24 @@ class WorkExperienceController extends ApiController
             $work_exp->job_title = $request['job_title'];
             $work_exp->resume_id = $request['resume_id'];
             $work_exp->description = $request['description'];
+            $work_exp->save();
 
             // company
-            $comapny = Company::where('name', $reqCompany['name'])
-                ->where('city', $reqCompany['city'])
-                ->where('country', $reqCompany['country'])->first();
+            if($reqCompany !=null){
+                $work_exp->company()->delete();
+                Company::create([
+                    'work_experience_id' => $work_exp->id,
+                    'name' => $reqCompany['name'],
+                    'city' => $reqCompany['city'],
+                    'country' => $reqCompany['country'],
+                    'company_size' => $reqCompany['company_size'],
+                    'company_website' => $reqCompany['company_website'],
+                    'company_description' => $reqCompany['company_description'],
+                    'verified_by_google' => $reqCompany['verified_by_google'],
 
-            if ($comapny != null) {
-                $work_exp->company_id = $comapny->id;
-                $comapny->company_size = $reqCompany['company_size'];
-                $comapny->company_website = $reqCompany['company_website'];
-                $comapny->company_description = $reqCompany['company_description'];
-                $comapny->save();
-            } else {
-                $new_comapny = new Company();
-                $new_comapny->name = $reqCompany['name'];
-                $new_comapny->city = $reqCompany['city'];
-                $new_comapny->country = $reqCompany['country'];
-                $new_comapny->company_size = $reqCompany['company_size'];
-                $new_comapny->company_website = $reqCompany['company_website'];
-                $new_comapny->company_description = $reqCompany['company_description'];
-                $new_comapny->verified = false;
-
-                $new_comapny->save();
-                $work_exp->company_id = $new_comapny->id;
+                ]);
             }
+
             //company industry
             if ($request->has('company_industry')) {
                 $req_company_industry = $request['company_industry'];

@@ -16,17 +16,16 @@ class CreateCompaniesTable extends Migration
         Schema::create('companies', function (Blueprint $table) {
 
             $table->increments('id');
+//            $table->integer('work_experience_id')->unsigned();
             $table->string('name');
             $table->string('country')->nullable();
             $table->string('city')->nullable();
             $table->string('company_size')->nullable();
             $table->string('company_website')->nullable();
             $table->string('company_description')->nullable();
-
-            $table->boolean('verified')->default(false);
-
-
+            $table->boolean('verified_by_google')->default(false);
             $table->timestamps();
+//            $table->foreign('work_experience_id')->references('id')->on('work_experiences')->onDelete('cascade');
 
         });
     }
