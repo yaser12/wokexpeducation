@@ -17,6 +17,7 @@ use App\Models\Portfolio\Portfolio;
 use App\Models\Projects\Projects;
 use App\Models\Publications\Publications;
 use App\Models\ReReference\ReReference;
+use App\Models\Skills\Skills;
 use App\Models\SummarySec\Summary;
 use App\Models\Language\Language;
 use App\Models\Training\Training;
@@ -135,6 +136,10 @@ class Resume extends Model
     public function work_experiences()
     {
         return $this->hasMany(WorkExperience::class);
+    }
+
+    public function skills(){
+        return $this->hasMany(Skills::class);
     }
 
     protected $fillable = ['user_id'];
