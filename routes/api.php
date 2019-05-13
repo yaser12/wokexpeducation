@@ -82,5 +82,7 @@ Route::resource('workExperiences', 'WorkExperience\WorkExperienceController', ['
 Route::Post('workExperiences/order/{resumeId}', 'WorkExperience\WorkExperienceController@orderData');
 Route::get('resumes/{resume}/workExperiences', 'WorkExperience\WorkExperienceController@index');
 
-
+Route::resource('skills', 'Skills\SkillsController', ['except' => ['edit', 'create']]);
+Route::Post('skills/order/{resumeId}', 'Skills\SkillsController@orderData');
+Route::get('resumes/{resume}/skills', 'Skills\SkillsController@index');
 
