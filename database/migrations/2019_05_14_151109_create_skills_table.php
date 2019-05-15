@@ -16,14 +16,14 @@ class CreateSkillsTable extends Migration
         Schema::create('skills', function (Blueprint $table) {
             $table->increments('id');
             $table->integer('resume_id')->unsigned();
-            $table->integer('skills_types_id')->unsigned();
 
-            $table->string('skill_level');
+            $table->string('skill_level')->nullable();
 
             $table->foreign('resume_id')->references('id')->on('resumes')->onDelete('cascade');
-            $table->foreign('skills_types_id')->references('id')->on('skills_types')->onDelete('cascade');
 
-            $table->integer('order');
+            $table->integer('skill_types_id')->unsigned();
+            $table->foreign('skill_types_id')->references('id')->on('skill_types')->onDelete('cascade');
+
             $table->timestamps();
         });
     }

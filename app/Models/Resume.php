@@ -17,6 +17,7 @@ use App\Models\Portfolio\Portfolio;
 use App\Models\Projects\Projects;
 use App\Models\Publications\Publications;
 use App\Models\ReReference\ReReference;
+use App\Models\Skills\Skill;
 use App\Models\Skills\Skills;
 use App\Models\SummarySec\Summary;
 use App\Models\Language\Language;
@@ -139,7 +140,7 @@ class Resume extends Model
     }
 
     public function skills(){
-        return $this->hasMany(Skills::class);
+        return $this->hasMany(Skill::class);
     }
 
     protected $fillable = ['user_id'];

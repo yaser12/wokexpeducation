@@ -4,7 +4,7 @@ use Illuminate\Support\Facades\Schema;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Database\Migrations\Migration;
 
-class CreateSkillsTypesTable extends Migration
+class CreateSkillTypeParentsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,10 +13,9 @@ class CreateSkillsTypesTable extends Migration
      */
     public function up()
     {
-        Schema::create('skills_types', function (Blueprint $table) {
+        Schema::create('skill_type_parents', function (Blueprint $table) {
             $table->increments('id');
             $table->string('name');
-            $table->integer('parent_id')->nullable();
             $table->timestamps();
         });
     }
@@ -28,6 +27,6 @@ class CreateSkillsTypesTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('skills_types');
+        Schema::dropIfExists('skill_type_parents');
     }
 }
