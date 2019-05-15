@@ -103,6 +103,9 @@ class WorkExperienceController extends ApiController
                 'name' => $reqCompany['name'],
                 'city' => $reqCompany['city'],
                 'country' => $reqCompany['country'],
+                'company_size' => $reqCompany['company_size'],
+                'company_website' => $reqCompany['company_website'],
+                'company_description' => $reqCompany['company_description'],
                 'verified_by_google' => $reqCompany['verified_by_google'],
 
             ]);
