@@ -230,7 +230,7 @@ class WorkExperienceController extends ApiController
             $work_exp->save();
 
             // company
-            if($reqCompany !=null){
+            if ($reqCompany != null) {
                 $work_exp->company()->delete();
                 Company::create([
                     'work_experience_id' => $work_exp->id,
@@ -246,18 +246,37 @@ class WorkExperienceController extends ApiController
             }
 
             //company industry
-            if ($request->has('company_industry')) {
-                $req_company_industry = $request['company_industry'];
-                if ($req_company_industry['id'] > 0) {
-                    $company_industry = CompanyIndustry::where('name', $req_company_industry['name'])->first();
+            $req_company_industry = $request['company_industry'];
+
+//            if ($request->has('company_industry')) {
+//                $req_company_industry = $request['company_industry'];
+//                if($req_company_industry['name'] && $req_company_industry['id'] = null){
+//                 $work_exp->company_industry_id = null;}
+//                 else{
+//                if ($req_company_industry['id'] > 0) {
+//                    $company_industry = CompanyIndustry::where('name', $req_company_industry['name'])->first();
+//                    $work_exp->company_industry_id = $company_industry->id;
+//                } else {
+//                    $company_industry = new CompanyIndustry();
+//                    $company_industry->name = $req_company_industry['name'];
+//                    $company_industry->verified = false;
+//                    $company_industry->save();
+//                    $work_exp->company_industry_id = $company_industry->id;
+//                }
+//            }}
+            if ($req_company_industry['name'] != null) {
+                $company_industry = CompanyIndustry::where('name', $req_company_industry['name'])->first();
+                if ($company_industry) {
                     $work_exp->company_industry_id = $company_industry->id;
                 } else {
-                    $company_industry = new CompanyIndustry();
-                    $company_industry->name = $req_company_industry['name'];
-                    $company_industry->verified = false;
-                    $company_industry->save();
-                    $work_exp->company_industry_id = $company_industry->id;
+                    $newCompanyIndustry = new CompanyIndustry();
+                    $newCompanyIndustry->name = $req_company_industry['name'];
+                    $newCompanyIndustry->verified = false;
+                    $newCompanyIndustry->save();
+                    $work_exp->company_industry_id = $newCompanyIndustry->id;
                 }
+            } else {
+                $work_exp->company_industry_id = null;
             }
 
             //employment type
