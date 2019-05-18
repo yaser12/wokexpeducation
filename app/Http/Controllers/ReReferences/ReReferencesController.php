@@ -63,22 +63,11 @@ class ReReferencesController extends ApiController
             'is_available' => $request->is_available
         ]);
 
-
         if($request->has('contact_number')){
             $reqcontact_number = $request['contact_number'];
-                $reference->country_code = $reqcontact_number['country_code']['code'];
-                $reference->mobile = $reqcontact_number['mobile'];
+            $reference->country_code = $reqcontact_number['country_code']['code'];
+            $reference->mobile = $reqcontact_number['mobile'];
         }
-
-        /*$reference->country_code = $request['country_code']['code'];
-            $reference->mobile = $request['country_code']['mobile'];*/
-
-       /* if($request->has('is_available')){
-            $reference->is_available = true;
-        }else{
-            $reference->is_available = false;
-        }*/
-
 
         $references = ReReference::where('resume_id',$request['resume_id'])->get();
         foreach($references as $ref){
@@ -147,7 +136,7 @@ class ReReferencesController extends ApiController
         $reference->organization = $request->organization;
         $reference->prefered_time_to_call = $request->prefered_time_to_call;
         $reference->ref_email_address = $request->ref_email_address;
-        $reference->is_available = $request['is_available'];
+        $reference->is_available = $request->is_available;
 
         if($request->has('contact_number')){
             $reqcontact_number = $request['contact_number'];
