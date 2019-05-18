@@ -73,7 +73,9 @@ class ReReferencesController extends ApiController
             $reference->mobile = $request['country_code']['mobile'];*/
 
         if($request->has('is_available')){
-            $reference->is_available = $request['is_available'];
+            $reference->is_available = true;
+        }else{
+            $reference->is_available = false;
         }
 
 
@@ -153,7 +155,9 @@ class ReReferencesController extends ApiController
 
 
         if($request->has('is_available')){
-            $reference->is_available = $request['is_available'];
+            $reference->is_available = true;
+        }else{
+            $reference->is_available = false;
         }
 
         $reference->save();
