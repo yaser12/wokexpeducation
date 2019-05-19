@@ -86,3 +86,4 @@ Route::resource('skills', 'Skills\SkillsController', ['except' => ['edit', 'crea
 Route::Post('skills/order/{resumeId}', 'Skills\SkillsController@orderData');
 Route::get('resumes/{resume}/skills', 'Skills\SkillsController@index');
 
+Route::get('resume/duplicate/{resumeId}', 'ResumeController@duplicate');
