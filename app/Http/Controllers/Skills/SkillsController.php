@@ -30,6 +30,7 @@ class SkillsController extends ApiController
         if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
 
         $skills = Skill::where('resume_id', $resumeId)
+            ->orderBy('order')
             ->with(['skill_types','skill_types.skill_type_parents'])
             ->get();
 
