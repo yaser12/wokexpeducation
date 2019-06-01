@@ -29,6 +29,7 @@ use App\Models\Publications\Publications;
 use App\Models\ReReference\ReReference;
 use App\Models\SummarySec\Summary;
 use App\Models\Training\Training;
+use App\Models\TranslatedLanguages\TranslatedLanguages;
 use App\Models\Volunteers\Volunteers;
 use App\Models\WorkExperience\Company;
 use App\Models\WorkExperience\WorkExperience;
@@ -51,9 +52,13 @@ class ResumeController extends ApiController
      */
     public function index()
     {
+        $translated_language =TranslatedLanguages::get();
         $user = auth()->user();
         $resumes = $user->resumes;
-        return $this->showAll($resumes);
+        return response()->json([
+            'resumes' => $resumes,
+            'translated_language' =>$translated_language
+        ]);
     }
 
     /**
@@ -74,8 +79,14 @@ class ResumeController extends ApiController
      */
     public function store(Request $request)
     {
-        $this->validate($request, ['user_id' => 'required']);
-        $resume = Resume::create(['user_id' => $request->user_id]);
+        $this->validate($request, ['user_id' => 'required',
+            'translated_languages_id' => 'required'
+        ]);
+        $resume = new Resume();
+        $resume->user_id = $request['user_id'];
+        $resume->translated_languages_id = $request['translated_languages_id'];
+        $resume->name = $request->name;
+        $resume->save();
         return $this->showOne($resume);
     }
 
@@ -155,6 +166,8 @@ class ResumeController extends ApiController
     {
         $resume = Resume::where('resumes.id', $resume_id)->first();
         $new_resume = $resume->replicate();
+        $resume->count++;
+        $new_resume->name = ($resume->name) + ($resume->count);
         $new_resume->save();
         //////////// personal_info
         foreach ($resume->personalInformation()->get() as $per) {
@@ -391,4 +404,13 @@ class ResumeController extends ApiController
             $show_newresume,
         ], 200);
     }
+
+    public function setActive(Request $request, $resume_id)
+    {
+        $resume = Resume::where('id', $resume_id)->update(['active' => $request['active']]);
+        $show_resume = Resume::where('id', $resume_id)->first();
+        return $this->showOne($show_resume);
+    }
+
+
 }

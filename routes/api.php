@@ -27,15 +27,17 @@ Route::group([
 
 });
 Route::resource('resume', 'ResumeController', ['except' => ['edit', 'create']]);
-Route::resource('personalInformation', 'PersonalInformation\PersonalInformationController', ['except' => ['edit', 'create', 'index']]);
+//////////////////////////
+Route::resource('personalInformation', 'PersonalInformation\PersonalInformationController', ['except' => ['edit', 'create',]]);
 Route::resource('summary', 'Summary\SummaryController', ['except' => ['edit', 'create', 'index']]);
 Route::resource('objective', 'Objective\ObjectiveController', ['except' => ['edit', 'create', 'index']]);
 Route::resource('hobbiesInterest', 'HobbiesInterest\HobbiesInterestController', ['except' => ['edit', 'create', 'index']]);
+//////////////////////////
 Route::resource('contactInfo', 'ContactInformation\ContactInfoController', ['except' => ['edit', 'create', 'index']]);
 Route::resource('language', 'Language\LanguageController', ['except' => ['edit', 'create']]);
 Route::Post('language/order/{resumeId}', 'Language\LanguageController@orderData');
+/////////////////////////
 Route::resource('driving', 'DrivingLicense\DrivingLicenseController', ['except' => ['edit', 'create']]);
-
 //////////////////////////////////////
 Route::resource('education', 'Education\EducationController', ['except' => ['edit', 'create']]);
 Route::get('education/{resumeId}/{educationId}', 'Education\EducationController@getSingleEducation');
@@ -87,3 +89,4 @@ Route::Post('skills/order/{resumeId}', 'Skills\SkillsController@orderData');
 Route::get('resumes/{resume}/skills', 'Skills\SkillsController@index');
 
 Route::get('resume/duplicate/{resumeId}', 'ResumeController@duplicate');
+Route::post('resume/setActive/{resumeId}', 'ResumeController@setActive');

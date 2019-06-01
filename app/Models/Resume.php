@@ -22,6 +22,7 @@ use App\Models\Skills\Skills;
 use App\Models\SummarySec\Summary;
 use App\Models\Language\Language;
 use App\Models\Training\Training;
+use App\Models\TranslatedLanguages\TranslatedLanguages;
 use App\Models\Volunteers\Volunteers;
 use App\Models\WorkExperience\WorkExperience;
 use App\User;
@@ -35,10 +36,10 @@ class Resume extends Model
 
         parent::boot();
 
-        //When Deleting A Resume 
+        //When Deleting A Resume
         static::deleting(function ($resume) {
 
-            //delete each achievement associated with it 
+            //delete each achievement associated with it
             $resume->achievements->each->delete();
         });
     }
@@ -122,26 +123,36 @@ class Resume extends Model
     {
         return $this->hasMany(Portfolio::class);
     }
+
     public function certifications()
     {
         return $this->hasMany(Certifications::class);
     }
+
     public function trainings()
     {
         return $this->hasMany(Training::class);
     }
 
-    public function reReferences(){
+    public function reReferences()
+    {
         return $this->hasMany(ReReference::class);
     }
+
     public function work_experiences()
     {
         return $this->hasMany(WorkExperience::class);
     }
 
-    public function skills(){
+    public function skills()
+    {
         return $this->hasMany(Skill::class);
     }
 
-    protected $fillable = ['user_id'];
+    public function translatedLanguages()
+    {
+        return $this->hasOne(TranslatedLanguages::class);
+    }
+
+    protected $fillable = ['user_id', 'translated_languages_id', 'name'];
 }
