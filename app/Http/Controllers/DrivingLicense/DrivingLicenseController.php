@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\DrivingLicense;
 
 
+use App\Models\Country\CountryTranslation;
 use App\Models\DrivingCategory\DrivingCategory;
 
 use App\Http\Controllers\ApiController;
@@ -19,17 +20,6 @@ class DrivingLicenseController extends ApiController
         $this->middleware('jwt.auth');
     }
 
-
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
-        //
-    }
-
     /**
      * Show the form for creating a new resource.
      *
@@ -43,12 +33,12 @@ class DrivingLicenseController extends ApiController
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $this->validate($request,  [
+        $this->validate($request, [
             'resume_id' => 'required',
             'license_type' => 'required',
         ]);
@@ -56,29 +46,39 @@ class DrivingLicenseController extends ApiController
         $user = auth()->user();
         if ($user->id != $resume->user->id)
             return $this->errorResponse('you are not authorized to do this operation', 401);
-        return DB::transaction(function () use ($request) {
+        return DB::transaction(function () use ($request, $resume) {
             $driving = new Driving();
             $driving->resume_id = $request['resume_id'];
             $driving->license_type = $request['license_type'];
-            $driving->country = $request['country'];
+//            $driving->country = $request['country'];
+            $driving->country_id = $request['country_id'];
             $driving->international = $request['international'];
             $driving->save();
-            $categories=$request['category'];
-            foreach ($categories as $cat){
-                $c=new DrivingCategory();
-                $c->driving_id=$driving->id;
-                $c->name=$cat['name'];
+            $categories = $request['category'];
+            foreach ($categories as $cat) {
+                $c = new DrivingCategory();
+                $c->driving_id = $driving->id;
+                $c->name = $cat['name'];
                 $c->save();
             }
             $driving->categories = $categories;
-            return $this->showOne($driving);
+            //       resume translated language
+            $resume_translated_language = $resume->translated_languages_id;
+            $driving1 = Driving::where('resume_id', $resume->id)->
+            with('categories', 'country')->
+            with(array('country.countryTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))->get();
+
+
+            return $this->showAll($driving1);
         });
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  $resumeId
      * @return \Illuminate\Http\Response
      */
     public function show($resumeId)
@@ -90,19 +90,30 @@ class DrivingLicenseController extends ApiController
         if ($user->id != $resume->user->id)
             return $this->errorResponse('you are not authorized to do this operation', 401);
 
-        $driving = Driving::where('resume_id', $resumeId)
-            ->with(['categories'])
-            ->get();
-        if( $driving ==null){
+//               resume translated language
+        $resume_translated_language = $resume->translated_languages_id;
+        $driving = Driving::where('resume_id', $resume->id)->
+        with('categories', 'country')->
+        with(array('country.countryTranslation' => function ($query) use ($resume_translated_language) {
+            $query->where('translated_languages_id', $resume_translated_language);
+        }))->get();
+        $country_name_trans = CountryTranslation::where('translated_languages_id', $resume_translated_language)->
+        get(['country_id', 'name']);
+
+
+        if ($driving == null) {
             return response()->json(['data' => 404]);
         }
-        return $this->showAll($driving);
+        return response()->json([
+            'driving' => $driving,
+            'country_name_translations' => $country_name_trans,
+        ]);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -113,13 +124,13 @@ class DrivingLicenseController extends ApiController
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, Driving $driving)
     {
-        $this->validate($request,  [
+        $this->validate($request, [
             'resume_id' => 'required',
             'license_type' => 'required',
         ]);
@@ -128,11 +139,12 @@ class DrivingLicenseController extends ApiController
         if ($user->id != $resume->user->id)
             return $this->errorResponse('you are not authorized to do this operation', 401);
 
-        return DB::transaction(function () use ($request , $driving) {
+        return DB::transaction(function () use ($request, $driving, $resume) {
 
             $driving->resume_id = $request['resume_id'];
             $driving->license_type = $request['license_type'];
-            $driving->country = $request['country'];
+//            $driving->country = $request['country'];
+            $driving->country_id = $request['country_id'];
             $driving->international = $request['international'];
             $driving->save();
             if ($request->has('category')) {
@@ -149,14 +161,22 @@ class DrivingLicenseController extends ApiController
                 }
                 $driving->categories = $categories;
             }
-            return $this->showOne($driving);
+            //       resume translated language
+            $resume_translated_language = $resume->translated_languages_id;
+            $driving1 = Driving::where('resume_id', $resume->id)->with('categories', 'country')->
+            with(array('country.countryTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))->get();
+
+            return $this->showAll($driving1);
+
         });
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy(Driving $driving)
