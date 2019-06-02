@@ -15,4 +15,8 @@ class Minor extends Model
     {
         return $this->hasMany(Education::class);
     }
+    public function minorTranslation()
+    {
+        return $this->hasMany(MinorTranslation::class);
+    }
 }

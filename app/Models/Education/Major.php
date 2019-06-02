@@ -18,4 +18,8 @@ class Major extends Model
     {
         return $this->belongsTo(MajorGroup::class);
     }
+    public function majorTranslation()
+    {
+        return $this->hasMany(MajorTranslation::class);
+    }
 }

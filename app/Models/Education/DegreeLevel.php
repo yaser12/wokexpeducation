@@ -4,15 +4,16 @@ namespace App\Models\Education;
 
 use Illuminate\Database\Eloquent\Model;
 
-class University extends Model
+class DegreeLevel extends Model
 {
+
     public function education()
     {
         return $this->hasMany(Education::class);
     }
 
-    public function universityTranslation()
+    public function degreeLevelTranslation()
     {
-        return $this->hasMany(UniversityTranslation::class);
+        return $this->hasMany(DegreeLevelTranslation::class);
     }
 }

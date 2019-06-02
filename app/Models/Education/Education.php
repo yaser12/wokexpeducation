@@ -22,6 +22,10 @@ class Education extends Model
     {
         return $this->belongsTo(Minor::class);
     }
+    public function degreeLevel()
+    {
+        return $this->belongsTo(DegreeLevel::class);
+    }
 
     public function university()
     {
