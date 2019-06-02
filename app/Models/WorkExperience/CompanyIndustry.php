@@ -10,4 +10,9 @@ class CompanyIndustry extends Model
     {
         return $this->hasMany(WorkExperience::class);
     }
+
+    public function companyIndustryTranslation()
+    {
+        return $this->hasMany(CompanyIndustryTranslation::class);
+    }
 }

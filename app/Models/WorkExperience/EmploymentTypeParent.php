@@ -24,4 +24,8 @@ class EmploymentTypeParent extends Model
     {
         return $this->belongsTo('App\Models\WorkExperience\EmploymentTypeParent', 'parent_id', 'id');
     }
+    public function empTypeParentTranslation()
+    {
+        return $this->hasMany(EmpTypeParentTranslation::class);
+    }
 }

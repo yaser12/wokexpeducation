@@ -22,6 +22,7 @@ class CreateCompanyIndustryTranslationsTable extends Migration
             $table->foreign('translated_languages_id')->references('id')->on('translated_languages');
 
             $table->string('name');
+            $table->timestamps();
 
         });
     }
