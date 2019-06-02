@@ -17,4 +17,14 @@ class Language extends Model
     {
         return $this->hasMany(Diploma::class);
     }
+
+    public function internationalLanguage()
+    {
+        return $this->belongsTo(InternationalLanguage::class);
+    }
+
+    public function languageAssessment()
+    {
+        return $this->hasMany(LanguageAssessment::class);
+    }
 }
