@@ -2,16 +2,23 @@
 
 namespace App\Models\ReReference;
 
+use App\Models\Country\Country;
 use App\Models\Resume;
 use Illuminate\Database\Eloquent\Model;
 
 class ReReference extends Model
 {
-    public function resume(){
+    public function resume()
+    {
         return $this->belongsTo(Resume::class);
     }
 
-    protected $fillable=[
+    public function country()
+    {
+        return $this->belongsTo(Country::class);
+    }
+
+    protected $fillable = [
         'name',
         'position',
         'organization',

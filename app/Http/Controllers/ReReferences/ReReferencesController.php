@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\ReReferences;
 
 use App\Http\Controllers\ApiController;
+use App\Models\Country\Country;
 use App\Models\ReReference\ReReference;
 use App\Models\Resume;
 use Illuminate\Http\Request;
@@ -14,6 +15,7 @@ class ReReferencesController extends ApiController
     {
         $this->middleware('jwt.auth');
     }
+
     /**
      * Display a listing of the resource.
      *
@@ -21,11 +23,25 @@ class ReReferencesController extends ApiController
      */
     public function index(Resume $resume)
     {
-        $reference = $resume->reReferences()
-            ->orderby('order')
-            ->get() ;
+//         resume translated language
+        $resume_translated_language = $resume->translated_languages_id;
+
+        $reference = ReReference::where('resume_id', $resume->id)
+            ->orderby('order')->
+            with(array('country.countryTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->
+            get();
+        $country_code = Country::with(array('countryTranslation' => function ($query) use ($resume_translated_language) {
+            $query->where('translated_languages_id', $resume_translated_language);
+        }))->get();
         //Return the success response data
-        return $this->showAll($reference);
+        return response()->json([
+            'references' => $reference,
+            'country_codes' => $country_code
+
+        ]);
     }
 
     /**
@@ -41,49 +57,51 @@ class ReReferencesController extends ApiController
     /**
      * Store a newly created resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
+     * @param  \Illuminate\Http\Request $request
      * @return \Illuminate\Http\Response
      */
     public function store(Request $request)
     {
-        $this->validate($request, ['name' => 'required', 'resume_id'=>'required',
-           'ref_email_address'=>'required' ]);
-        $resume=Resume::findOrFail($request->resume_id);
+        $this->validate($request, ['name' => 'required', 'resume_id' => 'required',
+            'ref_email_address' => 'required']);
+        $resume = Resume::findOrFail($request->resume_id);
         $user = auth()->user();
         if ($user->id != $resume->user->id)
             return $this->errorResponse('you are not authorized to do this operation', 401);
 
         $reference = ReReference::create([
-            'resume_id'=>$request->resume_id,
-            'name'=>$request->name,
-            'position'=>$request->position,
-            'organization'=>$request->organization,
-            'prefered_time_to_call'=>$request->prefered_time_to_call,
-            'ref_email_address'=>$request->ref_email_address,
+            'resume_id' => $request->resume_id,
+            'name' => $request->name,
+            'position' => $request->position,
+            'organization' => $request->organization,
+            'prefered_time_to_call' => $request->prefered_time_to_call,
+            'ref_email_address' => $request->ref_email_address,
             'is_available' => $request->is_available
         ]);
 
-        if($request->has('contact_number')){
+        if ($request->has('contact_number')) {
             $reqcontact_number = $request['contact_number'];
-            $reference->country_code = $reqcontact_number['country_code']['code'];
+            $reference->country_id = $reqcontact_number['country_id'];
             $reference->mobile = $reqcontact_number['mobile'];
         }
 
-        $references = ReReference::where('resume_id',$request['resume_id'])->get();
-        foreach($references as $ref){
-            $ref->order=$ref->order+1;
+        $references = ReReference::where('resume_id', $request['resume_id'])->get();
+        foreach ($references as $ref) {
+            $ref->order = $ref->order + 1;
             $ref->save();
         }
-        $reference->order=1;
+        $reference->order = 1;
         $reference->save();
-        $newrefernce=ReReference::where('id',$reference->id)->first();
-        return $this->showOne($newrefernce);
+        $newrefernce = ReReference::where('id', $reference->id)
+            ->with('country')
+            ->get();
+        return $this->showAll($newrefernce);
     }
 
     /**
      * Display the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function show($resumeId)
@@ -93,16 +111,17 @@ class ReReferencesController extends ApiController
         if ($user->id != $resume->user->id)
             return $this->errorResponse('you are not authorized to do this operation', 401);
 
-        $references =ReReference::where('Resume_id',$resumeId)
-            ->orderBy('order')
+
+        $reference = ReReference::where('resume_id', $resume->id)
+            ->with('country')
             ->get();
-        return $this->showAll($references);
+        return $this->showAll($reference);
     }
 
     /**
      * Show the form for editing the specified resource.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function edit($id)
@@ -113,16 +132,16 @@ class ReReferencesController extends ApiController
     /**
      * Update the specified resource in storage.
      *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
+     * @param  \Illuminate\Http\Request $request
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function update(Request $request, $id)
     {
-        $this->validate($request,[
-            'name'=>'required',
-            'resume_id'=>'required',
-            'ref_email_address'=>'required'
+        $this->validate($request, [
+            'name' => 'required',
+            'resume_id' => 'required',
+            'ref_email_address' => 'required'
         ]);
         $resume = Resume::findOrFail($request['resume_id']);
         $user = auth()->user();
@@ -138,29 +157,31 @@ class ReReferencesController extends ApiController
         $reference->ref_email_address = $request->ref_email_address;
         $reference->is_available = $request->is_available;
 
-        if($request->has('contact_number')){
+        if ($request->has('contact_number')) {
             $reqcontact_number = $request['contact_number'];
-            $reference->country_code = $reqcontact_number['country_code']['code'];
+            $reference->country_id = $reqcontact_number['country_id'];
             $reference->mobile = $reqcontact_number['mobile'];
         }
 
 
-       /* if($request->has('is_available')){
-            $reference->is_available = true;
-        }else{
-            $reference->is_available = false;
-        }*/
+        /* if($request->has('is_available')){
+             $reference->is_available = true;
+         }else{
+             $reference->is_available = false;
+         }*/
 
         $reference->save();
-        $newReference = ReReference::where('id',$reference->id)->first();
-        return $this->showOne($newReference);
+        $newReference = ReReference::where('id', $reference->id)
+            ->with('country')
+            ->get();
+        return $this->showAll($newReference);
 
     }
 
     /**
      * Remove the specified resource from storage.
      *
-     * @param  int  $id
+     * @param  int $id
      * @return \Illuminate\Http\Response
      */
     public function destroy($ref_id)
@@ -174,7 +195,7 @@ class ReReferencesController extends ApiController
 
         $reference->delete();
 
-        $references = ReReference::where([['resume_id',$reference->resume_id],['order','>',$reference->order]]);
+        $references = ReReference::where([['resume_id', $reference->resume_id], ['order', '>', $reference->order]]);
         foreach ($references as $ref) {
             $ref->order = $ref->order - 1;
             $ref->save();
@@ -183,7 +204,8 @@ class ReReferencesController extends ApiController
         return $this->showOne($reference);
     }
 
-    public function orderData(Request $request,$resumeId){
+    public function orderData(Request $request, $resumeId)
+    {
 
         $resume = Resume::findOrFail($resumeId);
 
@@ -192,13 +214,13 @@ class ReReferencesController extends ApiController
         if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
 
 
-        foreach($request['orderData'] as  $ref){
+        foreach ($request['orderData'] as $ref) {
 
-            $reference=ReReference::findOrFail($ref['referenceId']);
-            $reference->order=$ref['orderId'];
+            $reference = ReReference::findOrFail($ref['referenceId']);
+            $reference->order = $ref['orderId'];
             $reference->save();
         }
-        return response()->json(['success'=>'true']);
+        return response()->json(['success' => 'true']);
     }
 
 }
