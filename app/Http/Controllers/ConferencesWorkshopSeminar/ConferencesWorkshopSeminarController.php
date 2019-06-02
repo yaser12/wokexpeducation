@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\ConferencesWorkshopSeminar;
 
 use App\Models\ConferencesWorkshopSeminar\ConferencesWorkshopSeminar;
+use App\Models\ConferencesWorkshopSeminar\ConferenceTypeTranslation;
 use App\Models\Resume;
 use Illuminate\Http\Request;
 use App\Http\Controllers\ApiController;
@@ -19,15 +20,24 @@ class ConferencesWorkshopSeminarController extends ApiController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Resume $resume)
+    public function index($resume_id)
     {
-
+        $resume = Resume::findOrFail($resume_id);
+//         resume translated language
+        $resume_translated_language = $resume->translated_languages_id;
+        $conference_type_trans = ConferenceTypeTranslation::where('translated_languages_id', $resume_translated_language)
+            ->get(['conference_type_id', 'name']);
         $Con_work_sem = $resume->ConferencesWorkshopSeminar()
-            ->orderBy('order')
+            ->orderBy('order')->
+            with(array('conferenceType.conferenceTypeTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
             ->get();
         //Return the success response data
-        return $this->showAll($Con_work_sem);
-
+        return response()->json([
+            'conferences' => $Con_work_sem,
+            'conference_type_translations' => $conference_type_trans,
+        ]);
     }
 
     /**
@@ -50,11 +60,13 @@ class ConferencesWorkshopSeminarController extends ApiController
     {
         $this->validate($request, [
             'resume_id' => 'required',
-            'type' => 'required',
+            'conference_type_id' => 'required',
             'isMonth' => 'required',
         ]);
         $resume = Resume::findOrFail($request['resume_id']);
 
+//       resume translated language
+        $resume_translated_language = $resume->translated_languages_id;
         //Authorization
         $user = auth()->user();
         if ($user->id != $resume->user->id)
@@ -69,16 +81,17 @@ class ConferencesWorkshopSeminarController extends ApiController
         $conferences_workshop_seminar->description = $request['description'];
 
         //store type
-        $conferences_workshop_seminar->type = $request['type'];
+        $conferences_workshop_seminar->conference_type_id = $request['conference_type_id'];
 
-        if ($request['type'] === 'Conference') {
+//        if ($request['type'] === 'Conference') {
+        if ($request['conference_type_id'] === 1) {
             $this->validate($request, ['attended_as' => 'required']);
             $conferences_workshop_seminar->attended_as = $request['attended_as'];
-
+        } else {
+            $conferences_workshop_seminar->attended_as = null;
         }
 
         //store date
-//
         if ($request['date']['year'] != null) {
 
             if ($request['isMonth'] == true) {
@@ -110,8 +123,13 @@ class ConferencesWorkshopSeminarController extends ApiController
         $conferences_workshop_seminar->save();
 
         //fetch the newly created conferences_workshop_seminar from the database
-        $newConferences_workshop_seminar = ConferencesWorkshopSeminar::where('id', $conferences_workshop_seminar->id)->first();
-        return $this->showOne($newConferences_workshop_seminar);
+        $newCon_work_sem = ConferencesWorkshopSeminar::where('id', $conferences_workshop_seminar->id)
+            ->with(array('conferenceType.conferenceTypeTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->get();
+        return $this->showAll($newCon_work_sem);
+
     }
 
     /**
@@ -125,16 +143,20 @@ class ConferencesWorkshopSeminarController extends ApiController
         $conferencesWorkshopSeminar = ConferencesWorkshopSeminar::findOrFail($con_work_sem);
 
         $resume = $conferencesWorkshopSeminar->resume;
+//               resume translated language
+        $resume_translated_language = $resume->translated_languages_id;
 
         //Authorization
-
         $user = auth()->user();
-        if ($user->id != $resume->user->id)
-            return $this->errorResponse('you are not authorized to do this operation', 401);
+        if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
 
+        $Con_work_sem = ConferencesWorkshopSeminar::where('id', $conferencesWorkshopSeminar->id)
+            ->with(array('conferenceType.conferenceTypeTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->get();
         //return single conferencesWorkshopSeminar
-
-        return $this->showOne($conferencesWorkshopSeminar);
+        return $this->showAll($Con_work_sem);
     }
 
 
@@ -160,11 +182,13 @@ class ConferencesWorkshopSeminarController extends ApiController
     {
         $this->validate($request, [
             'resume_id' => 'required',
-            'type' => 'required',
+//            'type' => 'required',
             'isMonth' => 'required',
 
         ]);
         $resume = Resume::findOrFail($request['resume_id']);
+        //       resume translated language
+        $resume_translated_language = $resume->translated_languages_id;
 
         //Authorization
         $user = auth()->user();
@@ -180,12 +204,15 @@ class ConferencesWorkshopSeminarController extends ApiController
         $conferences_workshop_seminar->description = $request['description'];
 
         // type
-        $conferences_workshop_seminar->type = $request['type'];
+        $conferences_workshop_seminar->conference_type_id = $request['conference_type_id'];
 
-        if ($request['type'] === 'Conference') {
+//        if ($request['type'] === 'Conference') {
+        if ($request['conference_type_id'] === 1) {
             $this->validate($request, ['attended_as' => 'required']);
             $conferences_workshop_seminar->attended_as = $request['attended_as'];
 
+        } else {
+            $conferences_workshop_seminar->attended_as = null;
         }
 
         //update date
@@ -213,8 +240,13 @@ class ConferencesWorkshopSeminarController extends ApiController
         $conferences_workshop_seminar->save();
 
         //fetch the newly created conferences_workshop_seminar from the database
-        $newConferences_workshop_seminar = ConferencesWorkshopSeminar::where('id', $conferences_workshop_seminar->id)->first();
-        return $this->showOne($newConferences_workshop_seminar);
+        $newCon_work_sem = ConferencesWorkshopSeminar::where('id', $conferences_workshop_seminar->id)
+            ->with(array('conferenceType.conferenceTypeTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->get();
+        return $this->showAll($newCon_work_sem);
+
     }
 
     /**

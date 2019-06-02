@@ -13,4 +13,9 @@ class ConferencesWorkshopSeminar extends Model
     {
         return $this->belongsTo(Resume::class);
     }
+
+    public function conferenceType()
+    {
+        return $this->belongsTo(ConferenceType::class);
+    }
 }
