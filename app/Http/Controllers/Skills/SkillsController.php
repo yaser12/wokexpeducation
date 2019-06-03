@@ -5,10 +5,13 @@ namespace App\Http\Controllers\Skills;
 use App\Http\Controllers\ApiController;
 use App\Models\Resume;
 use App\Models\Skills\Skill;
+use App\Models\Skills\SkillLevelTrans;
 use App\Models\Skills\Skills;
 use App\Models\Skills\SkillsTypes;
 use App\Models\Skills\SkillType;
 use App\Models\Skills\SkillTypeParent;
+use App\Models\Skills\SkillTypeParentTrans;
+use App\Models\Skills\SkillTypeTrans;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -29,17 +32,41 @@ class SkillsController extends ApiController
         $user = auth()->user();
         if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
 
+        //resume translated language
+        $resume_translated_language = $resume->translated_languages_id;
+
         $skills = Skill::where('resume_id', $resumeId)
             ->orderBy('order')
             ->with(['skill_types','skill_types.skill_type_parents'])
+            ->with(array('skill_types.skillTypeTrans' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('skill_types.skill_type_parents.skillTypeParentTrans'=> function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('skillLevel.skillLevelTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
             ->get();
 
-        $skill_types = SkillType::all();
-        $skill_types_parent = SkillTypeParent::all();
+        $skill_types_trans = SkillTypeTrans::where('translated_languages_id', $resume_translated_language)->
+        get(['skill_type_id', 'name']);
+
+        $skill_types_parent_trans = SkillTypeParentTrans::where('translated_languages_id', $resume_translated_language)->
+        get(['skill_type_parent_id', 'name']);
+
+        $skill_level_trans = SkillLevelTrans::where('translated_languages_id', $resume_translated_language)->
+        get(['skill_level_id', 'name']);
+
+
+        // $skill_types = SkillType::all();
+       // $skill_types_parent = SkillTypeParent::all();
         return response()->json(['skill' => $skills,
-            'skill_types' => $skill_types,
-            'skills_types_parent' => $skill_types_parent ]
-            ,200);
+            'skill_types_trans' => $skill_types_trans,
+            'skill_types_parent_trans' => $skill_types_parent_trans,
+            'skill_leve_id' => $skill_level_trans
+        ], 200);
+
     }
 
     /**
@@ -71,8 +98,8 @@ class SkillsController extends ApiController
         $skill->resume_id  = $request['resume_id'];
         //store_skill_type
         $skill->skill_types_id = $request['skill_types_id'];
-        //store_skill_level
-        $skill->skill_level = $request['skill_level'];
+        //store_skill_level_id
+        $skill->skill_level_id = $request['skill_level_id'];
 
         $skills = Skill::where('resume_id', $request['resume_id'])->get();
         foreach ($skills as $sk) {
@@ -98,7 +125,7 @@ class SkillsController extends ApiController
     {
         $skill = Skill::where('id',$id)
             ->orderBy('order')
-            ->with(['skill_types','skill_types.skill_type_parents'])
+            ->with(['skill_types','skill_types.skill_type_parents','skillLevel'])
             ->get();
 
         return $this->showAll($skill);
@@ -130,16 +157,32 @@ class SkillsController extends ApiController
         if ($user->id != $resume->user->id)
             return $this->errorResponse('you are not authorized to do this operation', 401);
 
+        //resume translated language
+        $resume_translated_language = $resume->translated_languages_id;
+
         $skill = Skill::findOrFail($id);
         //skill_type
         $skill->skill_types_id = $request['skill_types_id'];
         //skill_level
-        $skill->skill_level = $request['skill_level'];
+        $skill->skill_level_id = $request['skill_level_id'];
 
         $skill->save();
 
-        $New_skill = Skill::where('id',$id)
+       /* $New_skill = Skill::where('id',$id)
             ->with(['skill_types','skill_types.skill_type_parents'])
+            ->get();*/
+
+        $New_skill = Skill::where('id', $skill->id)
+            ->with(['skill_types','skill_types.skill_type_parents'])
+            ->with(array('skill_types.skillTypeTrans' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('skill_types.skill_type_parents.skillTypeParentTrans'=> function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('skillLevel.skillLevelTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
             ->get();
         return $this->showAll($New_skill);
 

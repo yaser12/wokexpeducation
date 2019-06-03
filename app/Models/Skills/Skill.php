@@ -14,4 +14,8 @@ class Skill extends Model
     public function skill_types(){
         return $this->belongsTo(SkillType::class);
     }
+
+    public function skillLevel(){
+        return $this->belongsTo(SkillLevel::class);
+    }
 }

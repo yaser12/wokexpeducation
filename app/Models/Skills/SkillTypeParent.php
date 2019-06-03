@@ -9,4 +9,9 @@ class SkillTypeParent extends Model
     public function skill_types(){
         return $this->hasMany(SkillType::class);
     }
+
+
+    public function skillTypeParentTrans(){
+        return $this->hasMany(SkillTypeParentTrans::class);
+    }
 }

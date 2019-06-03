@@ -14,6 +14,9 @@ use App\Models\Language\SelfAssessmentTrans;
 use App\Models\PersonalInformation\MaritalStatusTranslation;
 use App\Models\PersonalInformation\NationalityTranslation;
 use App\Models\Resume;
+use App\Models\Skills\SkillLevelTrans;
+use App\Models\Skills\SkillTypeParentTrans;
+use App\Models\Skills\SkillTypeTrans;
 use App\Models\WorkExperience\CompanyIndustryTranslation;
 use App\Models\WorkExperience\EmpTypeParentTranslation;
 use Illuminate\Database\Eloquent\Model;
@@ -81,5 +84,14 @@ class TranslatedLanguages extends Model
     public function selfAssessmentTranslation()
     {
         return $this->hasMany(SelfAssessmentTrans::class);
+    }
+    public function skillTypeTrans(){
+        return $this->hasMany(SkillTypeTrans::class);
+    }
+    public function skillTypeParentTrans(){
+        return $this->hasMany(SkillTypeParentTrans::class);
+    }
+    public function skillLevelTranslation(){
+        return $this->hasMany(SkillLevelTrans::class);
     }
 }
