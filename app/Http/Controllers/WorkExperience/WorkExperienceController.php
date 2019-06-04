@@ -65,11 +65,17 @@ class WorkExperienceController extends ApiController
                 $query->where('translated_languages_id', $resume_translated_language);
             }))->get();
 
+//                $company_industry_parent = CompanyIndustry::with(array('companyIndustryParent.companyIndustryParentTrans' => function ($query) use   ($resume_translated_language) {
+//            $query->where('translated_languages_id', $resume_translated_language);
+//        }))->get(['id', 'verified','company_industry_parent_id']);
+
         return response()->json(['work_experiences' => $work_experiences,
             'companies' => $companies,
             'company_industries' => $company_industries,
             'employment_types' => $employment_types,
             'employment_type_parents' => $employment_type_parents,
+//                        'company_industry_parent' =>$company_industry_parent,
+
 
         ], 200);
     }

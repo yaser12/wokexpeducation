@@ -189,7 +189,10 @@ class EducationController extends ApiController
                 $query->where('translated_languages_id', $resume_translated_language);
             }))
             ->get();
-
+//        $major_parent = Major::with(array('majorParent.majorParentTranslation' => function ($query) use ($resume_translated_language) {
+//            $query->where('translated_languages_id', $resume_translated_language);
+//        }))
+//            ->get(['id','verified','major_parent_id',]);
         $degree_level_trans = DegreeLevelTranslation::where('translated_languages_id', $resume_translated_language)->get(['degree_level_id', 'name']);
 
         $majors = Major::where('verified', true)->
@@ -220,7 +223,8 @@ class EducationController extends ApiController
 //                ' minors_translation' => $minors_translation,
 //                ' universities_translation' => $universities_translation,
                 'minors' => $minors,
-                'universities' => $universities
+                'universities' => $universities,
+//                'major_parent' =>$major_parent,
             ]
             , 200);
     }

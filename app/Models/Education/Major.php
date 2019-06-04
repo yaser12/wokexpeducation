@@ -6,7 +6,8 @@ use Illuminate\Database\Eloquent\Model;
 
 class Major extends Model
 {
-    public function minors(){
+    public function minors()
+    {
         return $this->hasMany(Minor::class);
     }
 
@@ -14,10 +15,12 @@ class Major extends Model
     {
         return $this->hasMany(Education::class);
     }
-    public function majorGroup()
+
+    public function majorParent()
     {
-        return $this->belongsTo(MajorGroup::class);
+        return $this->belongsTo(MajorParent::class);
     }
+
     public function majorTranslation()
     {
         return $this->hasMany(MajorTranslation::class);

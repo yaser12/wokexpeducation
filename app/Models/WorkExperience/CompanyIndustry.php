@@ -15,4 +15,8 @@ class CompanyIndustry extends Model
     {
         return $this->hasMany(CompanyIndustryTranslation::class);
     }
+    public function companyIndustryParent()
+    {
+        return $this->belongsTo(CompanyIndustryParent::class);
+    }
 }
