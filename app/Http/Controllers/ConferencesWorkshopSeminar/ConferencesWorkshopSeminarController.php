@@ -25,8 +25,8 @@ class ConferencesWorkshopSeminarController extends ApiController
         $resume = Resume::findOrFail($resume_id);
 //         resume translated language
         $resume_translated_language = $resume->translated_languages_id;
-        $conference_type_trans = ConferenceTypeTranslation::where('translated_languages_id', $resume_translated_language)
-            ->get(['conference_type_id', 'name']);
+//        $conference_type_trans = ConferenceTypeTranslation::where('translated_languages_id', $resume_translated_language)
+//            ->get(['conference_type_id', 'name']);
         $Con_work_sem = $resume->ConferencesWorkshopSeminar()
             ->orderBy('order')->
             with(array('conferenceType.conferenceTypeTranslation' => function ($query) use ($resume_translated_language) {
@@ -36,6 +36,17 @@ class ConferencesWorkshopSeminarController extends ApiController
         //Return the success response data
         return response()->json([
             'conferences' => $Con_work_sem,
+        ]);
+    }
+
+    public function ConferencesData($resume_id)
+    {
+        $resume = Resume::findOrFail($resume_id);
+//         resume translated language
+        $resume_translated_language = $resume->translated_languages_id;
+        $conference_type_trans = ConferenceTypeTranslation::where('translated_languages_id', $resume_translated_language)
+            ->get(['conference_type_id', 'name']);
+        return response()->json([
             'conference_type_translations' => $conference_type_trans,
         ]);
     }

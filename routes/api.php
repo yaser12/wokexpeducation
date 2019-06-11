@@ -50,6 +50,8 @@ Route::Post('achievements/order/{resumeId}', 'Achievements\AchievementsControlle
 Route::resource('ConferencesWorkshopSeminar', 'ConferencesWorkshopSeminar\ConferencesWorkshopSeminarController', ['except' => ['edit', 'create']]);
 Route::Post('ConferencesWorkshopSeminar/order/{resumeId}', 'ConferencesWorkshopSeminar\ConferencesWorkshopSeminarController@orderData');
 Route::get('resumes/{resume}/ConferencesWorkshopSeminars', 'ConferencesWorkshopSeminar\ConferencesWorkshopSeminarController@index');
+Route::get('ConferencesData/{resume}', 'ConferencesWorkshopSeminar\ConferencesWorkshopSeminarController@ConferencesData');
+
 
 
 Route::resource('membership', 'Membership\MembershipController', ['except' => ['edit', 'create']]);
