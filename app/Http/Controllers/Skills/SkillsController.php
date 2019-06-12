@@ -47,9 +47,15 @@ class SkillsController extends ApiController
             }))
             ->with(array('skillLevel.skillLevelTranslation' => function ($query) use ($resume_translated_language) {
                 $query->where('translated_languages_id', $resume_translated_language);
-            }))
-            ->get();
+            }))->get();
+        return response()->json(['skill' => $skills,], 200);
+    }
 
+    public function skillsData($resume_id)
+    {
+        $resume = Resume::findOrFail($resume_id);
+//         resume translated language
+        $resume_translated_language = $resume->translated_languages_id;
         $skill_types_trans = SkillTypeTrans::where('translated_languages_id', $resume_translated_language)->
         get(['skill_type_id', 'name']);
 
@@ -66,13 +72,12 @@ class SkillsController extends ApiController
 
         // $skill_types = SkillType::all();
         // $skill_types_parent = SkillTypeParent::all();
-        return response()->json(['skill' => $skills,
+        return response()->json([
             'skill_types_trans' => $skill_types_trans,
             'skill_types_parent_trans' => $skill_types_parent_trans,
-            'skill_level_id' => $skill_level_trans,
+            'skill_level' => $skill_level_trans,
 //            'skill_types_basic_parent' => $skill_types_basic_parent
         ], 200);
-
     }
 
     /**

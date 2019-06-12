@@ -189,10 +189,15 @@ class EducationController extends ApiController
                 $query->where('translated_languages_id', $resume_translated_language);
             }))
             ->get();
-//        $major_parent = Major::with(array('majorParent.majorParentTranslation' => function ($query) use ($resume_translated_language) {
-//            $query->where('translated_languages_id', $resume_translated_language);
-//        }))
-//            ->get(['id','verified','major_parent_id',]);
+//
+        return response()->json(['educations' => $education,], 200);
+    }
+
+    public function educationData($resume_id)
+    {
+        $resume = Resume::findOrFail($resume_id);
+//         resume translated language
+        $resume_translated_language = $resume->translated_languages_id;
         $degree_level_trans = DegreeLevelTranslation::where('translated_languages_id', $resume_translated_language)->get(['degree_level_id', 'name']);
 
         $majors = Major::where('verified', true)->
@@ -200,33 +205,40 @@ class EducationController extends ApiController
             $query->where('translated_languages_id', $resume_translated_language);
         }))->
         get(['id', 'verified']);
-//        $majors_translation = MajorTranslation::where('translated_languages_id', $resume_translated_language)->
-//        get(['major_id', 'name']);
         $minors = Minor::where('verified', true)->
         with(array('minorTranslation' => function ($query) use ($resume_translated_language) {
             $query->where('translated_languages_id', $resume_translated_language);
-        }))
-            ->get();
-//        $minors_translation = MinorTranslation::where('translated_languages_id', $resume_translated_language)->
-//        get(['minor_id', 'name']);
-
+        }))->
+          get(['id', 'verified','major_id']);
         $universities = University::where('verified', true)->
         with(array('universityTranslation' => function ($query) use ($resume_translated_language) {
             $query->where('translated_languages_id', $resume_translated_language);
         }))->get();
-//        $universities_translation = UniversityTranslation::where('translated_languages_id', $resume_translated_language)->
-//        get(['university_id', 'name']);
-        return response()->json(['educations' => $education,
-                'degree_level_translations' => $degree_level_trans,
-                'majors' => $majors,
-//                ' majors_translation' => $majors_translation,
-//                ' minors_translation' => $minors_translation,
-//                ' universities_translation' => $universities_translation,
-                'minors' => $minors,
-                'universities' => $universities,
-//                'major_parent' =>$major_parent,
-            ]
-            , 200);
+        /*       $minors_translation = MinorTranslation::where('translated_languages_id', $resume_translated_language)->
+       get(['minor_id', 'name']);
+
+       $majors_translation = MajorTranslation::where('translated_languages_id', $resume_translated_language)->
+       get(['major_id', 'name']);
+
+       $universities_translation = UniversityTranslation::where('translated_languages_id', $resume_translated_language)->
+       get(['university_id', 'name']);
+       $major_parent = Major::with(array('majorParent.majorParentTranslation' => function ($query) use ($resume_translated_language) {
+           $query->where('translated_languages_id', $resume_translated_language);
+       }))
+           ->get(['id','verified','major_parent_id',]);
+        */
+
+        return response()->json([
+            'degree_level_translations' => $degree_level_trans,
+            'universities' => $universities,
+            'majors' => $majors,
+            'minors' => $minors,
+         /*       ' majors_translation' => $majors_translation,
+                ' minors_translation' => $minors_translation,
+                ' universities_translation' => $universities_translation,
+                'major_parent' =>$major_parent,
+         */
+        ]);
     }
 
     public function getSingleEducation($resumeId, $educationId)

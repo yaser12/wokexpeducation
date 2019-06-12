@@ -89,7 +89,6 @@ class DrivingLicenseController extends ApiController
         $user = auth()->user();
         if ($user->id != $resume->user->id)
             return $this->errorResponse('you are not authorized to do this operation', 401);
-
 //               resume translated language
         $resume_translated_language = $resume->translated_languages_id;
         $driving = Driving::where('resume_id', $resume->id)->
@@ -106,6 +105,19 @@ class DrivingLicenseController extends ApiController
         }
         return response()->json([
             'driving' => $driving,
+
+        ]);
+    }
+
+    public function drivingData($resume_id)
+    {
+        $resume = Resume::findOrFail($resume_id);
+//         resume translated language
+        $resume_translated_language = $resume->translated_languages_id;
+        $country_name_trans = CountryTranslation::where('translated_languages_id', $resume_translated_language)->
+        get(['country_id', 'name']);
+
+        return response()->json([
             'country_name_translations' => $country_name_trans,
         ]);
     }

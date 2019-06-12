@@ -133,19 +133,24 @@ class LanguageController extends ApiController
                 $query->where('translated_languages_id', $resume_translated_language);
             }))
             ->get();
+        return response()->json([
+            'languages' => $languages,], 200);
+    }
+    public function languageData($resume_id)
+    {
+        $resume = Resume::findOrFail($resume_id);
+//         resume translated language
+        $resume_translated_language = $resume->translated_languages_id;
         $languages_trans = InternationalLanguageTrans::where('translated_languages_id', $resume_translated_language)
             ->get(['international_language_id', 'name']);
 
         $self_assessment_trans = SelfAssessmentTrans::where('translated_languages_id', $resume_translated_language)->get();
 
         return response()->json([
-            'languages' => $languages,
             'language_translations' => $languages_trans,
             'self_assessment_translations' => $self_assessment_trans,
-
         ], 200);
     }
-
     /**
      * Update the specified resource in storage.
      *

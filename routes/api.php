@@ -29,19 +29,31 @@ Route::group([
 Route::resource('resume', 'ResumeController', ['except' => ['edit', 'create']]);
 //////////////////////////
 Route::resource('personalInformation', 'PersonalInformation\PersonalInformationController', ['except' => ['edit', 'create',]]);
+Route::get('personalInfoData/{resume}', 'PersonalInformation\PersonalInformationController@personalInfoData');
+
+
 Route::resource('summary', 'Summary\SummaryController', ['except' => ['edit', 'create', 'index']]);
 Route::resource('objective', 'Objective\ObjectiveController', ['except' => ['edit', 'create', 'index']]);
 Route::resource('hobbiesInterest', 'HobbiesInterest\HobbiesInterestController', ['except' => ['edit', 'create', 'index']]);
 //////////////////////////
+Route::get('contactInfoData/{resume}', 'ContactInformation\ContactInfoController@contactInfoData');
 Route::resource('contactInfo', 'ContactInformation\ContactInfoController', ['except' => ['edit', 'create', 'index']]);
+
+
 Route::resource('language', 'Language\LanguageController', ['except' => ['edit', 'create']]);
 Route::Post('language/order/{resumeId}', 'Language\LanguageController@orderData');
+Route::get('languageData/{resume}', 'Language\LanguageController@languageData');
+
 /////////////////////////
 Route::resource('driving', 'DrivingLicense\DrivingLicenseController', ['except' => ['edit', 'create']]);
+Route::get('drivingData/{resume}', 'DrivingLicense\DrivingLicenseController@drivingData');
+
 //////////////////////////////////////
 Route::resource('education', 'Education\EducationController', ['except' => ['edit', 'create']]);
 Route::get('education/{resumeId}/{educationId}', 'Education\EducationController@getSingleEducation');
 Route::Post('education/order/{resumeId}', 'Education\EducationController@orderData');
+Route::get('educationData/{resume}', 'Education\EducationController@educationData');
+
 //////////////////////////////////////
 Route::resource('achievements', 'Achievements\AchievementsController', ['except' => ['edit', 'create', 'index']]);
 Route::get('resumes/{resume}/achievements', 'Achievements\AchievementsController@index');
@@ -51,7 +63,6 @@ Route::resource('ConferencesWorkshopSeminar', 'ConferencesWorkshopSeminar\Confer
 Route::Post('ConferencesWorkshopSeminar/order/{resumeId}', 'ConferencesWorkshopSeminar\ConferencesWorkshopSeminarController@orderData');
 Route::get('resumes/{resume}/ConferencesWorkshopSeminars', 'ConferencesWorkshopSeminar\ConferencesWorkshopSeminarController@index');
 Route::get('ConferencesData/{resume}', 'ConferencesWorkshopSeminar\ConferencesWorkshopSeminarController@ConferencesData');
-
 
 
 Route::resource('membership', 'Membership\MembershipController', ['except' => ['edit', 'create']]);
@@ -81,14 +92,19 @@ Route::get('resumes/{resume}/trainings', 'Training\TrainingController@index');
 Route::resource('references', 'ReReferences\ReReferencesController', ['except' => ['edit', 'create']]);
 Route::Post('references/order/{resumeId}', 'ReReferences\ReReferencesController@orderData');
 Route::get('resumes/{resume}/references', 'ReReferences\ReReferencesController@index');
+Route::get('referencesData/{resume}', 'ReReferences\ReReferencesController@referencesData');
 
 Route::resource('workExperiences', 'WorkExperience\WorkExperienceController', ['except' => ['edit', 'create']]);
 Route::Post('workExperiences/order/{resumeId}', 'WorkExperience\WorkExperienceController@orderData');
 Route::get('resumes/{resume}/workExperiences', 'WorkExperience\WorkExperienceController@index');
+Route::get('workExpData/{resume}', 'WorkExperience\WorkExperienceController@workExperiencesData');
+
 
 Route::resource('skills', 'Skills\SkillsController', ['except' => ['edit', 'create']]);
 Route::Post('skills/order/{resumeId}', 'Skills\SkillsController@orderData');
 Route::get('resumes/{resume}/skills', 'Skills\SkillsController@index');
+Route::get('skillsData/{resume}', 'Skills\SkillsController@skillsData');
+
 
 Route::get('resume/duplicate/{resumeId}', 'ResumeController@duplicate');
 Route::post('resume/setActive/{resumeId}', 'ResumeController@setActive');

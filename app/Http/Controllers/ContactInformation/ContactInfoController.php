@@ -24,6 +24,7 @@ class ContactInfoController extends ApiController
     {
         $this->middleware('jwt.auth');
     }
+
     /**
      * Store a newly created resource in storage.
      *
@@ -180,7 +181,16 @@ class ContactInfoController extends ApiController
             $query->where('translated_languages_id', $resume_translated_language);
         }))
             ->get(['id', 'resume_id']);
+        return response()->json([
+            'contact_informations ' => $contact_info,
+        ]);
+    }
 
+    public function contactInfoData($resume_id)
+    {
+        $resume = Resume::findOrFail($resume_id);
+//         resume translated language
+        $resume_translated_language = $resume->translated_languages_id;
         $phone_type_trans = PhoneTypeTranslation::where('translated_languages_id', $resume_translated_language)->
         get(['phone_type_id', 'name']);
 
@@ -188,12 +198,11 @@ class ContactInfoController extends ApiController
             $query->where('translated_languages_id', $resume_translated_language);
         }))->get();
         return response()->json([
-//            'resume_translated_language' => $resume_translated_language,
-            'contact_informations ' => $contact_info,
             'Phone_type_translations' => $phone_type_trans,
             'country_codes' => $country_code
         ]);
     }
+
     /**
      * Update the specified resource in storage.
      *

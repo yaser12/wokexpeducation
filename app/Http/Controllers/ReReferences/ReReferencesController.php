@@ -25,22 +25,28 @@ class ReReferencesController extends ApiController
     {
 //         resume translated language
         $resume_translated_language = $resume->translated_languages_id;
-
         $reference = ReReference::where('resume_id', $resume->id)
             ->orderby('order')->
             with(array('country.countryTranslation' => function ($query) use ($resume_translated_language) {
                 $query->where('translated_languages_id', $resume_translated_language);
-            }))
-            ->
-            get();
+            }))->get();
+        //Return the success response data
+        return response()->json([
+            'references' => $reference,
+        ]);
+    }
+
+    public function referencesData($resume_id)
+    {
+        $resume = Resume::findOrFail($resume_id);
+//         resume translated language
+        $resume_translated_language = $resume->translated_languages_id;
         $country_code = Country::with(array('countryTranslation' => function ($query) use ($resume_translated_language) {
             $query->where('translated_languages_id', $resume_translated_language);
         }))->get();
         //Return the success response data
         return response()->json([
-            'references' => $reference,
             'country_codes' => $country_code
-
         ]);
     }
 

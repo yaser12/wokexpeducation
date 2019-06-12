@@ -50,6 +50,15 @@ class WorkExperienceController extends ApiController
                 $query->where('translated_languages_id', $resume_translated_language);
             }))
             ->get();
+        return response()->json(['work_experiences' => $work_experiences,], 200);
+
+    }
+
+    public function workExperiencesData($resume_id)
+    {
+        $resume = Resume::findOrFail($resume_id);
+//         resume translated language
+        $resume_translated_language = $resume->translated_languages_id;
 
         $companies = Company::all();
         $company_industries = CompanyIndustry::where('verified', true)->
@@ -63,20 +72,18 @@ class WorkExperienceController extends ApiController
         }))
             ->with(array('child_types.empTypeParentTranslation' => function ($query) use ($resume_translated_language) {
                 $query->where('translated_languages_id', $resume_translated_language);
-            }))->get();
+            }))->get(['id', 'parent_id']);
 
 //                $company_industry_parent = CompanyIndustry::with(array('companyIndustryParent.companyIndustryParentTrans' => function ($query) use   ($resume_translated_language) {
 //            $query->where('translated_languages_id', $resume_translated_language);
 //        }))->get(['id', 'verified','company_industry_parent_id']);
 
-        return response()->json(['work_experiences' => $work_experiences,
-            'companies' => $companies,
+        return response()->json([
             'company_industries' => $company_industries,
-            'employment_types' => $employment_types,
             'employment_type_parents' => $employment_type_parents,
+            'employment_types' => $employment_types,
+            'companies' => $companies,
 //                        'company_industry_parent' =>$company_industry_parent,
-
-
         ], 200);
     }
 

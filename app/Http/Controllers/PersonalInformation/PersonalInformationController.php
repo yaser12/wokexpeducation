@@ -158,6 +158,7 @@ class PersonalInformationController extends ApiController
         });
     }
 
+
     /**
      * Display the specified resource.
      *
@@ -180,7 +181,16 @@ class PersonalInformationController extends ApiController
         with(array('nationalities.nationalityTranslation' => function ($query) use ($resume_translated_language) {
             $query->where('translated_languages_id', $resume_translated_language);
         }))->get();
+        return response()->json([
+            'personal_info' => $personal_info,
+        ]);
+    }
 
+    public function personalInfoData($resume_id)
+    {
+        $resume = Resume::findOrFail($resume_id);
+//         resume translated language
+        $resume_translated_language = $resume->translated_languages_id;
         $marital_status_trans = MaritalStatusTranslation::where('translated_languages_id', $resume_translated_language)->
         get(['marital_status_id', 'name']);
 
@@ -188,8 +198,6 @@ class PersonalInformationController extends ApiController
         get(['nationality_id', 'name']);
 
         return response()->json([
-//            'resume_translated_language' => $resume_translated_language,
-            'personal_info' => $personal_info,
             'marital_status_translations' => $marital_status_trans,
             'nationality_translations' => $nationalities_trans
         ]);
