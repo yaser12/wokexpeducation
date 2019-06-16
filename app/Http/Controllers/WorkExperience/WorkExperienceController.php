@@ -223,6 +223,11 @@ class WorkExperienceController extends ApiController
      */
     public function show($id)
     {
+        $work =WorkExperience::find($id);
+        $resume_id = $work->resume_id;
+        $resume = Resume::findOrFail($resume_id);
+//         resume translated language
+        $resume_translated_language = $resume->translated_languages_id;
         $work_exp = WorkExperience::where('id', $id)
             ->with(['company', 'company_industry', 'employment_types',
                 'employment_types.employment_type_parent'])

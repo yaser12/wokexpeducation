@@ -11,7 +11,9 @@ use App\Models\ContactInfo\PersonalLink;
 use App\Models\ContactInfo\PhoneTypeTranslation;
 use App\Models\Country\Country;
 use App\Models\Country\CountryTranslation;
+use App\Models\InternetCommunicationType;
 use App\Models\Resume;
+use App\Models\SocialMedia\SocialMedia;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use function reset;
@@ -42,7 +44,6 @@ class ContactInfoController extends ApiController
             foreach ($request->contact_numbers as $number) {
                 $numberRequest = new Request($number);
                 $this->validate($numberRequest, [
-
                     'country_id' => 'required',
                     'phone_number' => 'required',
                 ]);
@@ -52,7 +53,7 @@ class ContactInfoController extends ApiController
             foreach ($request->internet_communications as $account) {
                 $accountRequest = new Request($account);
                 $this->validate($accountRequest, [
-                    'type' => 'required',
+                    'internet_communication_type_id' => 'required',
                     'address' => 'required',
                 ]);
             }
@@ -61,7 +62,7 @@ class ContactInfoController extends ApiController
             foreach ($request->personal_links as $account) {
                 $accountRequest = new Request($account);
                 $this->validate($accountRequest, [
-                    'type' => 'required',
+                    'social_media_id' => 'required',
                     'url' => 'required',
                 ]);
             }
@@ -73,7 +74,6 @@ class ContactInfoController extends ApiController
     {
 
         $this->validate($request, ['emails' => 'required', 'resume_id' => 'required|integer']);
-
         /*
          * If CV already has Contact Information we can't add another one
          * because the relation is one to one
@@ -97,29 +97,20 @@ class ContactInfoController extends ApiController
                     'email_address' => $email['email_address']
                 ]);
             }
-
-
             if ($request->has('contact_numbers')) {
-
                 foreach ($request->contact_numbers as $number) {
-
                     ContactNumber::create([
-//                        'phone_type'=>$number['phone_type'],
                         'phone_type_id' => $number['phone_type_id'],
-//                        'country_code'=>$number['country_code']['code'],
                         'country_id' => $number['country_id'],
                         'phone_number' => $number['phone_number'],
                         'contact_information_id' => $contactInfo->id
-
                     ]);
                 }
-
             }
-
             if ($request->has('internet_communications')) {
                 foreach ($request->internet_communications as $account) {
                     InternetCommunication::create([
-                        'type' => $account['type'],
+                        'internet_communication_type_id' => $account['internet_communication_type_id'],
                         'address' => $account['address'],
                         'contact_information_id' => $contactInfo->id
 
@@ -129,14 +120,12 @@ class ContactInfoController extends ApiController
             if ($request->has('personal_links')) {
                 foreach ($request->personal_links as $account) {
                     PersonalLink::create([
-                        'type' => $account['type'],
+                        'social_media_id' => $account['social_media_id'],
                         'url' => $account['url'],
                         'contact_information_id' => $contactInfo->id
-
                     ]);
                 }
             }
-
             $contactInfo->emails;
             $contactInfo->contactNumbers;
             $contactInfo->internetCommunications;
@@ -144,7 +133,7 @@ class ContactInfoController extends ApiController
 
             $resume_translated_language = $resume->translated_languages_id;
             $contact_information = ContactInformation::where('resume_id', $resume->id)->
-            with('emails', 'internetCommunications', 'personalLinks', 'contactNumbers'
+            with('emails', 'internetCommunications.internetCommunicationType', 'personalLinks.socialMedia', 'contactNumbers'
             )->
             with(array('contactNumbers.phoneType.PhoneTypeTranslation' => function ($query) use ($resume_translated_language) {
                 $query->where('translated_languages_id', $resume_translated_language);
@@ -172,7 +161,7 @@ class ContactInfoController extends ApiController
         $resume_translated_language = $resume->translated_languages_id;
 
         $contact_info = ContactInformation::where('resume_id', $resumeId)->
-        with('emails', 'internetCommunications', 'personalLinks', 'contactNumbers'
+        with('emails', 'internetCommunications.internetCommunicationType', 'personalLinks.socialMedia', 'contactNumbers'
         )->
         with(array('contactNumbers.phoneType.PhoneTypeTranslation' => function ($query) use ($resume_translated_language) {
             $query->where('translated_languages_id', $resume_translated_language);
@@ -197,9 +186,14 @@ class ContactInfoController extends ApiController
         $country_code = Country::with(array('countryTranslation' => function ($query) use ($resume_translated_language) {
             $query->where('translated_languages_id', $resume_translated_language);
         }))->get();
+        $social_media = SocialMedia::get(['id', 'name']);
+        $internet_communication = InternetCommunicationType::get(['id', 'name']);
+
         return response()->json([
             'Phone_type_translations' => $phone_type_trans,
-            'country_codes' => $country_code
+            'country_codes' => $country_code,
+            'social_media' => $social_media,
+            'internet_communication' => $internet_communication
         ]);
     }
 
@@ -251,7 +245,8 @@ class ContactInfoController extends ApiController
                 }
                 foreach ($request->internet_communications as $account) {
                     InternetCommunication::create([
-                        'type' => $account['type'],
+//                        'type' => $account['type'],
+                        'internet_communication_type_id' => $account['internet_communication_type_id'],
                         'address' => $account['address'],
                         'contact_information_id' => $contactInfo->id]);
                 }
@@ -263,7 +258,8 @@ class ContactInfoController extends ApiController
                 }
                 foreach ($request->personal_links as $account) {
                     PersonalLink::create([
-                        'type' => $account['type'],
+//                        'type' => $account['type'],
+                        'social_media_id' => $account['social_media_id'],
                         'url' => $account['url'],
                         'contact_information_id' => $contactInfo->id]);
                 }
@@ -272,7 +268,7 @@ class ContactInfoController extends ApiController
 
             $resume_translated_language = $resume->translated_languages_id;
             $contact_information = ContactInformation::where('resume_id', $resume->id)->
-            with('emails', 'internetCommunications', 'personalLinks', 'contactNumbers')->
+            with('emails', 'internetCommunications.internetCommunicationType', 'personalLinks.socialMedia', 'contactNumbers')->
             with(array('contactNumbers.phoneType.PhoneTypeTranslation' => function ($query) use ($resume_translated_language) {
                 $query->where('translated_languages_id', $resume_translated_language);
             }))->with(array('contactNumbers.country.countryTranslation' => function ($query) use ($resume_translated_language) {
