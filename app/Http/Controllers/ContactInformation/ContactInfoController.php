@@ -141,8 +141,8 @@ class ContactInfoController extends ApiController
             with(array('contactNumbers.country.countryTranslation' => function ($query) use ($resume_translated_language) {
                 $query->where('translated_languages_id', $resume_translated_language);
             }))
-                ->get();
-            return $this->showAll($contact_information);
+                ->first();
+            return $this->showOne($contact_information);
         });
     }
 
@@ -274,8 +274,8 @@ class ContactInfoController extends ApiController
             }))->with(array('contactNumbers.country.countryTranslation' => function ($query) use ($resume_translated_language) {
                 $query->where('translated_languages_id', $resume_translated_language);
             }))
-                ->get();
-            return $this->showAll($contact_information);
+                ->first();
+            return $this->showOne($contact_information);
         });
     }
 

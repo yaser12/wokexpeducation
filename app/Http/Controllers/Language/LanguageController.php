@@ -103,8 +103,8 @@ class LanguageController extends ApiController
                 ->with(array('languageAssessment.selfAssessment.selfAssessmentTrans' => function ($query) use ($resume_translated_language) {
                     $query->where('translated_languages_id', $resume_translated_language);
                 }))
-                ->get();
-            return $this->showAll($newlanguage);
+                ->first();
+            return $this->showOne($newlanguage);
         });
     }
 
@@ -233,8 +233,8 @@ class LanguageController extends ApiController
                 ->with(array('languageAssessment.selfAssessment.selfAssessmentTrans' => function ($query) use ($resume_translated_language) {
                     $query->where('translated_languages_id', $resume_translated_language);
                 }))
-                ->get();
-            return $this->showAll($language1);
+                ->first();
+            return $this->showOne($language1);
         });
     }
 

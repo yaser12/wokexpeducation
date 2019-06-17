@@ -157,9 +157,9 @@ class EducationController extends ApiController
                 ->with(array('degreeLevel.degreeLevelTranslation' => function ($query) use ($resume_translated_language) {
                     $query->where('translated_languages_id', $resume_translated_language);
                 }))
-                ->get();
+                ->first();
 
-            return $this->showAll($NewEducation);
+            return $this->showOne($NewEducation);
 
         });
     }
@@ -478,9 +478,9 @@ class EducationController extends ApiController
                 ->with(array('degreeLevel.degreeLevelTranslation' => function ($query) use ($resume_translated_language) {
                     $query->where('translated_languages_id', $resume_translated_language);
                 }))
-                ->get();
+                ->first();
 
-            return $this->showAll($NewEducation);
+            return $this->showOne($NewEducation);
 
         });
 

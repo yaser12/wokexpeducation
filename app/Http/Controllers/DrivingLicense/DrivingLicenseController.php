@@ -68,10 +68,8 @@ class DrivingLicenseController extends ApiController
             with('categories', 'country')->
             with(array('country.countryTranslation' => function ($query) use ($resume_translated_language) {
                 $query->where('translated_languages_id', $resume_translated_language);
-            }))->get();
-
-
-            return $this->showAll($driving1);
+            }))->first();
+            return $this->showOne($driving1);
         });
     }
 
@@ -178,9 +176,8 @@ class DrivingLicenseController extends ApiController
             $driving1 = Driving::where('resume_id', $resume->id)->with('categories', 'country')->
             with(array('country.countryTranslation' => function ($query) use ($resume_translated_language) {
                 $query->where('translated_languages_id', $resume_translated_language);
-            }))->get();
-
-            return $this->showAll($driving1);
+            }))->first();
+            return $this->showOne($driving1);
 
         });
     }

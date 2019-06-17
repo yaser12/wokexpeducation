@@ -100,8 +100,8 @@ class ReReferencesController extends ApiController
         $reference->save();
         $newrefernce = ReReference::where('id', $reference->id)
             ->with('country')
-            ->get();
-        return $this->showAll($newrefernce);
+            ->first();
+        return $this->showOne($newrefernce);
     }
 
     /**
@@ -179,8 +179,8 @@ class ReReferencesController extends ApiController
         $reference->save();
         $newReference = ReReference::where('id', $reference->id)
             ->with('country')
-            ->get();
-        return $this->showAll($newReference);
+            ->first();
+        return $this->showOne($newReference);
 
     }
 

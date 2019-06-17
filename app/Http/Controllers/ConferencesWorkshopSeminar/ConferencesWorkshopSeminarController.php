@@ -138,8 +138,8 @@ class ConferencesWorkshopSeminarController extends ApiController
             ->with(array('conferenceType.conferenceTypeTranslation' => function ($query) use ($resume_translated_language) {
                 $query->where('translated_languages_id', $resume_translated_language);
             }))
-            ->get();
-        return $this->showAll($newCon_work_sem);
+            ->first();
+        return $this->showOne($newCon_work_sem);
 
     }
 
@@ -255,8 +255,8 @@ class ConferencesWorkshopSeminarController extends ApiController
             ->with(array('conferenceType.conferenceTypeTranslation' => function ($query) use ($resume_translated_language) {
                 $query->where('translated_languages_id', $resume_translated_language);
             }))
-            ->get();
-        return $this->showAll($newCon_work_sem);
+            ->first();
+        return $this->showOne($newCon_work_sem);
 
     }
 

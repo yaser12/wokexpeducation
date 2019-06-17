@@ -144,7 +144,7 @@ class PersonalInformationController extends ApiController
 
                 $query->where('translated_languages_id', $resume_translated_language);
             }))
-                ->get();
+                ->first();
 //            $personal_info = DB::table('personal_informations') //  returen marital_status_translations not as object
 //                ->where('personal_informations.resume_id',$resume->id)
 //                ->leftjoin('marital_statuses','marital_statuses.id','=','personal_informations.marital_status_id')
@@ -153,7 +153,7 @@ class PersonalInformationController extends ApiController
 ////                ->select('marital_statuses.id','marital_status_translations.translated_languages_id','marital_status_translations.name')
 //                ->get()
 //            ;
-            return $this->showAll($personal_info);
+            return $this->showOne($personal_info);
 
         });
     }
@@ -327,9 +327,9 @@ class PersonalInformationController extends ApiController
             with(array('nationalities.nationalityTranslation' => function ($query) use ($resume_translated_language) {
                 $query->where('translated_languages_id', $resume_translated_language);
             }))
-                ->get();
+                ->first();
 
-            return $this->showAll($personal_info);
+            return $this->showOne($personal_info);
         });
     }
 

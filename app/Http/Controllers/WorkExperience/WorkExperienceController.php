@@ -60,12 +60,12 @@ class WorkExperienceController extends ApiController
 //         resume translated language
         $resume_translated_language = $resume->translated_languages_id;
 
-        $companies = Company::all();
+//        $companies = Company::all();
         $company_industries = CompanyIndustry::where('verified', true)->
         with(array('companyIndustryTranslation' => function ($query) use ($resume_translated_language) {
             $query->where('translated_languages_id', $resume_translated_language);
         }))->get(['id', 'verified']);
-        $employment_types = EmploymentType::all();
+//        $employment_types = EmploymentType::all();
         $employment_type_parents = EmploymentTypeParent::whereNull('parent_id')->
         with(array('empTypeParentTranslation' => function ($query) use ($resume_translated_language) {
             $query->where('translated_languages_id', $resume_translated_language);
@@ -81,8 +81,8 @@ class WorkExperienceController extends ApiController
         return response()->json([
             'company_industries' => $company_industries,
             'employment_type_parents' => $employment_type_parents,
-            'employment_types' => $employment_types,
-            'companies' => $companies,
+//            'employment_types' => $employment_types,
+//            'companies' => $companies,
 //                        'company_industry_parent' =>$company_industry_parent,
         ], 200);
     }
@@ -209,8 +209,8 @@ class WorkExperienceController extends ApiController
                 ->with(array('employment_types.employment_type_parent.parent_category.empTypeParentTranslation' => function ($query) use ($resume_translated_language) {
                     $query->where('translated_languages_id', $resume_translated_language);
                 }))
-                ->get();
-            return $this->showAll($newWorkExp);
+                ->first();
+            return $this->showOne($newWorkExp);
 
         });
     }
@@ -418,8 +418,8 @@ class WorkExperienceController extends ApiController
                 ->with(array('employment_types.employment_type_parent.parent_category.empTypeParentTranslation' => function ($query) use ($resume_translated_language) {
                     $query->where('translated_languages_id', $resume_translated_language);
                 }))
-                ->get();
-            return $this->showAll($newWorkExp);
+                ->first();
+            return $this->showOne($newWorkExp);
         });
     }
 

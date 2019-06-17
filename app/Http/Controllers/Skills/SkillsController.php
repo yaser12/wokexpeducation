@@ -137,9 +137,9 @@ class SkillsController extends ApiController
         $skill = Skill::where('id', $id)
             ->orderBy('order')
             ->with(['skill_types', 'skill_types.skill_type_parents', 'skillLevel'])
-            ->get();
+            ->first();
 
-        return $this->showAll($skill);
+        return $this->showOne($skill);
     }
 
     /**
@@ -194,8 +194,8 @@ class SkillsController extends ApiController
             ->with(array('skillLevel.skillLevelTranslation' => function ($query) use ($resume_translated_language) {
                 $query->where('translated_languages_id', $resume_translated_language);
             }))
-            ->get();
-        return $this->showAll($New_skill);
+            ->first();
+        return $this->showOne($New_skill);
 
     }
 
