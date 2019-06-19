@@ -159,6 +159,32 @@ class ResumeController extends ApiController
         $resume->delete();
         return $resumeDate;*/
 
+        $deleted_resume = Resume::where('id', $resume->id)->with([
+            'personalInformation.placeOfBirth',
+            'personalInformation.currentLocation',
+            'personalInformation.nationalities',
+            'summary',
+            'objective',
+            'contactInformation.emails',
+            'contactInformation.contactNumbers', 'contactInformation.internetCommunications.internetCommunicationType', 'contactInformation.personalLinks.socialMedia',
+            'educations.projects',
+            'languages.diplomas',
+            'drivingLicense.categories',
+            'achievements',
+            'work_experiences.company',
+            'hobbiesInterest',
+            'memberships',
+            'projects',
+            'publications',
+            'volunteers',
+            'ConferencesWorkshopSeminar',
+            'Portfolio',
+            'certifications',
+            'trainings',
+            'reReferences',
+            'skills'
+        ])->get();
+
         //delete_personal_information
         foreach ($resume->personalInformation()->get() as $per) {
             $personalInformation = PersonalInformation::where('id', $per->id)->first();
@@ -170,7 +196,6 @@ class ResumeController extends ApiController
             foreach ($nationalities as $nationality) {
                 DB::table('nationality_personal_information')->where('personal_information_id', $personalInformation->id)->delete();
             }
-
             $personalInformation->delete();
         }
 
@@ -197,8 +222,6 @@ class ResumeController extends ApiController
                 $langAssess = LanguageAssessment::where('id', $ass->id)->first();
                 $langAssess->delete();
             }
-
-            // $language = Language::where('languages.id', $lan->id)->first();
             $language->delete();
         }
 
@@ -259,17 +282,22 @@ class ResumeController extends ApiController
         $skills = Skill::where('resume_id', $resume->id);
         $skills->delete();
 
-        //delete_contact_informations
-        //$contact_information = $resume->contactInformation()->get();
-        $contact_information = ContactInformation::where('resume_id', $resume->id);
-        //$personalLink = PersonalLink::where('contact_information_id', $contact_information->id);
-        //$personalLink->delete();
-        $contact_information->delete();
+        //delete_contact_Information
+        foreach ($resume->contactInformation()->get() as $con) {
+            $contactInformation = ContactInformation::where('id', $con->id)->first();
+
+            $personalLink = PersonalLink::where('contact_information_id', $contactInformation->id);
+            $personalLink->delete();
+
+            $contactInformation->delete();
+        }
 
         $resume->delete();
 
-        return $this->showOne($resume);
-            }
+        return response()->json([
+            $deleted_resume,
+        ], 200);
+    }
 
             /**
              * @param $resume_id
