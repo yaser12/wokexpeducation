@@ -188,7 +188,6 @@ class ResumeController extends ApiController
 
         //delete_languages
         foreach ($resume->languages()->get() as $lan) {
-            //you should put it out side foreach to be public,Do not forget!
             $language = Language::where('languages.id', $lan->id)->first();
             foreach ($language->diplomas()->get() as $pro) {
                 $diploma = Diploma::where('id', $pro->id)->first();
