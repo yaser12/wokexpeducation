@@ -17,6 +17,7 @@ use App\Models\Education\Education;
 use App\Models\Education\EducationProject;
 use App\Models\HobbiesInterest\HobbiesInterest;
 use App\Models\Language\Language;
+use App\Models\Language\LanguageAssessment;
 use App\Models\Membership\Membership;
 use App\Models\ObjectiveSec\Objective;
 use App\Models\PersonalInformation\CurrentLocation;
@@ -27,6 +28,7 @@ use App\Models\Portfolio\Portfolio;
 use App\Models\Projects\Projects;
 use App\Models\Publications\Publications;
 use App\Models\ReReference\ReReference;
+use App\Models\Skills\Skill;
 use App\Models\SummarySec\Summary;
 use App\Models\Training\Training;
 use App\Models\TranslatedLanguages\TranslatedLanguages;
@@ -153,15 +155,127 @@ class ResumeController extends ApiController
      */
     public function destroy(Resume $resume)
     {
-        $resumeDate = $resume;
+        /*$resumeDate = $resume;
         $resume->delete();
-        return $resumeDate;
-    }
+        return $resumeDate;*/
 
-    /**
-     * @param $resume_id
-     * @return \Illuminate\Http\JsonResponse
-     */
+        //delete_personal_information
+        foreach ($resume->personalInformation()->get() as $per) {
+            $personalInformation = PersonalInformation::where('id', $per->id)->first();
+
+            $placeOfBirth = PlaceOfBirth::where('personal_information_id', $personalInformation->id);
+            $placeOfBirth->delete();
+
+            $nationalities = DB::table('nationality_personal_information')->where('personal_information_id', $personalInformation->id)->get();
+            foreach ($nationalities as $nationality) {
+                DB::table('nationality_personal_information')->where('personal_information_id', $personalInformation->id)->delete();
+            }
+
+            $personalInformation->delete();
+        }
+
+        //delete_summary
+        $summary = Summary::where('resume_id', $resume->id);
+        $summary->delete();
+
+        //delete_objectives
+        $objective = Objective::where('resume_id', $resume->id);
+        $objective->delete();
+
+        //delete_hobbies_interests
+        $hobbiesinterest = HobbiesInterest::where('resume_id', $resume->id);
+        $hobbiesinterest->delete();
+
+        //delete_languages
+        foreach ($resume->languages()->get() as $lan) {
+            //you should put it out side foreach to be public,Do not forget!
+            $language = Language::where('languages.id', $lan->id)->first();
+            foreach ($language->diplomas()->get() as $pro) {
+                $diploma = Diploma::where('id', $pro->id)->first();
+                $diploma->delete();
+            }
+            foreach ($language->languageAssessment()->get() as $ass) {
+                $langAssess = LanguageAssessment::where('id', $ass->id)->first();
+                $langAssess->delete();
+            }
+
+            // $language = Language::where('languages.id', $lan->id)->first();
+            $language->delete();
+        }
+
+        //delete_drivings
+        $driving = Driving::where('resume_id', $resume->id);
+        $driving->delete();
+
+        //delete_achievements
+        $achievement = Achievements::where('resume_id', $resume->id);
+        $achievement->delete();
+
+        //delete_memberships
+        $membership = Membership::where('resume_id', $resume->id);
+        $membership->delete();
+
+        //delete_projects
+        $project = Projects::where('resume_id', $resume->id);
+        $project->delete();
+
+        //delete_publications
+        $publication = Publications::where('resume_id', $resume->id);
+        $publication->delete();
+
+        //delete_volunteers
+        $volunteers = Volunteers::where('resume_id', $resume->id);
+        $volunteers->delete();
+
+        //delete_conferences_workshop_seminar
+        $conferences_workshop_seminar = ConferencesWorkshopSeminar::where('resume_id', $resume->id);
+        $conferences_workshop_seminar->delete();
+
+        //delete_portfolios
+        $portfolio = Portfolio::where('resume_id', $resume->id);
+        $portfolio->delete();
+
+        //delete_Certifications
+        $certification = Certifications::where('resume_id', $resume->id);
+        $certification->delete();
+
+        //delete_trainings
+        $trainings = Training::where('resume_id', $resume->id);
+        $trainings->delete();
+
+        //delete_references
+        $reference = ReReference::where('resume_id', $resume->id);
+        $reference->delete();
+
+        //delete_educations
+        $education = Education::where('resume_id', $resume->id);
+        $education->delete();
+
+        //delete_work_experience
+        $work_exp = WorkExperience::where('resume_id', $resume->id);
+        //$work_exp->employment_types()->delete();
+        $work_exp->delete();
+
+        //delete_skills
+        $skills = Skill::where('resume_id', $resume->id);
+        $skills->delete();
+
+        //delete_contact_informations
+        //$contact_information = $resume->contactInformation()->get();
+        $contact_information = ContactInformation::where('resume_id', $resume->id);
+        //$personalLink = PersonalLink::where('contact_information_id', $contact_information->id);
+        //$personalLink->delete();
+        $contact_information->delete();
+
+        $resume->delete();
+
+        return $this->showOne($resume);
+            }
+
+            /**
+             * @param $resume_id
+             * @return \Illuminate\Http\JsonResponse
+             */
     public function duplicate($resume_id)
     {
         $resume = Resume::where('resumes.id', $resume_id)->first();

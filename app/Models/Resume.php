@@ -31,7 +31,7 @@ use Illuminate\Database\Eloquent\Model;
 class Resume extends Model
 {
     //Model Events
-    protected static function boot()
+    /*protected static function boot()
     {
 
         parent::boot();
@@ -42,7 +42,7 @@ class Resume extends Model
             //delete each achievement associated with it
             $resume->achievements->each->delete();
         });
-    }
+    }*/
 
     public function user()
     {
