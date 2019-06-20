@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\DrivingLicense;
 
 
+use App\Models\Country\Country;
 use App\Models\Country\CountryTranslation;
 use App\Models\DrivingCategory\DrivingCategory;
 
@@ -112,11 +113,12 @@ class DrivingLicenseController extends ApiController
         $resume = Resume::findOrFail($resume_id);
 //         resume translated language
         $resume_translated_language = $resume->translated_languages_id;
-        $country_name_trans = CountryTranslation::where('translated_languages_id', $resume_translated_language)->
-        get(['country_id', 'name']);
+        $country = Country::with(array('countryTranslation' => function ($query) use ($resume_translated_language) {
+            $query->where('translated_languages_id', $resume_translated_language);
+        }))->get();;
 
         return response()->json([
-            'country_name_translations' => $country_name_trans,
+            'country_codes' => $country,
         ]);
     }
 
