@@ -34,6 +34,7 @@ use App\Models\Training\Training;
 use App\Models\TranslatedLanguages\TranslatedLanguages;
 use App\Models\Volunteers\Volunteers;
 use App\Models\WorkExperience\Company;
+use App\Models\WorkExperience\EmploymentType;
 use App\Models\WorkExperience\WorkExperience;
 use Illuminate\Http\Request;
 use App\Models\Resume;
@@ -54,12 +55,16 @@ class ResumeController extends ApiController
      */
     public function index()
     {
-        $translated_language =TranslatedLanguages::get();
         $user = auth()->user();
         $resumes = $user->resumes;
+        return $this->showAll($resumes);
+    }
+
+    public function resumeData()
+    {
+        $translatedLanguages = TranslatedLanguages::get();
         return response()->json([
-            'resumes' => $resumes,
-            'translated_language' =>$translated_language
+            'TranslatedLanguages' => $translatedLanguages,
         ]);
     }
 
@@ -81,13 +86,16 @@ class ResumeController extends ApiController
      */
     public function store(Request $request)
     {
-        $this->validate($request, ['user_id' => 'required',
+        $this->validate($request, [
+//            'user_id' => 'required',
             'translated_languages_id' => 'required'
         ]);
         $resume = new Resume();
-        $resume->user_id = $request['user_id'];
+        $user = auth()->user();
+        $resume->user_id = $user->id;
+//        $resume->user_id = $request['user_id'];
         $resume->translated_languages_id = $request['translated_languages_id'];
-        $resume->name = $request->name;
+        $resume->name = $request['name'];
         $resume->save();
         return $this->showOne($resume);
     }
@@ -100,28 +108,92 @@ class ResumeController extends ApiController
      */
     public function show($resume_id)
     {
-        $resume = Resume::where('id', $resume_id)->with(['summary', 'objective',
-            'contactInformation.emails',
-            'contactInformation.contactNumbers',
-            'contactInformation.internetCommunications',
-            'contactInformation.personalLinks',
-            'personalInformation.nationalities',
-            'personalInformation.currentLocation',
+        $resume = Resume::where('resumes.id', $resume_id)->first();
+//        resume translated language
+        $resume_translated_language = $resume->translated_languages_id;
+        $show_resume = Resume::where('id', $resume_id)->with([
             'personalInformation.placeOfBirth',
-            'educations.university', 'educations.major', 'educations.minor', 'educations.projects',
+            'personalInformation.currentLocation',
+            'summary',
+            'objective',
+            'contactInformation.emails',
+            'contactInformation.contactNumbers', 'contactInformation.internetCommunications.internetCommunicationType', 'contactInformation.personalLinks.socialMedia',
+            'educations.projects',
             'languages.diplomas',
-            'drivingLicense',
-            'achievements', 'memberships', 'projects', 'publications', 'volunteers', 'hobbiesInterest',
-            'Portfolio', 'certifications', 'trainings', 'ConferencesWorkshopSeminar', 'reReferences',
-            'work_experiences', 'work_experiences.company', 'work_experiences.company_industry',
-            'work_experiences.employment_types.employment_type_parent',
-            'work_experiences.employment_types.employment_type_parent.parent_category',
-
-//            'skills'
-        ])->get();
-        return $this->showAll($resume);
-
-
+            'drivingLicense.categories',
+            'achievements',
+            'work_experiences.company',
+            'hobbiesInterest',
+            'memberships',
+            'projects',
+            'publications',
+            'volunteers',
+            'ConferencesWorkshopSeminar',
+            'Portfolio',
+            'certifications',
+            'trainings',
+            'reReferences',
+            'skills'
+        ])->
+        with(array('personalInformation.maritalStatus.maritalStatusTranslation' => function ($query) use ($resume_translated_language) {
+            $query->where('translated_languages_id', $resume_translated_language);
+        }))->
+        with(array('personalInformation.nationalities.nationalityTranslation' => function ($query) use ($resume_translated_language) {
+            $query->where('translated_languages_id', $resume_translated_language);
+        }))
+            ->with(array('contactInformation.contactNumbers.phoneType.PhoneTypeTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))->
+            with(array('contactInformation.contactNumbers.country.countryTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('languages.internationalLanguage.internationalLanguageTrans' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('languages.languageAssessment.selfAssessment.selfAssessmentTrans' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('drivingLicense.country.countryTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('educations.major.majorTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('educations.minor.minorTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('educations.university.universityTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('educations.degreeLevel.degreeLevelTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('work_experiences.company_industry.companyIndustryTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('work_experiences.employment_types.employment_type_parent.empTypeParentTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('work_experiences.employment_types.employment_type_parent.parent_category.empTypeParentTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))->
+            with(array('ConferencesWorkshopSeminar.conferenceType.conferenceTypeTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('reReferences.country.countryTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('skills.skill_types.skillTypeTrans' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('skills.skill_types.skill_type_parents.skillTypeParentTrans' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('skills.skillLevel.skillLevelTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->first();
+        return $this->showOne($show_resume);
     }
 
     /**
@@ -299,17 +371,21 @@ class ResumeController extends ApiController
         ], 200);
     }
 
-            /**
-             * @param $resume_id
-             * @return \Illuminate\Http\JsonResponse
-             */
+    /**
+     * @param $resume_id
+     * @return \Illuminate\Http\JsonResponse
+     */
     public function duplicate($resume_id)
     {
         $resume = Resume::where('resumes.id', $resume_id)->first();
+//        resume translated language
+        $resume_translated_language = $resume->translated_languages_id;
+
         $new_resume = $resume->replicate();
-        $resume->count++;
-        $new_resume->name = ($resume->name) + ($resume->count);
+        $resume->count_copy++;
+        $new_resume->name = $resume->name . '(' . $resume->count_copy . ')';
         $new_resume->save();
+        $resume->save();
         //////////// personal_info
         foreach ($resume->personalInformation()->get() as $per) {
             $personalInformation = PersonalInformation::where('id', $per->id)->first();
@@ -336,21 +412,18 @@ class ResumeController extends ApiController
             }
         }
         //////////// summary
-
         $summary = Summary::where('resume_id', $resume->id)->first();
         $newSummary = $summary->replicate();
         $newSummary->resume_id = $new_resume->id;
         $newSummary->save();
 
         //////////// objective
-
         $objective = Objective::where('resume_id', $resume->id)->first();
         $newObjective = $objective->replicate();
         $newObjective->resume_id = $new_resume->id;
         $newObjective->save();
 
         //////////// hobbiesInterest
-
         $hobbiesInterest = HobbiesInterest::where('resume_id', $resume->id)->first();
         $newHobbiesInterest = $hobbiesInterest->replicate();
         $newHobbiesInterest->resume_id = $new_resume->id;
@@ -368,10 +441,16 @@ class ResumeController extends ApiController
                 $newDiploma->language_id = $newlanguage->id;
                 $newDiploma->save();
             }
+            foreach ($language->languageAssessment()->get() as $assessment) {
+                $lang_assessment = LanguageAssessment::where('id', $assessment->id)->first();
+                $newLang_assessment = $lang_assessment->replicate();
+                $newLang_assessment->language_id = $newlanguage->id;
+                $newLang_assessment->save();
+            }
         }
         //////////// drivingLicense
-        foreach ($resume->drivingLicense()->get() as $lan) {
-            $drivingLicense = Driving::where('drivings.id', $lan->id)->first();
+        foreach ($resume->drivingLicense()->get() as $dr) {
+            $drivingLicense = Driving::where('drivings.id', $dr->id)->first();
             $newDrivingLicense = $drivingLicense->replicate();
             $newDrivingLicense->resume_id = $new_resume->id;
             $newDrivingLicense->save();
@@ -470,7 +549,6 @@ class ResumeController extends ApiController
 
             }
         }
-
         //////////// work experience
         foreach ($resume->work_experiences()->with(['company'])->get() as $work) {
             $work_exp = WorkExperience::where('id', $work->id)->first();
@@ -482,8 +560,21 @@ class ResumeController extends ApiController
             $newCompany = $company->replicate();
             $newCompany->work_experience_id = $newWorkExp->id;
             $newCompany->save();
+            foreach ($work_exp->employment_types()->get() as $emp_type) {
+                $employment_type = EmploymentType::where('id', $emp_type->id)->first();
+                $newEmploymentType = $employment_type->replicate();
+                $newEmploymentType->work_experience_id = $newWorkExp->id;
+                $newEmploymentType->save();
+            }
         }
 //
+        //////////// skills
+        foreach ($resume->skills()->get() as $skill) {
+            $skill1 = Skill::where('id', $skill->id)->first();
+            $newSkill = $skill1->replicate();
+            $newSkill->resume_id = $new_resume->id;
+            $newSkill->save();
+        }
         //////////// contact_info
         foreach ($resume->contactInformation()->get() as $con) {
             $contact_info = ContactInformation::where('id', $con->id)->first();
@@ -517,12 +608,13 @@ class ResumeController extends ApiController
 
         }
 
-        $show_newresume = Resume::where('id', $new_resume->id)->with([
+        $show_new_resume = Resume::where('id', $new_resume->id)->with([
             'personalInformation.placeOfBirth',
-            'personalInformation.nationalities',
+            'personalInformation.currentLocation',
             'summary',
             'objective',
-            'contactInformation.emails', 'contactInformation.contactNumbers', 'contactInformation.internetCommunications', 'contactInformation.personalLinks',
+            'contactInformation.emails',
+            'contactInformation.contactNumbers', 'contactInformation.internetCommunications.internetCommunicationType', 'contactInformation.personalLinks.socialMedia',
             'educations.projects',
             'languages.diplomas',
             'drivingLicense.categories',
@@ -537,20 +629,90 @@ class ResumeController extends ApiController
             'Portfolio',
             'certifications',
             'trainings',
-            'reReferences'
-
-        ])->get();
+            'reReferences',
+            'skills'
+        ])->
+        with(array('personalInformation.maritalStatus.maritalStatusTranslation' => function ($query) use ($resume_translated_language) {
+            $query->where('translated_languages_id', $resume_translated_language);
+        }))->
+        with(array('personalInformation.nationalities.nationalityTranslation' => function ($query) use ($resume_translated_language) {
+            $query->where('translated_languages_id', $resume_translated_language);
+        }))
+            ->
+            with(array('contactInformation.contactNumbers.phoneType.PhoneTypeTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))->
+            with(array('contactInformation.contactNumbers.country.countryTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('languages.internationalLanguage.internationalLanguageTrans' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('languages.languageAssessment.selfAssessment.selfAssessmentTrans' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('drivingLicense.country.countryTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->
+            with(array('educations.major.majorTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))->
+            with(array('educations.minor.minorTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))->
+            with(array('educations.university.universityTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('educations.degreeLevel.degreeLevelTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('work_experiences.company_industry.companyIndustryTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('work_experiences.employment_types.employment_type_parent.empTypeParentTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('work_experiences.employment_types.employment_type_parent.parent_category.empTypeParentTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))->
+            with(array('ConferencesWorkshopSeminar.conferenceType.conferenceTypeTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->
+            with(array('reReferences.country.countryTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('skills.skill_types.skillTypeTrans' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('skills.skill_types.skill_type_parents.skillTypeParentTrans' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('skills.skillLevel.skillLevelTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->first();
 
         return response()->json([
-            $show_newresume,
+            $show_new_resume,
         ], 200);
     }
 
     public function setActive(Request $request, $resume_id)
-    {
+    { //true or false
         $resume = Resume::where('id', $resume_id)->update(['active' => $request['active']]);
         $show_resume = Resume::where('id', $resume_id)->first();
         return $this->showOne($show_resume);
+    }
+
+    public function rename(Request $request, $resume_id)
+    {
+        $resume = Resume::where('id', $resume_id)->first();
+        $resume->name = $request['name'];
+        $resume->save();
+        return $this->showOne($resume);
+
     }
 
 
