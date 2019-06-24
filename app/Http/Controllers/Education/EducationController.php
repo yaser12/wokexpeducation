@@ -209,7 +209,7 @@ class EducationController extends ApiController
         with(array('minorTranslation' => function ($query) use ($resume_translated_language) {
             $query->where('translated_languages_id', $resume_translated_language);
         }))->
-          get(['id', 'verified','major_id']);
+        get(['id', 'verified', 'major_id']);
         $universities = University::where('verified', true)->
         with(array('universityTranslation' => function ($query) use ($resume_translated_language) {
             $query->where('translated_languages_id', $resume_translated_language);
@@ -233,11 +233,11 @@ class EducationController extends ApiController
             'universities' => $universities,
             'majors' => $majors,
             'minors' => $minors,
-         /*       ' majors_translation' => $majors_translation,
-                ' minors_translation' => $minors_translation,
-                ' universities_translation' => $universities_translation,
-                'major_parent' =>$major_parent,
-         */
+            /*       ' majors_translation' => $majors_translation,
+                   ' minors_translation' => $minors_translation,
+                   ' universities_translation' => $universities_translation,
+                   'major_parent' =>$major_parent,
+            */
         ]);
     }
 
@@ -267,21 +267,23 @@ class EducationController extends ApiController
             ->get();
 
 
-        $majors = Major::where('verified', true)->
-        with(array('majorTranslation' => function ($query) use ($resume_translated_language) {
-            $query->where('translated_languages_id', $resume_translated_language);
-        }))->
-        get();
-        $minors = Minor::where('verified', true)->
-        with(array('minorTranslation' => function ($query) use ($resume_translated_language) {
-            $query->where('translated_languages_id', $resume_translated_language);
-        }))
-            ->get();
-        $universities = University::where('verified', true)->
-        with(array('universityTranslation' => function ($query) use ($resume_translated_language) {
-            $query->where('translated_languages_id', $resume_translated_language);
-        }))->get();
-        return response()->json(['education' => $education, 'majors' => $majors, 'minors' => $minors, 'universities' => $universities], 200);
+//        $majors = Major::where('verified', true)->
+//        with(array('majorTranslation' => function ($query) use ($resume_translated_language) {
+//            $query->where('translated_languages_id', $resume_translated_language);
+//        }))->
+//        get();
+//        $minors = Minor::where('verified', true)->
+//        with(array('minorTranslation' => function ($query) use ($resume_translated_language) {
+//            $query->where('translated_languages_id', $resume_translated_language);
+//        }))
+//            ->get();
+//        $universities = University::where('verified', true)->
+//        with(array('universityTranslation' => function ($query) use ($resume_translated_language) {
+//            $query->where('translated_languages_id', $resume_translated_language);
+//        }))->get();
+        return response()->json(['education' => $education,
+//            'majors' => $majors, 'minors' => $minors, 'universities' => $universities
+        ], 200);
     }
 
     public function update(Request $request, Education $education)

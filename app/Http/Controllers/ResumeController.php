@@ -58,6 +58,14 @@ class ResumeController extends ApiController
         $user = auth()->user();
         $resumes = $user->resumes;
         return $this->showAll($resumes);
+//        $translated_language =TranslatedLanguages::get();
+//        $user = auth()->user();
+//        $resumes = $user->resumes;
+//        return response()->json([
+//            'resumes' => $resumes,
+//            'translated_language' =>$translated_language
+//        ]);
+
     }
 
     public function resumeData()
@@ -255,7 +263,7 @@ class ResumeController extends ApiController
             'trainings',
             'reReferences',
             'skills'
-        ])->get();
+        ])->first();
 
         //delete_personal_information
         foreach ($resume->personalInformation()->get() as $per) {
