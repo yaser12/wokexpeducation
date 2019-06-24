@@ -75,21 +75,26 @@ class EducationController extends ApiController
                 $education->university_id = $university->id;
             }
 
-            if ($request['major_id'] > 0) {
-                $major = Major::where('id', $request['major_id'])->first();
-                $education->major_id = $major->id;
+            if ($request['major_id'] == null) {
+                $education->major_id = null;
             } else {
-                $major = new Major();
-                $major->verified = false;
-                $major->save();
-                $major_trans = new MajorTranslation();
-                $major_trans->name = $reqMajor['name'];
-                $major_trans->major_id = $major->id;
-                $major_trans->translated_languages_id = $resume_translated_language;
+                if ($request['major_id'] > 0) {
+                    $major = Major::where('id', $request['major_id'])->first();
+                    $education->major_id = $major->id;
+                } else {
+                    $major = new Major();
+                    $major->verified = false;
+                    $major->save();
+                    $major_trans = new MajorTranslation();
+                    $major_trans->name = $reqMajor['name'];
+                    $major_trans->major_id = $major->id;
+                    $major_trans->translated_languages_id = $resume_translated_language;
 
-                $major_trans->save();
-                $education->major_id = $major->id;
+                    $major_trans->save();
+                    $education->major_id = $major->id;
+                }
             }
+
 
             if ($reqFrom['year'] != null) {
 
@@ -338,20 +343,24 @@ class EducationController extends ApiController
             }
 
 
-            if ($request['major_id'] > 0) {
-                $major = Major::where('id', $request['major_id'])->first();
-                $education->major_id = $major->id;
+            if ($request['major_id'] == null) {
+                $education->major_id = null;
             } else {
-                $major = new Major();
-                $major->verified = false;
-                $major->save();
-                $major_trans = new MajorTranslation();
-                $major_trans->name = $reqMajor['name'];
-                $major_trans->major_id = $major->id;
-                $major_trans->translated_languages_id = $resume_translated_language;
+                if ($request['major_id'] > 0) {
+                    $major = Major::where('id', $request['major_id'])->first();
+                    $education->major_id = $major->id;
+                } else {
+                    $major = new Major();
+                    $major->verified = false;
+                    $major->save();
+                    $major_trans = new MajorTranslation();
+                    $major_trans->name = $reqMajor['name'];
+                    $major_trans->major_id = $major->id;
+                    $major_trans->translated_languages_id = $resume_translated_language;
 
-                $major_trans->save();
-                $education->major_id = $major->id;
+                    $major_trans->save();
+                    $education->major_id = $major->id;
+                }
             }
 
             if ($request['minor']['minor_id'] == null) {

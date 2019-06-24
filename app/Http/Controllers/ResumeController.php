@@ -55,16 +55,18 @@ class ResumeController extends ApiController
      */
     public function index()
     {
+        $translated_language =TranslatedLanguages::get();
+
         $user = auth()->user();
-        $resumes = $user->resumes;
-        return $this->showAll($resumes);
+//        $resumes = $user->resumes;
+//        return $this->showAll($resumes);
 //        $translated_language =TranslatedLanguages::get();
 //        $user = auth()->user();
-//        $resumes = $user->resumes;
-//        return response()->json([
-//            'resumes' => $resumes,
-//            'translated_language' =>$translated_language
-//        ]);
+        $resumes = $user->resumes;
+        return response()->json([
+            'resumes' => $resumes,
+            'translated_language' =>$translated_language
+        ]);
 
     }
 
