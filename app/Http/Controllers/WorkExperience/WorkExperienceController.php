@@ -4,13 +4,14 @@ namespace App\Http\Controllers\WorkExperience;
 
 use App\Http\Controllers\ApiController;
 use App\Models\WorkExperience\CompanyIndustryTranslation;
+use App\Models\WorkExperience\CompanySize;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use Auth;
 use Illuminate\Support\Facades\DB;
 
 use App\Models\Resume;
-use App\Models\WorkExperience\Company;
+use App\Models\WorkExperience\WorkExpCompany;
 use App\Models\WorkExperience\CompanyIndustry;
 use App\Models\WorkExperience\EmploymentTypeParent;
 use App\Models\WorkExperience\EmploymentType;
@@ -40,6 +41,9 @@ class WorkExperienceController extends ApiController
             ->orderBy('order')
             ->with(['company', 'company_industry', 'employment_types',
                 'employment_types.employment_type_parent'])
+            ->with(array('company.company_size.company_size_translation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
             ->with(array('company_industry.companyIndustryTranslation' => function ($query) use ($resume_translated_language) {
                 $query->where('translated_languages_id', $resume_translated_language);
             }))
@@ -65,6 +69,9 @@ class WorkExperienceController extends ApiController
         with(array('companyIndustryTranslation' => function ($query) use ($resume_translated_language) {
             $query->where('translated_languages_id', $resume_translated_language);
         }))->get(['id', 'verified']);
+        $company_size = CompanySize::with(array('company_size_translation' => function ($query) use ($resume_translated_language) {
+            $query->where('translated_languages_id', $resume_translated_language);
+        }))->get(['id']);
 //        $employment_types = EmploymentType::all();
         $employment_type_parents = EmploymentTypeParent::whereNull('parent_id')->
         with(array('empTypeParentTranslation' => function ($query) use ($resume_translated_language) {
@@ -81,6 +88,8 @@ class WorkExperienceController extends ApiController
         return response()->json([
             'company_industries' => $company_industries,
             'employment_type_parents' => $employment_type_parents,
+            'company_size' => $company_size,
+
 //            'employment_types' => $employment_types,
 //            'companies' => $companies,
 //                        'company_industry_parent' =>$company_industry_parent,
@@ -135,12 +144,12 @@ class WorkExperienceController extends ApiController
             $work_exp->save();
 
             //store company
-            Company::create([
+            WorkExpCompany::create([
                 'work_experience_id' => $work_exp->id,
                 'name' => $reqCompany['name'],
                 'city' => $reqCompany['city'],
                 'country' => $reqCompany['country'],
-                'company_size' => $reqCompany['company_size'],
+                'company_size_id' => $reqCompany['company_size_id'],
                 'company_website' => $reqCompany['company_website'],
                 'company_description' => $reqCompany['company_description'],
                 'verified_by_google' => $reqCompany['verified_by_google'],
@@ -200,6 +209,9 @@ class WorkExperienceController extends ApiController
             $newWorkExp = WorkExperience::where('id', $work_exp->id)
                 ->with(['company', 'company_industry', 'employment_types',
                     'employment_types.employment_type_parent'])
+                ->with(array('company.company_size.company_size_translation' => function ($query) use ($resume_translated_language) {
+                    $query->where('translated_languages_id', $resume_translated_language);
+                }))
                 ->with(array('company_industry.companyIndustryTranslation' => function ($query) use ($resume_translated_language) {
                     $query->where('translated_languages_id', $resume_translated_language);
                 }))
@@ -223,7 +235,7 @@ class WorkExperienceController extends ApiController
      */
     public function show($id)
     {
-        $work =WorkExperience::find($id);
+        $work = WorkExperience::find($id);
         $resume_id = $work->resume_id;
         $resume = Resume::findOrFail($resume_id);
 //         resume translated language
@@ -231,6 +243,9 @@ class WorkExperienceController extends ApiController
         $work_exp = WorkExperience::where('id', $id)
             ->with(['company', 'company_industry', 'employment_types',
                 'employment_types.employment_type_parent'])
+            ->with(array('company.company_size.company_size_translation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
             ->with(array('company_industry.companyIndustryTranslation' => function ($query) use ($resume_translated_language) {
                 $query->where('translated_languages_id', $resume_translated_language);
             }))
@@ -296,12 +311,12 @@ class WorkExperienceController extends ApiController
             // company
             if ($reqCompany != null) {
                 $work_exp->company()->delete();
-                Company::create([
+                WorkExpCompany::create([
                     'work_experience_id' => $work_exp->id,
                     'name' => $reqCompany['name'],
                     'city' => $reqCompany['city'],
                     'country' => $reqCompany['country'],
-                    'company_size' => $reqCompany['company_size'],
+                    'company_size_id' => $reqCompany['company_size_id'],
                     'company_website' => $reqCompany['company_website'],
                     'company_description' => $reqCompany['company_description'],
                     'verified_by_google' => $reqCompany['verified_by_google'],
@@ -409,6 +424,9 @@ class WorkExperienceController extends ApiController
             $newWorkExp = WorkExperience::where('id', $work_exp->id)
                 ->with(['company', 'company_industry', 'employment_types',
                     'employment_types.employment_type_parent'])
+                ->with(array('company.company_size.company_size_translation' => function ($query) use ($resume_translated_language) {
+                    $query->where('translated_languages_id', $resume_translated_language);
+                }))
                 ->with(array('company_industry.companyIndustryTranslation' => function ($query) use ($resume_translated_language) {
                     $query->where('translated_languages_id', $resume_translated_language);
                 }))

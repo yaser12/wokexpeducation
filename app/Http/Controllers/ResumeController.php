@@ -33,7 +33,7 @@ use App\Models\SummarySec\Summary;
 use App\Models\Training\Training;
 use App\Models\TranslatedLanguages\TranslatedLanguages;
 use App\Models\Volunteers\Volunteers;
-use App\Models\WorkExperience\Company;
+use App\Models\WorkExperience\WorkExpCompany;
 use App\Models\WorkExperience\EmploymentType;
 use App\Models\WorkExperience\WorkExperience;
 use Illuminate\Http\Request;
@@ -566,7 +566,7 @@ class ResumeController extends ApiController
             $newWorkExp->resume_id = $new_resume->id;
             $newWorkExp->save();
 
-            $company = Company::where('work_experience_id', $work->id)->first();
+            $company = WorkExpCompany::where('work_experience_id', $work->id)->first();
             $newCompany = $company->replicate();
             $newCompany->work_experience_id = $newWorkExp->id;
             $newCompany->save();

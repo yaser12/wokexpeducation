@@ -17,6 +17,8 @@ use App\Models\PersonalInformation\NationalityTranslation;
 use App\Models\Resume;
 use App\Models\WorkExperience\CompanyIndustryParentTrans;
 use App\Models\WorkExperience\CompanyIndustryTranslation;
+use App\Models\WorkExperience\CompanySize;
+use App\Models\WorkExperience\CompanySizeTranslation;
 use App\Models\WorkExperience\EmpTypeParentTranslation;
 use Illuminate\Database\Eloquent\Model;
 
@@ -102,5 +104,9 @@ class TranslatedLanguages extends Model
     public function majorParentTranslation()
     {
         return $this->hasMany(MajorParentTranslation::class);
+    }
+    public function companySizeTranslation()
+    {
+        return $this->hasMany(CompanySizeTranslation::class);
     }
 }

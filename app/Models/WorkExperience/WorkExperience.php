@@ -15,7 +15,7 @@ class WorkExperience extends Model
     }
     public function company()
     {
-        return $this->hasOne(Company::class);
+        return $this->hasOne(WorkExpCompany::class);
     }
     public function company_industry()
     {
