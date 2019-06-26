@@ -56,8 +56,8 @@ class SkillsController extends ApiController
         $resume = Resume::findOrFail($resume_id);
 //         resume translated language
         $resume_translated_language = $resume->translated_languages_id;
-        $skill_types_trans = SkillTypeTrans::where('translated_languages_id', $resume_translated_language)->
-        get(['skill_type_id', 'name']);
+        $skill_types_trans = SkillTypeTrans::where('translated_languages_id', $resume_translated_language)
+            ->get(['skill_type_id', 'name']);
 
         $skill_types_parent_trans = SkillTypeParentTrans::where('translated_languages_id', $resume_translated_language)->
         get(['skill_type_parent_id', 'name']);
@@ -120,10 +120,17 @@ class SkillsController extends ApiController
         $skill->order = 1;
         $skill->save();
 
-        $newSkill = Skill::where('id', $skill->id)->first();
-        $newSkill->skill_types;
+        //       resume translated language
+        $resume_translated_language = $resume->translated_languages_id;
+        $newSkill = Skill::where('id', $skill->id)
+            ->with(array('skillLevel.skillLevelTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->with(array('skill_types.skillTypeTrans' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->first();
         return $this->showOne($newSkill);
-
     }
 
     /**
