@@ -5,13 +5,13 @@ namespace App\Models\Education;
 use App\Models\TranslatedLanguages\TranslatedLanguages;
 use Illuminate\Database\Eloquent\Model;
 
-class UniversityTranslation extends Model
+class InstitutionTranslation extends Model
 {
-    protected $fillable = ['university_id', 'translated_languages_id', 'name'];
+    protected $fillable = ['institution_id', 'translated_languages_id', 'name'];
 
-    public function university()
+    public function institution()
     {
-        return $this->belongsTo(University::class);
+        return $this->belongsTo(Institution::class);
     }
 
     public function translatedLanguages()

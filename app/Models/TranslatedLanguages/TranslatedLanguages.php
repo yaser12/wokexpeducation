@@ -7,10 +7,10 @@ use App\Models\ConferencesWorkshopSeminar\ConferenceTypeTranslation;
 use App\Models\ContactInfo\PhoneTypeTranslation;
 use App\Models\Country\CountryTranslation;
 use App\Models\Education\DegreeLevelTranslation;
+use App\Models\Education\InstitutionTranslation;
 use App\Models\Education\MajorParentTranslation;
 use App\Models\Education\MajorTranslation;
 use App\Models\Education\MinorTranslation;
-use App\Models\Education\UniversityTranslation;
 use App\Models\Language\InternationalLanguageTrans;
 use App\Models\Language\SelfAssessmentTrans;
 use App\Models\PersonalInformation\MaritalStatusTranslation;
@@ -18,7 +18,6 @@ use App\Models\PersonalInformation\NationalityTranslation;
 use App\Models\Resume;
 use App\Models\WorkExperience\CompanyIndustryParentTrans;
 use App\Models\WorkExperience\CompanyIndustryTranslation;
-use App\Models\WorkExperience\CompanySize;
 use App\Models\WorkExperience\CompanySizeTranslation;
 use App\Models\WorkExperience\EmpTypeParentTranslation;
 use Illuminate\Database\Eloquent\Model;
@@ -47,9 +46,9 @@ class TranslatedLanguages extends Model
         return $this->hasMany(PhoneTypeTranslation::class);
     }
 
-    public function universityTranslation()
+    public function institutionTranslation()
     {
-        return $this->hasMany(UniversityTranslation::class);
+        return $this->hasMany(InstitutionTranslation::class);
     }
 
     public function majorTranslation()

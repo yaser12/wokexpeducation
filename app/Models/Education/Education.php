@@ -27,9 +27,13 @@ class Education extends Model
         return $this->belongsTo(DegreeLevel::class);
     }
 
-    public function university()
+//    public function university()
+//    {
+//        return $this->belongsTo(University::class);
+//    }
+    public function institution()
     {
-        return $this->belongsTo(University::class);
+        return $this->belongsTo(Institution::class);
     }
 
     public function projects()
