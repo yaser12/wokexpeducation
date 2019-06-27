@@ -80,10 +80,12 @@ Route::Post('volunteers/order/{resumeId}', 'Volunteers\VolunteersController@orde
 Route::resource('portfolio', 'Portfolio\PortfolioController', ['except' => ['edit', 'create']]);
 Route::Post('portfolios/order/{resumeId}', 'Portfolio\PortfolioController@orderData');
 Route::get('resumes/{resume}/portfolios', 'Portfolio\PortfolioController@index');
-
+//certification
 Route::resource('certifications', 'Certification\CertificationController', ['except' => ['edit', 'create']]);
 Route::Post('certifications/order/{resumeId}', 'Certification\CertificationController@orderData');
 Route::get('resumes/{resume}/certifications', 'Certification\CertificationController@index');
+Route::get('certificationData/{resume}', 'Certification\CertificationController@certificationData');
+
 //trainings
 Route::resource('trainings', 'Training\TrainingController', ['except' => ['edit', 'create']]);
 Route::Post('trainings/order/{resumeId}', 'Training\TrainingController@orderData');

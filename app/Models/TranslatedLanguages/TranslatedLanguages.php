@@ -2,6 +2,7 @@
 
 namespace App\Models\TranslatedLanguages;
 
+use App\Models\Certifications\ValidYearTranslation;
 use App\Models\ConferencesWorkshopSeminar\ConferenceTypeTranslation;
 use App\Models\ContactInfo\PhoneTypeTranslation;
 use App\Models\Country\CountryTranslation;
@@ -108,5 +109,9 @@ class TranslatedLanguages extends Model
     public function companySizeTranslation()
     {
         return $this->hasMany(CompanySizeTranslation::class);
+    }
+    public function validYearTranslation()
+    {
+        return $this->hasMany(ValidYearTranslation::class);
     }
 }

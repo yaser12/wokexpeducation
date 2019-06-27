@@ -4,6 +4,8 @@ namespace App\Http\Controllers\Certification;
 
 use App\Http\Controllers\ApiController;
 use App\Models\Certifications\Certifications;
+use App\Models\Certifications\ValidYear;
+use App\Models\Country\Country;
 use App\Models\Resume;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -20,14 +22,35 @@ class CertificationController extends ApiController
      *
      * @return \Illuminate\Http\Response
      */
-    public function index(Resume $resume)
+    public function index($resumeId)
     {
-//        $resume = Resume::findOrFail($resume_id);
-        $certification = $resume->certifications()
+        $resume = Resume::findOrFail($resumeId);
+        //       resume translated language
+        $resume_translated_language = $resume->translated_languages_id;
+
+        $certification = Certifications::where('resume_id', $resumeId)
+            ->with(array('validYear.validYearTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
             ->orderBy('order')
             ->get();
         //Return the success response data
         return $this->showAll($certification);
+    }
+
+    public function certificationData($resume_id)
+    {
+        $resume = Resume::findOrFail($resume_id);
+//         resume translated language
+        $resume_translated_language = $resume->translated_languages_id;
+
+        $valid_for = ValidYear::with(array('validYearTranslation' => function ($query) use ($resume_translated_language) {
+            $query->where('translated_languages_id', $resume_translated_language);
+        }))->get(['id']);
+
+        return response()->json([
+            'valid_for' => $valid_for
+        ]);
     }
 
     /**
@@ -50,6 +73,9 @@ class CertificationController extends ApiController
     {
 
         $resume = Resume::findOrFail($request['resume_id']);
+        //         resume translated language
+        $resume_translated_language = $resume->translated_languages_id;
+
         //Authorization
         $user = auth()->user();
         if ($user->id != $resume->user->id) return $this->errorResponse('you are not authorized to do this operation', 401);
@@ -68,10 +94,9 @@ class CertificationController extends ApiController
 
         $certification->name = $request['name'];
         $certification->organization = $request['organization'];
-        $certification->valid_for = $request['valid_for'];
+        $certification->valid_year_id = $request['valid_year_id'];
 
         //store date
-//
         if ($request['date']['year'] != null) {
 
             if ($request['isMonth'] == true) {
@@ -87,9 +112,10 @@ class CertificationController extends ApiController
             $date_time = new \DateTime();
             $date = $date_time->createFromFormat('Y-m-d', $date_string);
             $certification->date = $date;
-        }else
-        { $certification->date = null;
-        $certification->isMonth=false;}
+        } else {
+            $certification->date = null;
+            $certification->isMonth = false;
+        }
         $certification->description = null;
 
         $certifications = Certifications::where('resume_id', $request['resume_id'])->get();
@@ -101,8 +127,12 @@ class CertificationController extends ApiController
         $certification->order = 1;
         $certification->save();
         //fetch the newly created certification from the database
-        $newcertification = Certifications::where('id', $certification->id)->first();
-        return $this->showOne($newcertification);
+        $newCertification = Certifications::where('id', $certification->id)
+            ->with(array('validYear.validYearTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->first();
+        return $this->showOne($newCertification);
 
     }
 
@@ -114,7 +144,7 @@ class CertificationController extends ApiController
      */
     public function show(Certifications $certification)
     {
-        $resume = $certification->resume ;
+        $resume = $certification->resume;
 
         //Authorization
 
@@ -156,7 +186,8 @@ class CertificationController extends ApiController
             'date' => 'required',
         ]);;
         $resume = Resume::findOrFail($request['resume_id']);
-
+        //         resume translated language
+        $resume_translated_language = $resume->translated_languages_id;
         //Authorization
         $user = auth()->user();
         if ($user->id != $resume->user->id)
@@ -168,7 +199,7 @@ class CertificationController extends ApiController
         $certification->resume_id = $request['resume_id'];
         $certification->name = $request['name'];
         $certification->organization = $request['organization'];
-        $certification->valid_for = $request['valid_for'];
+        $certification->valid_year_id = $request['valid_year_id'];
 
         //update date
 //
@@ -194,7 +225,11 @@ class CertificationController extends ApiController
 
         $certification->save();
 
-        $newCertification = Certifications::find($certification->id);
+        $newCertification = Certifications::where('id', $certification->id)
+            ->with(array('validYear.validYearTranslation' => function ($query) use ($resume_translated_language) {
+                $query->where('translated_languages_id', $resume_translated_language);
+            }))
+            ->first();
         return $this->showOne($newCertification);
 
     }
