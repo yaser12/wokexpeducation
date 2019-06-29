@@ -6,6 +6,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SkillTypeParent extends Model
 {
+    protected $fillable = ['skill_type_basic_parent_id','id'];
     public function skill_types(){
         return $this->hasMany(SkillType::class);
     }

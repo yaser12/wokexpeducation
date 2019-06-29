@@ -11,7 +11,7 @@ class Skill extends Model
         return $this->belongsTo(Resume::class);
     }
 
-    public function skill_types(){
+    public function skill_type(){
         return $this->belongsTo(SkillType::class);
     }
 
