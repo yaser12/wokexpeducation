@@ -136,7 +136,7 @@ class Resume extends Model
 
     public function reReferences()
     {
-        return $this->hasMany(ReReference::class);
+        return $this->hasOne(ReReference::class);
     }
 
     public function work_experiences()

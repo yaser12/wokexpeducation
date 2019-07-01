@@ -95,6 +95,7 @@ Route::resource('references', 'ReReferences\ReReferencesController', ['except' =
 Route::Post('references/order/{resumeId}', 'ReReferences\ReReferencesController@orderData');
 Route::get('resumes/{resume}/references', 'ReReferences\ReReferencesController@index');
 Route::get('referencesData/{resume}', 'ReReferences\ReReferencesController@referencesData');
+Route::Post('referencesIs_available/{resume}', 'ReReferences\ReReferencesController@is_available');
 //workExperiences
 Route::resource('workExperiences', 'WorkExperience\WorkExperienceController', ['except' => ['edit', 'create']]);
 Route::Post('workExperiences/order/{resumeId}', 'WorkExperience\WorkExperienceController@orderData');
