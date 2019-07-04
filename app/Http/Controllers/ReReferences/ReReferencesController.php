@@ -29,10 +29,18 @@ class ReReferencesController extends ApiController
         $resume_translated_language = $resume->translated_languages_id;
         $reference_available = ReReference::where('resume_id', $resume->id)
 //            ->where('is_available', false)
-            ->with('reference_info')->
-            with(array('reference_info.country.countryTranslation' => function ($query) use ($resume_translated_language) {
+            ->with(array('reference_info.country.countryTranslation' => function ($query) use ($resume_translated_language) {
                 $query->where('translated_languages_id', $resume_translated_language);
-            }))->get();
+//                $query->select(['country_id','name']);
+
+            }))
+
+
+//                  ->with(array('reference_info' => function ($query)  {
+////                $query->where('translated_languages_id', $resume_translated_language);
+//                      $query->select(['re_reference_id','name','country_id']);
+//                  }))
+            ->get();
         /*      $ref = ReReference::where('resume_id', $resume->id)->first();
               $ref_info = ReferenceInformation::where('re_reference_id', $ref->id)
                   ->with(array('country.countryTranslation' => function ($query) use ($resume_translated_language) {
@@ -116,7 +124,7 @@ class ReReferencesController extends ApiController
         $reference_info->order = 1;
         $reference_info->save();
 
-        $newReference = ReferenceInformation::where('re_reference_id', $re_ref->id)
+        $newReference = ReferenceInformation::where('id', $reference_info->id)
             ->with(array('country.countryTranslation' => function ($query) use ($resume_translated_language) {
                 $query->where('translated_languages_id', $resume_translated_language);
             }))->first();
@@ -205,7 +213,7 @@ class ReReferencesController extends ApiController
             $reference_info->country_id = $req_contact_number['country_id'];
             $reference_info->mobile = $req_contact_number['mobile'];
         }
-
+        $reference_info->save();
         $newReference = ReferenceInformation::where('id', $id)
             ->with(array('country.countryTranslation' => function ($query) use ($resume_translated_language) {
                 $query->where('translated_languages_id', $resume_translated_language);
