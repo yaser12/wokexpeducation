@@ -28,7 +28,7 @@ Route::get('resume/duplicate/{resumeId}', 'ResumeController@duplicate');
 Route::get('resumeData/{resumeId}', 'ResumeController@resumeData');
 Route::post('resume/rename/{resumeId}', 'ResumeController@rename');
 Route::post('resume/setActive/{resumeId}', 'ResumeController@setActive');
-Route::post('templateData/{resumeId}', 'ResumeController@templateData');
+Route::get('templateData/{resumeId}', 'ResumeController@templateData');
 //PersonalInfo
 Route::resource('personalInformation', 'PersonalInformation\PersonalInformationController', ['except' => ['edit', 'create',]]);
 Route::get('personalInfoData/{resume}', 'PersonalInformation\PersonalInformationController@personalInfoData');
@@ -56,7 +56,7 @@ Route::get('education/{resumeId}/{educationId}', 'Education\EducationController@
 Route::Post('education/order/{resumeId}', 'Education\EducationController@orderData');
 Route::get('educationData/{resume}', 'Education\EducationController@educationData');
 
-//achievememnts
+//achievements
 Route::resource('achievements', 'Achievements\AchievementsController', ['except' => ['edit', 'create', 'index']]);
 Route::get('resumes/{resume}/achievements', 'Achievements\AchievementsController@index');
 Route::Post('achievements/order/{resumeId}', 'Achievements\AchievementsController@orderData');

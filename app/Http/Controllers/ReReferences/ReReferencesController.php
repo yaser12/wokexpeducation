@@ -34,8 +34,11 @@ class ReReferencesController extends ApiController
 //                $query->select(['country_id','name']);
 
             }))
+            ->with(array('reference_info' => function ($query)  {
+               $query->orderBy('order');
+//                $query->select(['country_id','name']);
 
-
+            }))
 //                  ->with(array('reference_info' => function ($query)  {
 ////                $query->where('translated_languages_id', $resume_translated_language);
 //                      $query->select(['re_reference_id','name','country_id']);
