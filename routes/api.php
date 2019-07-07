@@ -26,8 +26,8 @@ Route::group([
 Route::resource('resume', 'ResumeController', ['except' => ['edit', 'create']]);
 Route::get('resume/duplicate/{resumeId}', 'ResumeController@duplicate');
 Route::get('resumeData/{resumeId}', 'ResumeController@resumeData');
-Route::post('resume/rename/{resumeId}', 'ResumeController@rename');
-Route::post('resume/setActive/{resumeId}', 'ResumeController@setActive');
+Route::put('resume/rename/{resumeId}', 'ResumeController@rename');
+Route::put('resume/setActive/{resumeId}', 'ResumeController@setActive');
 Route::get('templateData/{resumeId}', 'ResumeController@templateData');
 //PersonalInfo
 Route::resource('personalInformation', 'PersonalInformation\PersonalInformationController', ['except' => ['edit', 'create',]]);
