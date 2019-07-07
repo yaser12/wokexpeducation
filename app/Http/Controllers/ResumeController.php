@@ -55,7 +55,7 @@ class ResumeController extends ApiController
      */
     public function index()
     {
-        $translated_language = TranslatedLanguages::get();
+        // $translated_language = TranslatedLanguages::get();
 
         $user = auth()->user();
 //        $resumes = $user->resumes;
@@ -65,7 +65,7 @@ class ResumeController extends ApiController
         $resumes = $user->resumes;
         return response()->json([
             'resumes' => $resumes,
-            'translated_language' => $translated_language
+            // 'translated_language' => $translated_language
         ]);
 
     }
