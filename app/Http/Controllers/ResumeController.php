@@ -199,7 +199,7 @@ class ResumeController extends ApiController
                 $query->where('translated_languages_id', $resume_translated_language);
                 $query->select(['degree_level_id', 'name']);
             }))
-            ->with(array('educations' => function ($query)  {
+                      ->with(array('educations' => function ($query)  {
                 $query->orderBy('order');
             }))
             ->with(array('work_experiences.company_industry.companyIndustryTranslation' => function ($query) use ($resume_translated_language) {
@@ -284,16 +284,16 @@ class ResumeController extends ApiController
         return $this->showOne($show_resume);
     }
 
- /*   public function templateData($resume_id) // Cv template data
+  /* public function templateData($resume_id) // Cv template data
     {
         $resume = Resume::where('resumes.id', $resume_id)->first();
 //        resume translated language
         $resume_translated_language = $resume->translated_languages_id;
         $show_resume = Resume::where('id', $resume_id)
 
-//        with([
-////            'personalInformation.placeOfBirth',
-////            'personalInformation.currentLocation',
+//       with([
+// //            'personalInformation.placeOfBirth',
+// //            'personalInformation.currentLocation',
 //            'summary',
 //            'objective',
 //            'contactInformation.emails',
@@ -312,9 +312,9 @@ class ResumeController extends ApiController
 //            'Portfolio',
 //            'certifications',
 //            'trainings',
-////            'reReferences',
+// //            'reReferences',
 //            'skills'
-//        ])
+//        ]) 
             ->with(array('user' => function ($query) {
                 $query->select(['id', 'name']);
             }))
@@ -446,6 +446,7 @@ class ResumeController extends ApiController
         return $this->showOne($show_resume);
     }
     */
+
     /**
      * Show the form for editing the specified resource.
      *

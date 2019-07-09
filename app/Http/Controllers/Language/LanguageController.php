@@ -46,13 +46,6 @@ class LanguageController extends ApiController
             'type' => 'required'
         ];
 
-//        $otherRules = [
-//            'listening' => 'required',
-//            'reading' => 'required',
-//            'speaking' => 'required',
-//            'writing' => 'required'
-//        ];
-
         $this->validate($request, $rules);
 
         $resume = Resume::findOrFail($request['resume_id']);
@@ -72,20 +65,16 @@ class LanguageController extends ApiController
             $language->save();
 
             if ($request['type'] === 'other') {
-//                $this->validate($request, $otherRules);
-                foreach ($request->self_assessments as $value) {
+              if( $request->has('self_assessments')) {
+                 foreach ($request->self_assessments as $value) {
                     $assessment = new Request($value);
                     $ass = new LanguageAssessment();
                     $ass->language_id = $language->id;
                     $ass->self_assessment_id = $assessment->self_assessment_id;
                     $ass->assessment_type = $assessment->assessment_type;
                     $ass->save();
+                  }
                 }
-
-                /*   $language->listening = $request['listening'];
-                   $language->reading = $request['reading'];
-                   $language->speaking = $request['speaking'];
-                   $language->writing = $request['writing'];*/
             }
             $languages = Language::where('resume_id', $request['resume_id'])->get();
             foreach ($languages as $lang) {
@@ -197,7 +186,10 @@ class LanguageController extends ApiController
             $language->save();
 
             if ($request['type'] === 'other') {
-                $language->languageAssessment()->delete();
+                if( $request->has('self_assessments')) {
+                    if ($language->languageAssessment != null) {
+                        $language->languageAssessment()->delete();
+                    }
 //                $this->validate($request, $otherRules);
                 foreach ($request->self_assessments as $value) {
                     $assessment = new Request($value);
@@ -206,6 +198,7 @@ class LanguageController extends ApiController
                     $ass->self_assessment_id = $assessment->self_assessment_id;
                     $ass->assessment_type = $assessment->assessment_type;
                     $ass->save();
+                   }
                 }
             }
 

@@ -35,7 +35,7 @@ class PersonalInformationController extends ApiController
             'first_name' => 'required|string',
             'last_name' => 'required|string',
             'gender' => 'required|string',
-            'marital_status_id' => 'required',
+            // 'marital_status_id' => 'required',
             'date_of_birth' => 'required',
             'nationalities' => 'required'
         ];
@@ -94,7 +94,7 @@ class PersonalInformationController extends ApiController
             $personalInformation->resume_title = $request->has('resume_title') ? $request->resume_title : null;
             $personalInformation->gender = $request->gender;
 //            $personalInformation->marital_status = $request->marital_status;
-            $personalInformation->marital_status_id = $request->marital_status_id;
+            $personalInformation->marital_status_id = $request->has('marital_status_id') ? $request->marital_status_id : null;
             $personalInformation->date_of_birth = $date_of_birth;
             $personalInformation->save();
 
@@ -222,7 +222,7 @@ class PersonalInformationController extends ApiController
             'first_name' => 'required|string',
             'last_name' => 'required|string',
             'gender' => 'required|string',
-            'marital_status_id' => 'required',
+            // 'marital_status_id' => 'required',
             'date_of_birth' => 'required',
             'nationalities' => 'required'
         ];
@@ -270,8 +270,7 @@ class PersonalInformationController extends ApiController
             $personalInformation->last_name = $request->last_name;
             $personalInformation->resume_title = $request->has('resume_title') ? $request->resume_title : null;
             $personalInformation->gender = $request->gender;
-//            $personalInformation->marital_status = $request->marital_status;
-            $personalInformation->marital_status_id = $request->marital_status_id;
+            $personalInformation->marital_status_id = $request->has('marital_status_id') ? $request->marital_status_id : null;
 
             $personalInformation->date_of_birth = $date_of_birth;
             $personalInformation->save();
