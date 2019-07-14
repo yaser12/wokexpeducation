@@ -2,8 +2,6 @@
 
 namespace App\Models\TranslatedLanguages;
 
-use App\Models\Certifications\ValidYearTranslation;
-use App\Models\ConferencesWorkshopSeminar\ConferenceTypeTranslation;
 use App\Models\ContactInfo\PhoneTypeTranslation;
 use App\Models\Country\CountryTranslation;
 use App\Models\Education\DegreeLevelTranslation;
@@ -11,8 +9,6 @@ use App\Models\Education\InstitutionTranslation;
 use App\Models\Education\MajorParentTranslation;
 use App\Models\Education\MajorTranslation;
 use App\Models\Education\MinorTranslation;
-use App\Models\Language\InternationalLanguageTrans;
-use App\Models\Language\SelfAssessmentTrans;
 use App\Models\PersonalInformation\MaritalStatusTranslation;
 use App\Models\PersonalInformation\NationalityTranslation;
 use App\Models\Resume;
@@ -86,21 +82,6 @@ class TranslatedLanguages extends Model
         return $this->hasMany(CountryTranslation::class);
     }
 
-    public function conferenceTypeTranslation()
-    {
-        return $this->hasMany(ConferenceTypeTranslation::class);
-    }
-
-    public function internationalLanguageTranslation()
-    {
-        return $this->hasMany(InternationalLanguageTrans::class);
-    }
-
-    public function selfAssessmentTranslation()
-    {
-        return $this->hasMany(SelfAssessmentTrans::class);
-    }
-
     public function majorParentTranslation()
     {
         return $this->hasMany(MajorParentTranslation::class);
@@ -109,8 +90,5 @@ class TranslatedLanguages extends Model
     {
         return $this->hasMany(CompanySizeTranslation::class);
     }
-    public function validYearTranslation()
-    {
-        return $this->hasMany(ValidYearTranslation::class);
-    }
+
 }
