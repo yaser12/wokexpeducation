@@ -12,4 +12,5 @@ class SpecialtiesTranslation extends Model
     {
         return $this->hasOne(Specialty::class);
     }
+
 }

@@ -3,7 +3,7 @@
 namespace App\Models\WorkExperience;
 
 use Illuminate\Database\Eloquent\Model;
-
+use App\Models\Company\Specialty;
 class CompanyIndustry extends Model
 {
     public function work_experience()
@@ -14,6 +14,10 @@ class CompanyIndustry extends Model
     public function companyIndustryTranslation()
     {
         return $this->hasMany(CompanyIndustryTranslation::class);
+    }
+    public function Specialties() // from yaser 15-7-2019
+    {
+        return $this->hasMany(Specialty::class);
     }
     public function companyIndustryParent()
     {

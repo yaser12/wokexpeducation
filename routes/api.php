@@ -26,7 +26,7 @@ Route::group([
 Route::resource('resume', 'ResumeController', ['except' => ['edit', 'create']]);
 Route::get('resume/duplicate/{resumeId}', 'ResumeController@duplicate');
 Route::get('resumeData/{resumeId}', 'ResumeController@resumeData');
-;
+
 //PersonalInfo
 Route::resource('personalInformation', 'PersonalInformation\PersonalInformationController', ['except' => ['edit', 'create',]]);
 Route::get('personalInfoData/{resume}', 'PersonalInformation\PersonalInformationController@personalInfoData');
@@ -42,11 +42,20 @@ Route::get('educationData/{resume}', 'Education\EducationController@educationDat
 
 //workExperiences
 Route::resource('workExperiences', 'WorkExperience\WorkExperienceController', ['except' => ['edit', 'create']]);
-Route::resource('companytype', 'Company\CompanyTypeController', ['except' => ['edit', 'create']]);
-Route::resource('specialty', 'Company\SpecialtyController', ['except' => ['edit', 'create']]);
+
+
 Route::Post('workExperiences/order/{resumeId}', 'WorkExperience\WorkExperienceController@orderData');
 Route::get('resumes/{resume}/workExperiences', 'WorkExperience\WorkExperienceController@index');
 Route::get('workExpData/{resume}', 'WorkExperience\WorkExperienceController@workExperiencesData');
+
+
+///////////// yaser route
+
+Route::resource('companyindustrycontroller', 'Company\CompanyIndustryController', ['except' => ['edit', 'create']]);
+Route::resource('companytype', 'Company\CompanyTypeController', ['except' => ['edit', 'create']]);
+Route::resource('specialty', 'Company\SpecialtyController', ['except' => ['edit', 'create']]);
+Route::resource('companycontroller', 'Company\CompanyController', ['except' => ['edit', 'create']]);
+Route::Post('companycontroller/upload_logo/{company_id}', 'Company\CompanyController@upload_logo');
 
 
 
