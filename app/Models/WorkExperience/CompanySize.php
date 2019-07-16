@@ -2,6 +2,7 @@
 
 namespace App\Models\WorkExperience;
 
+use App\Models\Company\Company;
 use Illuminate\Database\Eloquent\Model;
 
 class CompanySize extends Model
@@ -15,5 +16,8 @@ class CompanySize extends Model
     {
         return $this->hasMany(CompanySizeTranslation::class);
     }
-
+    public function Company()
+    {
+        return $this->belongsTo(Company::class);
+    }
 }

@@ -10,7 +10,7 @@ class SpecialtiesTranslation extends Model
     public $timestamps = false;
     public function specialty()
     {
-        return $this->hasOne(Specialty::class);
+        return $this->belongsTo(Specialty::class);
     }
 
 }

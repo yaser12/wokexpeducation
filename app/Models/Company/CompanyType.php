@@ -13,4 +13,8 @@ class CompanyType extends Model
     {
         return $this->hasMany(CompanyTypeTranslation::class);
     }
+    public function Company()
+    {
+        return $this->belongsTo(Company::class);
+    }
 }

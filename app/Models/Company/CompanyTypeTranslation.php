@@ -11,6 +11,6 @@ class CompanyTypeTranslation extends Model
     public $timestamps = false;
     public function CompanyType()
     {
-        return $this->hasOne(CompanyType::class);
+        return $this->belongsTo(CompanyType::class);
     }
 }
