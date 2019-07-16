@@ -37,13 +37,12 @@ class CompanyController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'company_websit' => 'string'
+            'company_websit' => 'string|unique'
             , 'company_size_id' => 'integer'
             , 'company_type_id' => 'integer'
             , 'is_month' => 'integer'
             , 'path_company_imagelogo' => 'image'
             ,  "company_industries_for_company"    => "required|array|min:1",
-
         ];
         $this->validate($request,$rules);
         $Date_Of_Founded_Rules = [
@@ -89,6 +88,10 @@ class CompanyController extends Controller
             $date_time = new \DateTime();
             $founded = $date_time->createFromFormat('Y-m-d', $date_string);
         }
+    }
+    public function add_new_profile(Request $request)
+    {
+
     }
     public function upload_logo(Request $request)
     {
