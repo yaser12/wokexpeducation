@@ -15,7 +15,7 @@ class CompanyIndustryController extends Controller
      */
     public function index()
     {
-        $companyType = CompanyIndustry::   with(array('Specialties','Specialties.specialtiesTranslation'  ))->get()  ;
+        $companyType = CompanyIndustry::   with(array('companyIndustryTranslation','Specialties','Specialties.specialtiesTranslation'  ))->get()  ;
         return response()->json(['CompanyIndustry' => $companyType], 200);
     }
 
