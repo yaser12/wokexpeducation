@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers\Company;
 
+use App\Models\Company\Company;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -44,7 +45,7 @@ class CompanyController extends Controller
             , 'path_company_imagelogo' => 'image'
             ,  "company_industries_for_company"    => "required|array|min:1",
         ];
-        $this->validate($request,$rules);
+
         $Date_Of_Founded_Rules = [
             'year' => 'required|string',
             'month' => 'required|string'
@@ -76,6 +77,12 @@ class CompanyController extends Controller
             'year' => 'required|string',
             'month' => 'required|string'
         ];
+        $this->validate($request,$rules);
+        $company=new Company();
+        $company->company_websit=$request['company_websit'];
+        $company->company_size_id=$request['company_size_id'];
+        $company->company_type_id=$request['company_type_id'];
+
         $date_of_birth = "";
         $Date_Of_Founded_Request = new Request($request->founded);
         if ($request->has('founded')) {
