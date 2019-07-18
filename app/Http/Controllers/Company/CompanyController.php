@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers\Company;
 
+use App\Http\Controllers\ApiController;
 use App\Models\Company\Company;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
-class CompanyController extends Controller
+class CompanyController extends ApiController
 {
+    public function __construct()
+    {
+     //   $this->middleware('jwt.auth');
+    }
     /**
      * Display a listing of the resource.
      *
@@ -38,12 +43,12 @@ class CompanyController extends Controller
     public function store(Request $request)
     {
         $rules = [
-            'company_websit' => 'string|unique'
+            'company_websit' => 'string'
             , 'company_size_id' => 'integer'
             , 'company_type_id' => 'integer'
             , 'is_month' => 'integer'
-            , 'path_company_imagelogo' => 'image'
-            ,  "company_industries_for_company"    => "required|array|min:1",
+            , 'path_company_imagelogo' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+          //  ,  "company_industries_for_company"    => "required|array|min:1",
         ];
 
         $Date_Of_Founded_Rules = [
@@ -83,6 +88,21 @@ class CompanyController extends Controller
         $company->company_size_id=$request['company_size_id'];
         $company->company_type_id=$request['company_type_id'];
 
+        if ($request->hasFile('path_company_imagelogo')){
+            $imagelogo = $request->file('path_company_imagelogo');
+            $extension = $imagelogo->getClientOriginalExtension(); // you can also use file name
+            $imagelogoName = time().'.'.$extension;
+            $path = public_path().'/img';
+            $uplaodimagelogoName = $imagelogo->move($path,$imagelogoName);
+
+        }
+        $company->path_company_imagelogo=$uplaodimagelogoName;
+
+
+
+        $company->save();
+        $company  = Company::findOrFail($company->id);
+           return $this->showOne($company);
         $date_of_birth = "";
         $Date_Of_Founded_Request = new Request($request->founded);
         if ($request->has('founded')) {
@@ -100,8 +120,20 @@ class CompanyController extends Controller
     {
 
     }
-    public function upload_logo(Request $request)
+    public function upload_logo(Request $request,$id)
     {
+        $rules = [
+              'path_company_imagelogo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
+            ];
+        $this->validate($request,$rules);
+        if ($request->hasFile('path_company_imagelogo')){
+            $file = $request->file('path_company_imagelogo');
+            $extension = $file->getClientOriginalExtension(); // you can also use file name
+            $fileName = time().'.'.$extension;
+            $path = public_path().'/img';
+            $uplaod = $file->move($path,$fileName);
+            return $fileName;
+        }
 
     }
     public function  add_new_company_location(Request $request,$id)

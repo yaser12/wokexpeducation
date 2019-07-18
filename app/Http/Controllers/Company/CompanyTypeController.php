@@ -10,6 +10,10 @@ use App\Http\Controllers\Controller;
 
 class CompanyTypeController extends   ApiController
 {
+    public function __construct()
+    {
+        $this->middleware('jwt.auth');
+    }
     /**
      * Display a listing of the resource.
      *

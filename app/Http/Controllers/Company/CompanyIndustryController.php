@@ -2,12 +2,17 @@
 
 namespace App\Http\Controllers\Company;
 
+use App\Http\Controllers\ApiController;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 use App\Models\WorkExperience\CompanyIndustry;
 use App\Models\Company\Specialty;
-class CompanyIndustryController extends Controller
+class CompanyIndustryController extends ApiController
 {
+    public function __construct()
+    {
+        $this->middleware('jwt.auth');
+    }
     /**
      * Display a listing of the resource.
      *

@@ -51,12 +51,15 @@ Route::get('workExpData/{resume}', 'WorkExperience\WorkExperienceController@work
 
 ///////////// yaser route
 
-Route::resource('companyindustrycontroller', 'Company\CompanyIndustryController', ['except' => ['edit', 'create']]);
+Route::resource('companyindustry', 'Company\CompanyIndustryController', ['except' => ['edit', 'create']]);
 Route::resource('companytype', 'Company\CompanyTypeController', ['except' => ['edit', 'create']]);
 Route::resource('companysize', 'Company\CompanySizeController', ['except' => ['edit', 'create']]);
 Route::resource('specialty', 'Company\SpecialtyController', ['except' => ['edit', 'create']]);
-Route::resource('companycontroller', 'Company\CompanyController', ['except' => ['edit', 'create']]);
-Route::Post('companycontroller/upload_logo/{company_id}', 'Company\CompanyController@upload_logo');
+Route::resource('company', 'Company\CompanyController', ['except' => ['edit', 'create']]);
+Route::Post('company/upload_logo/{company_id}', 'Company\CompanyController@upload_logo');
+//
+
+
 
 
 
