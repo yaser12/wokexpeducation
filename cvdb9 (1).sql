@@ -5461,7 +5461,7 @@ ALTER TABLE `phone_type_translations`
 -- Constraints for table `resumes`
 --
 ALTER TABLE `resumes`
-  ADD CONSTRAINT `resumes_translated_languages_id_foreign` FOREIGN KEY (`translated_languages_id`) REFERENCES `translated_languages` (`id`);
+  ADD CONSTRAINT `resumes_translated_languages_id_foreign` FOREIGN KEY (`translated_languages_id`) REFERENCES `CompanyProfile` (`id`);
 
 --
 -- Constraints for table `specialties`

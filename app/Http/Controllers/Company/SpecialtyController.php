@@ -61,16 +61,17 @@ class SpecialtyController extends ApiController
 
 
         $specialty = new Specialty();
+        //if ($user->is_admin)
+        {
+            $specialty->is_verfied = $request['is_verfied'];
+        }
         $specialty->company_industry_id=$request['company_industry_id'];
         $specialty->save();
 
 
         $specialtiesTranslation = new SpecialtiesTranslation();
         $specialtiesTranslation->specialty_id = $specialty->id;
-        //if ($user->is_admin)
-        {
-            $specialtiesTranslation->is_verfied = $request['is_verfied'];
-        }
+
         $specialtiesTranslation->specialties_translation_name=$request['specialties_translation_name'];
         $specialtiesTranslation->translated_languages_id=$request['translated_languages_id'];
         $specialtiesTranslation->save();

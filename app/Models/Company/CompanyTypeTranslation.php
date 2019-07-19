@@ -2,6 +2,7 @@
 
 namespace App\Models\Company;
 
+use App\Models\TranslatedLanguages\TranslatedLanguages;
 use Illuminate\Database\Eloquent\Model;
 
 class CompanyTypeTranslation extends Model
@@ -12,5 +13,9 @@ class CompanyTypeTranslation extends Model
     public function CompanyType()
     {
         return $this->belongsTo(CompanyType::class);
+    }
+    public function translatedLanguages()
+    {
+        return $this->belongsTo(TranslatedLanguages::class);
     }
 }

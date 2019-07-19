@@ -21,7 +21,7 @@ class CompanyTypeController extends   ApiController
      */
     public function index()
     {
-        //
+
         $companyType = CompanyType::   with(array('CompanyTypeTranslation' ))->get()  ;
            return response()->json(['companyTypes' => $companyType,], 200);
     }
@@ -33,7 +33,7 @@ class CompanyTypeController extends   ApiController
      */
     public function create()
     {
-        //
+
     }
 
     /**

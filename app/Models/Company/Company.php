@@ -15,5 +15,16 @@ class Company extends Model
     {
         return $this->hasMany(CompanySize::class);
     }
-
+    public function companyProfile()
+    {
+        return $this->hasMany(CompanyProfile::class);
+    }
+    public function companyIndustriesForCompany()
+    {
+        return $this->hasMany(CompanyIndustriesForCompany::class);
+    }
+    public function companySpecialtiesForCompany()
+    {
+        return $this->hasMany(CompanySpecialtiesForCompany::class);
+    }
 }

@@ -2,6 +2,7 @@
 
 namespace App\Models\Company;
 
+use App\Models\TranslatedLanguages\TranslatedLanguages;
 use Illuminate\Database\Eloquent\Model;
 
 class SpecialtiesTranslation extends Model
@@ -12,5 +13,8 @@ class SpecialtiesTranslation extends Model
     {
         return $this->belongsTo(Specialty::class);
     }
-
+    public function translatedLanguages()
+    {
+        return $this->belongsTo(TranslatedLanguages::class);
+    }
 }

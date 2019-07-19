@@ -2,6 +2,9 @@
 
 namespace App\Models\TranslatedLanguages;
 
+use App\Models\Company\CompanyProfile;
+use App\Models\Company\CompanyTypeTranslation;
+use App\Models\Company\SpecialtiesTranslation;
 use App\Models\ContactInfo\PhoneTypeTranslation;
 use App\Models\Country\CountryTranslation;
 use App\Models\Education\DegreeLevelTranslation;
@@ -90,5 +93,16 @@ class TranslatedLanguages extends Model
     {
         return $this->hasMany(CompanySizeTranslation::class);
     }
-
+    public function CompanyProfile()
+    {
+        return $this->hasMany(CompanyProfile::class);
+    }
+    public function specialtiesTranslation()
+    {
+        return $this->hasMany(SpecialtiesTranslation::class);
+    }
+    public function CompanyTypeTranslation()
+    {
+        return $this->hasMany(CompanyTypeTranslation::class);
+    }
 }
