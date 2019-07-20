@@ -53,7 +53,8 @@ class CompanyController extends ApiController
             'company_websit' => 'string'
             , 'company_size_id' => 'integer'
             , 'company_type_id' => 'integer'
-            , 'is_month' => 'integer'
+            , 'founded_year' => 'string'
+            , 'founded_month' => 'string'
             ,'company_profile'=> 'required'
             , 'path_company_imagelogo' => 'image|mimes:jpeg,png,jpg,gif,svg|max:2048'
            ,  "company_industries"    => "required|array|min:1"
@@ -118,6 +119,32 @@ class CompanyController extends ApiController
         $company->company_websit=$request['company_websit'];
         $company->company_size_id=$request['company_size_id'];
         $company->company_type_id=$request['company_type_id'];
+
+        if ( $request['founded_year'] != null  &&  $request['founded_month'] == null )
+        {
+
+            $year = $request->founded_year;
+            $month =1;
+            $day = 1;
+            $date_string = $year . "-" . $month . "-" . $day;
+            $date_time = new \DateTime();
+            $founded = $date_time->createFromFormat('Y-m-d', $date_string);
+            $company->founded=$founded;
+        }
+        else if( $request['founded_year'] != null  &&  $request['founded_month'] != null )
+        {
+
+            $year = $request->founded_year;
+            $month = $request->founded_month;
+            $day = 1;
+            $date_string = $year . "-" . $month . "-" . $day;
+            $date_time = new \DateTime();
+            $founded = $date_time->createFromFormat('Y-m-d', $date_string);
+
+            $company->founded=$founded;
+
+        }
+
         $company->save();
 
       //  $company  = Company::findOrFail($company->id);
@@ -151,17 +178,7 @@ class CompanyController extends ApiController
          $company  =  Company:: where('id', $company->id)->  with(array('companyProfile' ,'companyIndustriesForCompany','CompanySpecialtiesForCompany'))->get()  ;
         return response()->json(['company' => $company], 200);
         $date_of_birth = "";
-        $Date_Of_Founded_Request = new Request($request->founded);
-        if ($request->has('founded')) {
-            $this->validate($Date_Of_Founded_Request, $Date_Of_Founded_Rules);
-            $year = $Date_Of_Founded_Request->year;
-            $month = $Date_Of_Founded_Request->month;
-            $day = 1;
 
-            $date_string = $year . "-" . $month . "-" . $day;
-            $date_time = new \DateTime();
-            $founded = $date_time->createFromFormat('Y-m-d', $date_string);
-        }
     }
     public function add_new_profile(Request $request)
     {
