@@ -27,4 +27,8 @@ class Company extends Model
     {
         return $this->hasMany(CompanySpecialtiesForCompany::class);
     }
+    public function  companySocialMedia()
+    {
+        return $this->hasMany(CompanySocialMedia::class);
+    }
 }

@@ -7,7 +7,7 @@ use App\Models\Company\Company;
 use App\Models\Company\CompanyProfile;
 use App\Models\Company\CompanyIndustriesForCompany;
 use App\Models\Company\CompanySpecialtiesForCompany;
-
+use App\Models\Company\CompanySocialMedia;
 use App\Models\WorkExperience\CompanyIndustry;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
@@ -175,9 +175,21 @@ class CompanyController extends ApiController
                 $companySpecialtiesForCompany->save();
             }
         }
-         $company  =  Company:: where('id', $company->id)->  with(array('companyProfile' ,'companyIndustriesForCompany','CompanySpecialtiesForCompany'))->get()  ;
+        if ($request->has('company_social_media'))
+        {
+
+
+            $company_social_mediaRequest = new Request($request->company_social_media);
+            $this->validate($company_social_mediaRequest,$company_social_media_Rules );
+            $companySocialMedia =new CompanySocialMedia();
+            $companySocialMedia->company_social_media_info=$company_social_mediaRequest->company_social_media_info;
+            $companySocialMedia->social_media_id=$company_social_mediaRequest->social_media_id;
+            $companySocialMedia->company_id=$company->id;
+            $companySocialMedia->save();
+        }
+         $company  =  Company:: where('id', $company->id)->  with(array('companyProfile' ,'companyIndustriesForCompany','CompanySpecialtiesForCompany','companySocialMedia'))->get()  ;
         return response()->json(['company' => $company], 200);
-        $date_of_birth = "";
+
 
     }
     public function add_new_profile(Request $request)
@@ -219,7 +231,8 @@ class CompanyController extends ApiController
      */
     public function show($id)
     {
-        //
+        $company  =  Company:: where('id', $id)->  with(array('companyProfile' ,'companyIndustriesForCompany','CompanySpecialtiesForCompany','companySocialMedia'))->get()  ;
+        return response()->json(['company' => $company], 200);
     }
 
     /**
