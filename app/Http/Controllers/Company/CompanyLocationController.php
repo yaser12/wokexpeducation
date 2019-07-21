@@ -9,25 +9,7 @@ use App\Http\Controllers\Controller;
 
 class CompanyLocationController extends ApiController
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function index()
-    {
 
-    }
-
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
 
     /**
      * Store a newly created resource in storage.
@@ -124,8 +106,15 @@ public function  set_comapnylocatin_as_main(Request $request)
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function delete_company_location(Request $request)
     {
-        //
+        $companyLocation= CompanyLocation
+            ::where('company_id','=',$request->company_id)
+            ->where('id','=',$request->company_location_id)
+            ->delete();
+
+
+        $companyLocation= CompanyLocation::where('company_id','=',$request->company_id)->get();;
+        return $companyLocation;
     }
 }
