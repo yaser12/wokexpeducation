@@ -68,6 +68,20 @@ public function  set_comapnylocatin_as_main(Request $request)
         'company_id'=>'required|integer',
         'company_location_id' => 'required|integer'];
     $this->validate($request, $set_main_location_Rules);
+    $companyLocation= CompanyLocation
+        ::where('is_main_office','=',1)
+        ->where('company_id','=',$request->company_id)
+        ->update(['is_main_office' => 0]);
+
+
+    $companyLocation= CompanyLocation
+        ::where('company_id','=',$request->company_id)
+        ->where('id','=',$request->company_location_id)
+        ->update(['is_main_office' => 1]);
+
+
+    $companyLocation= CompanyLocation::where('company_id','=',$request->company_id)->get();;
+    return $companyLocation;
 }
     /**
      * Display the specified resource.
