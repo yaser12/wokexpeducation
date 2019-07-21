@@ -16,7 +16,7 @@ class CompanyLocationController extends ApiController
      */
     public function index()
     {
-        //
+
     }
 
     /**
@@ -38,6 +38,7 @@ class CompanyLocationController extends ApiController
     public function store(Request $request)
     {
         $location_Rules = [
+            'company_id'=>'required|integer',
             'country' => 'required|string',
             'city' => 'required|string',
             'postal_code' => 'required|string',
@@ -59,11 +60,14 @@ class CompanyLocationController extends ApiController
         $companyLocation  =  CompanyLocation:: where('id', $companyLocation->id)
              //-> with(array('companyType' ))
             ->first()  ;
-        return $this->showOne($companyLocation);
+        return $companyLocation;
     }
-public function  set_comapnylocatin_as_main(Request $request,$id)
+public function  set_comapnylocatin_as_main(Request $request)
 {
-
+    $set_main_location_Rules = [
+        'company_id'=>'required|integer',
+        'company_location_id' => 'required|integer'];
+    $this->validate($request, $set_main_location_Rules);
 }
     /**
      * Display the specified resource.
@@ -71,9 +75,10 @@ public function  set_comapnylocatin_as_main(Request $request,$id)
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show_company_locations($company_id)
     {
-        //
+        $companyLocation= CompanyLocation::where('company_id','=',$company_id)->get();;
+        return $companyLocation;
     }
 
     /**
