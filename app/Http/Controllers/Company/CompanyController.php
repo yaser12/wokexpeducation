@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Company;
 
 use App\Http\Controllers\ApiController;
 use App\Models\Company\Company;
+use App\Models\Company\CompanyLocation;
 use App\Models\Company\CompanyProfile;
 use App\Models\Company\CompanyIndustriesForCompany;
 use App\Models\Company\CompanySpecialtiesForCompany;
@@ -231,6 +232,7 @@ class CompanyController extends ApiController
 
         $companyType  =  CompanyType:: where('id', $company->company_type_id )  ->  with(array('CompanyTypeTranslation'))->first()  ;
         $companySize  =  CompanySize:: where('id', $company->company_size_id )  ->  with(array('company_size_translation'))->first()  ;
+        $companyLocation  =  CompanyLocation:: where('company_id', $company->id)->get();
         return response()->json(
             [
                 'company'     =>$company
@@ -238,6 +240,8 @@ class CompanyController extends ApiController
                 'companyType' =>$companyType
                 ,
                 'companySize' =>$companySize
+                ,
+                'companyLocation'=>$companyLocation
             ]
             , 200
         );
