@@ -56,6 +56,9 @@ Route::resource('companytype', 'Company\CompanyTypeController', ['except' => ['e
 Route::resource('companysize', 'Company\CompanySizeController', ['except' => ['edit', 'create']]);
 Route::resource('specialty', 'Company\SpecialtyController', ['except' => ['edit', 'create']]);
 Route::resource('company', 'Company\CompanyController', ['except' => ['edit', 'create']]);
+Route::resource('companyLocation', 'Company\CompanyLocationController', ['except' => ['edit', 'create']]);
+//Route::Post('set_comapnylocatin_as_main/{company_id}', 'CompanyLocationController\set_comapnylocatin_as_main');
+
 Route::Post('company/upload_logo/{company_id}', 'Company\CompanyController@upload_logo');
 //
 

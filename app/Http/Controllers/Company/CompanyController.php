@@ -9,6 +9,9 @@ use App\Models\Company\CompanyIndustriesForCompany;
 use App\Models\Company\CompanySpecialtiesForCompany;
 use App\Models\Company\CompanySocialMedia;
 use App\Models\WorkExperience\CompanyIndustry;
+use App\Models\Company\CompanyType;
+use App\Models\WorkExperience\CompanySize;
+
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -187,7 +190,7 @@ class CompanyController extends ApiController
             $companySocialMedia->company_id=$company->id;
             $companySocialMedia->save();
         }
-         $company  =  Company:: where('id', $company->id)->  with(array('companyProfile' ,'companyIndustriesForCompany','CompanySpecialtiesForCompany','companySocialMedia'))->get()  ;
+         $company  =  Company:: where('id', $company->id)->  with(array('companyProfile' ,'companyIndustriesForCompany','CompanySpecialtiesForCompany','companySocialMedia','companyType'))->get()  ;
         return response()->json(['company' => $company], 200);
 
 
@@ -212,17 +215,7 @@ class CompanyController extends ApiController
         }
 
     }
-    public function  add_new_company_location(Request $request,$id)
-    {
-        $location_Rules = [
-            'country' => 'required|string',
-            'city' => 'required|string',
-            'postal_code' => 'required|string',
-            'street_address' => 'required|string',
-            'latitude' => 'required',
-            'longitude' => 'required'];
-        $this->validate($request, $location_Rules);
-    }
+
     /**
      * Display the specified resource.
      *
@@ -231,8 +224,23 @@ class CompanyController extends ApiController
      */
     public function show($id)
     {
-        $company  =  Company:: where('id', $id)->  with(array('companyProfile' ,'companyIndustriesForCompany','CompanySpecialtiesForCompany','companySocialMedia'))->get()  ;
-        return response()->json(['company' => $company], 200);
+        $company  =  Company:: where('id', $id)
+            ->  with(array('companyProfile','companyIndustriesForCompany','CompanySpecialtiesForCompany','companySocialMedia'))
+            //-> with(array('companyType' ))
+            ->first()  ;
+
+        $companyType  =  CompanyType:: where('id', $company->company_type_id )  ->  with(array('CompanyTypeTranslation'))->first()  ;
+        $companySize  =  CompanySize:: where('id', $company->company_size_id )  ->  with(array('company_size_translation'))->first()  ;
+        return response()->json(
+            [
+                'company'     =>$company
+                ,
+                'companyType' =>$companyType
+                ,
+                'companySize' =>$companySize
+            ]
+            , 200
+        );
     }
 
     /**

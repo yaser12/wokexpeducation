@@ -6,14 +6,17 @@ use Illuminate\Database\Eloquent\Model;
 
 class Company extends Model
 {
+
+    protected $table = 'companies';
+
     public $timestamps = false;
-    public function CompanyTypes()
+    public function companyType()
     {
-        return $this->hasMany(CompanyType::class);
+        return $this->hasOne(CompanyType::class);
     }
     public function CompanySizes()
     {
-        return $this->hasMany(CompanySize::class);
+        return $this->hasOne(CompanySize::class);
     }
     public function companyProfile()
     {
