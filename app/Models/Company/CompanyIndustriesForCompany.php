@@ -5,7 +5,8 @@ namespace App\Models\Company;
 use Illuminate\Database\Eloquent\Model;
 
 class CompanyIndustriesForCompany extends Model
-{ public $timestamps = false;
+{
+    public $timestamps = false;
     protected $table = 'company_industries_for_company';
 
     public function companyIndustry()
