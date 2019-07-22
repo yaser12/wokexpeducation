@@ -96,7 +96,9 @@ class CompanyController extends ApiController
         $this->validate($request,$rules);
 
         $company_profile_Request = new Request($request->company_profile);
+
         $this->validate($company_profile_Request,$company_profile_Rules);
+
         $company_industries_request=new Request($request->company_industries);
 
 
@@ -169,7 +171,8 @@ class CompanyController extends ApiController
             $companyIndustriesForCompany->save();
         }
 
-        if ($request->has('company_specialties')) {
+        if ($request->has('company_specialties'))
+        {
             foreach ($request->company_specialties as $company_specialties_request)
             {
                 $company_specialtiesRequest = new Request($company_specialties_request);
@@ -191,7 +194,7 @@ class CompanyController extends ApiController
             $companySocialMedia->company_id=$company->id;
             $companySocialMedia->save();
         }
-         $company  =  Company:: where('id', $company->id)->  with(array('companyProfile' ,'companyIndustriesForCompany','CompanySpecialtiesForCompany','companySocialMedia','companyType'))->get()  ;
+         $company  =  Company:: where('id', $company->id)->  with(array('companyProfile' ,'companyIndustriesForCompany','CompanySpecialtiesForCompany','companySocialMedia'))->get()  ;
         return response()->json(['company' => $company], 200);
 
 
@@ -200,11 +203,13 @@ class CompanyController extends ApiController
     {
 
     }
-    public function upload_logo(Request $request,$id)
+    public function upload_logo(Request $request,$company_id)
     {
         $rules = [
+
               'path_company_imagelogo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
             ];
+        return $request;
         $this->validate($request,$rules);
         if ($request->hasFile('path_company_imagelogo')){
             $file = $request->file('path_company_imagelogo');
@@ -212,7 +217,9 @@ class CompanyController extends ApiController
             $fileName = time().'.'.$extension;
             $path = public_path().'/img';
             $uplaod = $file->move($path,$fileName);
-            return $fileName;
+            $company  = Company::findOrFail($company_id);
+            $company->path_company_imagelogo=$fileName;
+            return $company;
         }
 
     }
@@ -225,21 +232,28 @@ class CompanyController extends ApiController
      */
     public function show($id)
     {
+        $translated_languages_id = Company::findOrFail($id)->first();
+        return $translated_languages_id;
         $company  =  Company:: where('id', $id)
             ->  with(array('companyProfile','companyIndustriesForCompany','CompanySpecialtiesForCompany','companySocialMedia'))
+            ->with(array('company.company_size.company_size_translation' => function ($query) use ($translated_languages_id)
+            {
+                $query->where('translated_languages_id', $translated_languages_id);
+            }))
             //-> with(array('companyType' ))
             ->first()  ;
 
-        $companyType  =  CompanyType:: where('id', $company->company_type_id )  ->  with(array('CompanyTypeTranslation'))->first()  ;
-        $companySize  =  CompanySize:: where('id', $company->company_size_id )  ->  with(array('company_size_translation'))->first()  ;
+        $companyType  =  CompanyType:: where('id', $company->company_type_id )  ->
+        with(array('CompanyTypeTranslation'))->first()  ;
+        $companySize  =  CompanySize:: where('id', $company->company_size_id )  ->
+        with(array('company_size_translation'))->first()  ;
         $companyLocation  =  CompanyLocation:: where('company_id', $company->id)->get();
         return response()->json(
             [
                 'company'     =>$company
                 ,
                 'companyType' =>$companyType
-                ,
-                'companySize' =>$companySize
+
                 ,
                 'companyLocation'=>$companyLocation
             ]
