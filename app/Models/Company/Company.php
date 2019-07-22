@@ -12,11 +12,11 @@ class Company extends Model
     public $timestamps = false;
     public function companyType()
     {
-        return $this->hasOne(CompanyType::class);
+        return $this->belongsTo(CompanyType::class);
     }
     public function CompanySizes()
     {
-        return $this->hasOne(CompanySize::class);
+        return $this->belongsTo(CompanySize::class);
     }
     public function companyProfile()
     {

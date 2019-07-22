@@ -59,9 +59,9 @@ Route::resource('company', 'Company\CompanyController', ['except' => ['edit', 'c
 
 Route::Post('companyLocation', 'Company\CompanyLocationController@store');
 Route::get('companyLocation/{company_id}', 'Company\CompanyLocationController@show_company_locations');
-
+Route::delete('companyLocation/delete_company_location', 'Company\CompanyLocationController@delete_company_location');
 Route::Put('companyLocation/set_comapnylocatin_as_main', 'Company\CompanyLocationController@set_comapnylocatin_as_main' );
-Route::Post('company/upload_logo/{company_id}', 'Company\CompanyController@upload_logo');
+Route::Put('company/upload_logo/{company_id}', 'Company\CompanyController@upload_logo');
 //
 
 
