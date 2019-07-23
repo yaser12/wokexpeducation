@@ -269,19 +269,47 @@ class CompanyController extends ApiController
         $this->validate($request,$rules);
         $company = Company::where('id', $company_id)->update(['main_language_id' => $request['main_language_id']]);
         $show_company = Company::where('id', $company_id)->first();
-        return $show_company;
+        return $this->showOne($show_company);
+
 
     }
     public function getTranslationLanguages()
     {
         $translatedLanguages= TranslatedLanguages::all();
-        return $translatedLanguages;
+        return response()->json([
+            'translatedLanguages' => $translatedLanguages
+
+        ], 200);
 
     }
 
-    public function companydata()
+    public function companydata($company_id)
     {
+        $company = Company::findOrFail( $company_id);
 
+//         resume translated language
+        $main_language_id = $company->main_language_id;
+
+        if($main_language_id==null)$main_language_id=1;
+//        $companies = Company::all();
+        $company_industries = CompanyIndustry::where('verified', true)->
+        with(array('companyIndustryTranslation' => function ($query) use ($main_language_id) {
+            $query->where('translated_languages_id', $main_language_id);
+        }))->get(['id', 'verified']);
+        $company_size = CompanySize::with(array('company_size_translation' => function ($query) use ($main_language_id) {
+            $query->where('translated_languages_id', $main_language_id);
+        }))->get(['id']);
+        $company_type = CompanyType::with(array('company_size_translation' => function ($query) use ($main_language_id) {
+            $query->where('translated_languages_id', $main_language_id);
+        }))->get(['id']);
+        // company_types
+        return response()->json([
+            'company_industries' => $company_industries,
+
+            'company_size' => $company_size,
+            'company_type'=>$company_type,
+
+        ], 200);
     }
     /**
      * Show the form for editing the specified resource.
