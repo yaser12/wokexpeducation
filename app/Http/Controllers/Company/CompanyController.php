@@ -10,6 +10,7 @@ use App\Models\Company\CompanyIndustriesForCompany;
 use App\Models\Company\CompanySpecialtiesForCompany;
 use App\Models\Company\CompanySocialMedia;
 use App\Models\WorkExperience\CompanyIndustry;
+use App\Models\TranslatedLanguages\TranslatedLanguages;
 use App\Models\Company\CompanyType;
 use App\Models\WorkExperience\CompanySize;
 
@@ -260,7 +261,16 @@ class CompanyController extends ApiController
             , 200
         );
     }
+    public function getTranslationLanguages()
+    {
+        $translatedLanguages= TranslatedLanguages::all();
+        return $translatedLanguages;
 
+    }
+    public function companydata()
+    {
+
+    }
     /**
      * Show the form for editing the specified resource.
      *
