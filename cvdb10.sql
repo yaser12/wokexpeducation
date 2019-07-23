@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: Jul 22, 2019 at 09:36 PM
+-- Generation Time: Jul 23, 2019 at 05:07 PM
 -- Server version: 10.1.40-MariaDB
 -- PHP Version: 7.3.5
 
@@ -4431,6 +4431,9 @@ ALTER TABLE `company_industries_for_companies`
   ADD KEY `company_id` (`company_id`),
   ADD KEY `company_industry_id` (`company_industry_id`);
 
+ALTER TABLE `company_industries_for_companies`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
 --
 -- Indexes for table `company_industry_parents`
 --
@@ -4511,6 +4514,9 @@ ALTER TABLE `company_specialties_for_companies`
 --
 ALTER TABLE `company_types`
   ADD PRIMARY KEY (`id`);
+
+ALTER TABLE `company_types`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- Indexes for table `company_type_translations`
@@ -4813,9 +4819,12 @@ ALTER TABLE `social_media`
 --
 -- Indexes for table `specialties`
 --
+
 ALTER TABLE `specialties`
   ADD PRIMARY KEY (`id`),
   ADD KEY `company_industry_id` (`company_industry_id`);
+ALTER TABLE `specialties`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
 
 --
 -- Indexes for table `specialties_translations`
@@ -5080,6 +5089,7 @@ ALTER TABLE `nationalities`
 ALTER TABLE `nationality_translations`
   MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=618;
 
+
 --
 -- AUTO_INCREMENT for table `personal_informations`
 --
@@ -5154,6 +5164,10 @@ ALTER TABLE `work_exp_companies`
 -- Constraints for table `companies`
 --
 ALTER TABLE `companies`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+
+ALTER TABLE `companies`
   ADD CONSTRAINT `FK_main_language_idcompanies` FOREIGN KEY (`main_language_id`) REFERENCES `translated_languages` (`id`);
 
 --
@@ -5187,11 +5201,19 @@ ALTER TABLE `company_industry_translations`
 -- Constraints for table `company_locations`
 --
 ALTER TABLE `company_locations`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+
+ALTER TABLE `company_locations`
   ADD CONSTRAINT `FK_company_location_id_company_id` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`);
 
 --
 -- Constraints for table `company_profiles`
 --
+ALTER TABLE `company_profiles`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+
 ALTER TABLE `company_profiles`
   ADD CONSTRAINT `FK_company_idcompany_profiles` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`),
   ADD CONSTRAINT `FK_company_size_idcompany_profiles` FOREIGN KEY (`company_size_id`) REFERENCES `company_sizes` (`id`),
@@ -5200,6 +5222,9 @@ ALTER TABLE `company_profiles`
 --
 -- Constraints for table `company_profile_translations`
 --
+ALTER TABLE `company_profile_translations`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
 ALTER TABLE `company_profile_translations`
   ADD CONSTRAINT `FK_translated_languages_id` FOREIGN KEY (`translated_languages_id`) REFERENCES `translated_languages` (`id`);
 
@@ -5214,6 +5239,9 @@ ALTER TABLE `company_size_translations`
 -- Constraints for table `company_social_medias`
 --
 ALTER TABLE `company_social_medias`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+ALTER TABLE `company_social_medias`
   ADD CONSTRAINT `FK_company_idcompany_social_media` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`),
   ADD CONSTRAINT `FK_social_media_idcompany_social_media` FOREIGN KEY (`social_media_id`) REFERENCES `social_media` (`id`);
 
@@ -5221,12 +5249,20 @@ ALTER TABLE `company_social_medias`
 -- Constraints for table `company_specialties_for_companies`
 --
 ALTER TABLE `company_specialties_for_companies`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+
+ALTER TABLE `company_specialties_for_companies`
   ADD CONSTRAINT `FK_company_idcompany_specialties_for_company` FOREIGN KEY (`company_id`) REFERENCES `companies` (`id`),
   ADD CONSTRAINT `FK_specialty_idcompany_specialties_for_company` FOREIGN KEY (`specialty_id`) REFERENCES `specialties` (`id`);
 
 --
 -- Constraints for table `company_type_translations`
 --
+ALTER TABLE `company_type_translations`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+
 ALTER TABLE `company_type_translations`
   ADD CONSTRAINT `FK_company_type_idcompany_type_translations` FOREIGN KEY (`company_type_id`) REFERENCES `company_types` (`id`),
   ADD CONSTRAINT `FK_translated_languages_idcompany_type_translations` FOREIGN KEY (`translated_languages_id`) REFERENCES `translated_languages` (`id`);
@@ -5398,12 +5434,17 @@ ALTER TABLE `resumes`
 --
 -- Constraints for table `specialties`
 --
+
 ALTER TABLE `specialties`
   ADD CONSTRAINT `FK_company_industry_idspecialties` FOREIGN KEY (`company_industry_id`) REFERENCES `company_industries` (`id`);
 
 --
 -- Constraints for table `specialties_translations`
 --
+ALTER TABLE `specialties_translations`
+  MODIFY `id` int(10) UNSIGNED NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=1;
+
+
 ALTER TABLE `specialties_translations`
   ADD CONSTRAINT `FK_specialty_idspecialties_translation` FOREIGN KEY (`specialty_id`) REFERENCES `specialties` (`id`),
   ADD CONSTRAINT `FK_translated_languages_idspecialties_translation` FOREIGN KEY (`translated_languages_id`) REFERENCES `translated_languages` (`id`);
