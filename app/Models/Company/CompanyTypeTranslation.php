@@ -10,7 +10,7 @@ class CompanyTypeTranslation extends Model
     //
     protected $table = 'company_type_translations';
     public $timestamps = false;
-    public function CompanyType()
+    public function companyType()
     {
         return $this->belongsTo(CompanyType::class);
     }

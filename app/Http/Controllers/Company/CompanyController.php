@@ -12,8 +12,10 @@ use App\Models\Company\CompanySocialMedia;
 use App\Models\WorkExperience\CompanyIndustry;
 use App\Models\TranslatedLanguages\TranslatedLanguages;
 use App\Models\Company\CompanyType;
-use App\Models\WorkExperience\CompanySize;
+use App\Models\Company\Specialty;
 
+use App\Models\WorkExperience\CompanySize;
+use App\Models\SocialMedia\SocialMedia;
 use Illuminate\Http\Request;
 use App\Http\Controllers\Controller;
 
@@ -21,7 +23,7 @@ class CompanyController extends ApiController
 {
     public function __construct()
     {
-         $this->middleware('jwt.auth');
+      //   $this->middleware('jwt.auth');
     }
     /**
      * Display a listing of the resource.
@@ -283,7 +285,7 @@ class CompanyController extends ApiController
 
     }
 
-    public function companydata($company_id)
+    public function companydata(Request $request,$company_id)
     {
         $company = Company::findOrFail( $company_id);
 
@@ -291,23 +293,35 @@ class CompanyController extends ApiController
         $main_language_id = $company->main_language_id;
 
         if($main_language_id==null)$main_language_id=1;
+
+            if ($request->has('main_language_id')) $main_language_id=$request['main_language_id'];
 //        $companies = Company::all();
         $company_industries = CompanyIndustry::where('verified', true)->
         with(array('companyIndustryTranslation' => function ($query) use ($main_language_id) {
             $query->where('translated_languages_id', $main_language_id);
-        }))->get(['id', 'verified']);
+        }))->
+        with(array('specialties.specialtiesTranslation' => function ($query) use ($main_language_id) {
+            $query->where('translated_languages_id', $main_language_id);
+        }))->get();
         $company_size = CompanySize::with(array('company_size_translation' => function ($query) use ($main_language_id) {
             $query->where('translated_languages_id', $main_language_id);
         }))->get(['id']);
-        $company_type = CompanyType::with(array('company_size_translation' => function ($query) use ($main_language_id) {
+        $company_type = CompanyType::with(array('companyTypeTranslation' => function ($query) use ($main_language_id) {
             $query->where('translated_languages_id', $main_language_id);
         }))->get(['id']);
+      /*  $specialty = Specialty::with(array('specialtiesTranslation' => function ($query) use ($main_language_id) {
+            $query->where('translated_languages_id', $main_language_id);
+        }))->get(['id']);*/
+        $socialMedia = SocialMedia::all();
+
         // company_types
         return response()->json([
             'company_industries' => $company_industries,
 
             'company_size' => $company_size,
             'company_type'=>$company_type,
+            'socialMedia'=> $socialMedia
+            //,            'specialty'=>$specialty
 
         ], 200);
     }

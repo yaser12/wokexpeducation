@@ -15,7 +15,7 @@ class CompanyIndustry extends Model
     {
         return $this->hasMany(CompanyIndustryTranslation::class);
     }
-    public function Specialties() // from yaser 15-7-2019
+    public function specialties() // from yaser 15-7-2019
     {
         return $this->hasMany(Specialty::class);
     }

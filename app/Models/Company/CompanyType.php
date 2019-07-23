@@ -9,11 +9,11 @@ class CompanyType extends Model
     //
     protected $table = 'company_types';
     public $timestamps = false;
-    public function CompanyTypeTranslation()
+    public function companyTypeTranslation()
     {
         return $this->hasMany(CompanyTypeTranslation::class);
     }
-    public function Company()
+    public function company()
     {
         return $this->hasOne(Company::class);
     }

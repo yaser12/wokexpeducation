@@ -61,6 +61,7 @@ Route::Post('companyLocation', 'Company\CompanyLocationController@store');
 Route::get('companyLocation/{company_id}', 'Company\CompanyLocationController@show_company_locations');
 Route::get('translationLanguages', 'Company\CompanyController@getTranslationLanguages');
 Route::get('update_main_language/{company_id}', 'Company\CompanyController@update_main_language');
+Route::get('companydata/{company_id}', 'Company\CompanyController@companydata');
 
 Route::delete('companyLocation/delete_company_location', 'Company\CompanyLocationController@delete_company_location');
 Route::Put('companyLocation/set_comapnylocatin_as_main', 'Company\CompanyLocationController@set_comapnylocatin_as_main' );

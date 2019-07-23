@@ -7,7 +7,7 @@ use Illuminate\Database\Eloquent\Model;
 
 class SpecialtiesTranslation extends Model
 {
-    protected $table = 'specialties_translation';
+    protected $table = 'specialties_translations';
     public $timestamps = false;
     public function specialty()
     {
