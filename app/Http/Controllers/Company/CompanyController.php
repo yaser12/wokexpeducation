@@ -261,12 +261,24 @@ class CompanyController extends ApiController
             , 200
         );
     }
+    public  function update_main_language(Request $request,$company_id){
+
+        $rules = [
+            'main_language_id' => 'required'
+        ];
+        $this->validate($request,$rules);
+        $company = Company::where('id', $company_id)->update(['main_language_id' => $request['main_language_id']]);
+        $show_company = Company::where('id', $company_id)->first();
+        return $show_company;
+
+    }
     public function getTranslationLanguages()
     {
         $translatedLanguages= TranslatedLanguages::all();
         return $translatedLanguages;
 
     }
+
     public function companydata()
     {
 
@@ -291,7 +303,7 @@ class CompanyController extends ApiController
      */
     public function update(Request $request, $id)
     {
-        //
+
     }
 
     /**
