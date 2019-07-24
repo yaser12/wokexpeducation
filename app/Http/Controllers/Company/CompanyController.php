@@ -187,8 +187,6 @@ class CompanyController extends ApiController
         }
         if ($request->has('company_social_media'))
         {
-
-
             $company_social_mediaRequest = new Request($request->company_social_media);
             $this->validate($company_social_mediaRequest,$company_social_media_Rules );
             $companySocialMedia =new CompanySocialMedia();
@@ -202,14 +200,13 @@ class CompanyController extends ApiController
 
 
     }
-    public function add_new_profile(Request $request)
+    public function store_profile(Request $request,$company_id)
     {
 
     }
     public function upload_logo(Request $request,$company_id)
     {
         $rules = [
-
               'path_company_imagelogo' => 'required|image|mimes:jpeg,png,jpg,gif,svg|max:2048'
             ];
         return $request;
